@@ -1,0 +1,11 @@
+{
+  "vm:demo-vm": {
+    "type": "vm",
+    "name": "demo-vm",
+    "image": "ubuntu",
+    "size": "micro",
+    "region": "us-east-1",
+    "status": "created",
+    "ts": 1757156940
+  }
+}
