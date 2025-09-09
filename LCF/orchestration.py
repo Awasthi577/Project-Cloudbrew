@@ -1,89 +1,83 @@
-import os
 import time
-from typing import Any, Dict, Optional
+from typing import Dict, List, Optional
 
-import boto3
-
+from .cloud_adapters import get_compute_adapter
 from .utils import save_state
 
 
-def _get_boto_client(service: str) -> Any:
-
-    endpoint: Optional[str] = os.getenv("AWS_ENDPOINT_URL")
-    region: Optional[str] = os.getenv("AWS_REGION", "us-east-1")
-    aws_key: Optional[str] = os.getenv("AWS_ACCESS_KEY_ID", "test")
-    aws_secret: Optional[str] = os.getenv("AWS_SECRET_ACCESS_KEY", "test")
-
-    # Call boto3.client with explicit keyword args so mypy can match an overload.
-    # Passing None for optional args is accepted by boto3 and keeps runtime behavior.
-    return boto3.client(
-        service_name=service,
-        endpoint_url=endpoint if endpoint is not None else None,
-        region_name=region if region is not None else None,
-        aws_access_key_id=aws_key if aws_key is not None else None,
-        aws_secret_access_key=aws_secret if aws_secret is not None else None,
-    )
-
-
 def create_vm(
-    name: str, image: str = "ubuntu", size: str = "micro", region: str = "us-east-1"
-):
+    name: str,
+    image: str = "ubuntu",
+    size: str = "micro",
+    region: str = "us-east-1",
+    provider: str = "noop",  # default vendor-neutral provider
+) -> Dict:
     """
-    Minimal create VM flow — writes to local state and (optionally) calls EC2 run_instances
-    if AWS_ENDPOINT_URL is set (LocalStack).
+    Vendor-neutral create VM flow.
+    - Saves to local state.
+    - Delegates cloud-specific logic to provider adapter.
     """
     print(
-        f"[orchestration] create VM -> name={name}, image={image}, size={size}, region={region}"
+        f"[orchestration] create VM -> provider={provider}, "
+        f"name={name}, image={image}, size={size}, region={region}"
     )
+
     created = {
         "type": "vm",
         "name": name,
         "image": image,
         "size": size,
         "region": region,
+        "provider": provider,
         "status": "created",
         "ts": int(time.time()),
     }
-    # Save to local state
-    save_state({f"vm:{name}": created})
 
-    # If LocalStack endpoint provided, attempt to create EC2 instance (best-effort)
-    endpoint = os.getenv("AWS_ENDPOINT_URL")
-    if endpoint:
-        try:
-            ec2 = _get_boto_client("ec2")
-            # call a light-weight dry-run: describe or run with minimal args
-            # For LocalStack we attempt run_instances with a small placeholder
-            resp = ec2.run_instances(
-                ImageId="ami-12345",
-                InstanceType="t2.micro",
-                MinCount=1,
-                MaxCount=1,
-            )
-            print("[orchestration] EC2 run_instances response keys:", list(resp.keys()))
-            created["cloud_instance"] = resp.get("Instances", [{}])[0].get(
-                "InstanceId", "local-1"
-            )
-            save_state({f"vm:{name}": created})
-        except Exception as e:
-            print("[orchestration] Warning: cloud create failed (non-fatal) —", e)
+    # Save local state under provider-prefixed key AND bare key for compatibility
+    provider_key = f"{provider}:vm:{name}"
+    bare_key = f"vm:{name}"
+    save_state({provider_key: created})
+    save_state({bare_key: created})
+
+    # Delegate to provider adapter (best-effort)
+    try:
+        adapter = get_compute_adapter(provider)
+        cloud_instance = adapter.create_instance(
+            name=name,
+            image=image,
+            size=size,
+            region=region,
+        )
+        if cloud_instance:
+            created["cloud_instance"] = cloud_instance
+            # update both keys again with cloud info
+            save_state({provider_key: created})
+            save_state({bare_key: created})
+    except Exception as e:
+        print(
+            f"[orchestration] Warning: provider {provider} create failed (non-fatal) — {e}"
+        )
+
     return created
 
 
-def create_from_spec(spec: Dict):
+def create_from_spec(spec: Dict) -> List[Dict]:
     """
-    Spec format (simple):
+    Parse a vendor-neutral spec and create resources accordingly.
+
+    Example spec:
     resources:
       - type: vm
         name: myvm
         image: ubuntu
         size: micro
         region: us-east-1
+        provider: aws|azure|gcp|noop
     """
-    results = []
+    results: List[Dict] = []
     for r in spec.get("resources", []):
-        t = r.get("type")
-        if t == "vm":
+        rtype = r.get("type")
+        if rtype == "vm":
             name = r.get("name") or f"vm-{int(time.time())}"
             results.append(
                 create_vm(
@@ -91,18 +85,22 @@ def create_from_spec(spec: Dict):
                     image=r.get("image", "ubuntu"),
                     size=r.get("size", "micro"),
                     region=r.get("region", "us-east-1"),
+                    provider=r.get("provider", "noop"),  # default vendor-neutral
                 )
             )
         else:
-            print(f"[orchestration] unsupported resource type {t}, skipping.")
+            print(f"[orchestration] unsupported resource type {rtype}, skipping.")
     return results
 
 
 class Orchestrator:
     """
-    Minimal Orchestrator placeholder so tests pass.
-    Extend later with orchestration lifecycle methods.
+    Vendor-neutral Orchestrator.
+    Manages lifecycle of resources via provider adapters.
     """
 
-    def __init__(self):
-        pass
+    def __init__(self, provider: Optional[str] = "noop"):  # default vendor-neutral
+        self.provider = provider
+
+    def create_from_spec(self, spec: Dict) -> List[Dict]:
+        return create_from_spec(spec)

@@ -1,6 +1,10 @@
-# from .dsl_parser import parse_spec
-from . import api_handler, dsl_parser, orchestration, utils
-from .orchestration import create_from_spec, create_vm
+"""
+CloudBrew LCF package entrypoint.
+Keep this lightweight to avoid circular-import issues.
+"""
+
+import importlib
+from typing import Any
 
 __all__ = [
     "dsl_parser",
@@ -10,4 +14,12 @@ __all__ = [
     "create_from_spec",
     "create_vm",
 ]
-# Note: create_vm is exposed for backward compatibility; prefer using create_from_spec.
+
+# --- Lazy attribute loader ---
+def __getattr__(name: str) -> Any:
+    if name in ("dsl_parser", "utils", "orchestration", "api_handler"):
+        return importlib.import_module(f"LCF.{name}")
+    if name in ("create_from_spec", "create_vm"):
+        orch = importlib.import_module("LCF.orchestration")
+        return getattr(orch, name)
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
