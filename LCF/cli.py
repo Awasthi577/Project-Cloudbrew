@@ -1,6 +1,7 @@
 # LCF/cli.py
 import json
 import os
+from pathlib import Path
 from typing import Optional
 
 import typer
@@ -8,6 +9,9 @@ import typer
 from LCF.autoscaler import AutoscalerManager, parse_autoscale_string
 from LCF.offload.manager import OffloadManager
 from LCF.cloud_adapters import get_compute_adapter
+from LCF.cloud_adapters import pulumi_adapter  # Pulumi adapter wiring
+from LCF.cloud_adapters.terraform_adapter import TerraformAdapter
+
 
 app = typer.Typer()
 offload_app = typer.Typer()
@@ -15,6 +19,7 @@ app.add_typer(offload_app, name="offload")
 
 DEFAULT_DB = "cloudbrew.db"
 DEFAULT_OFFLOAD_DB = "cloudbrew_offload.db"
+
 
 # -------------------------
 # Generic existing create kept
@@ -27,7 +32,7 @@ def create(
     provider: str = typer.Option("noop", help="provider adapter to use (noop|terraform|pulumi|...)"),
     db_path: Optional[str] = typer.Option(DEFAULT_DB, help="path to SQLite DB (default cloudbrew.db)"),
     plan_only: bool = typer.Option(False, help="do not apply changes, only plan/dry-run"),
-    metrics: Optional[str] = typer.Option(None, help='observed metrics as JSON, e.g. \'{"cpu": 80}\''),
+    metrics: Optional[str] = typer.Option(None, help='observed metrics as JSON, e.g. \'{"cpu": 80}\''),  # noqa
     offload: bool = typer.Option(False, help="enqueue heavy apply to offload worker instead of running inline"),
 ):
     with open(spec, "r") as fh:
@@ -88,7 +93,6 @@ def create_vm(
     Create a VM across providers with a single canonical spec.
     Default: plan-only (safe). Use --yes to apply or --async to enqueue.
     """
-    # Build canonical spec
     if spec:
         with open(spec, "r") as fh:
             s = json.load(fh)
@@ -102,21 +106,16 @@ def create_vm(
             "count": count,
         }
 
-    # provider auto-resolution: if provider == auto, choose terraform by default
     chosen_provider = provider
     if provider == "auto":
-        # naive detection: AWS env vars present -> aws, else terraform
         if os.environ.get("AWS_ACCESS_KEY_ID") or os.environ.get("AWS_PROFILE"):
             chosen_provider = "aws"
         else:
             chosen_provider = "terraform"
 
-    # autoscale defaults (no autoscale by default)
     autoscale_cfg = {"min": s.get("count", count), "max": s.get("count", count), "policy": [], "cooldown": 60}
-
     mgr = AutoscalerManager(db_path=db_path, provider=chosen_provider)
 
-    # async apply: create plan, enqueue apply_plan task
     if async_apply:
         res = mgr.run_once(name, s, autoscale_cfg, observed_metrics={"cpu": 0}, plan_only=True)
         plan_id = None
@@ -128,15 +127,210 @@ def create_vm(
         typer.echo(json.dumps({"enqueued_task_id": tid, "plan_id": plan_id}, indent=2))
         return
 
-    # sync apply if --yes
     if yes:
         res = mgr.run_once(name, s, autoscale_cfg, observed_metrics={"cpu": 0}, plan_only=False)
         typer.echo(json.dumps(res, indent=2))
         return
 
-    # default: plan-only
     res = mgr.run_once(name, s, autoscale_cfg, observed_metrics={"cpu": 0}, plan_only=True)
     typer.echo(json.dumps(res, indent=2))
+
+
+# -------------------------
+# Destroy VM command
+# -------------------------
+@app.command("destroy-vm")
+def destroy_vm(
+    name: str = typer.Argument(..., help="logical name for the VM to destroy"),
+    provider: str = typer.Option("terraform", help="provider (terraform|pulumi|auto)"),
+    db_path: Optional[str] = typer.Option(DEFAULT_DB, help="path to SQLite DB"),
+    offload: bool = typer.Option(False, "--offload", help="enqueue destroy to OffloadManager"),
+    offload_db: str = typer.Option(DEFAULT_OFFLOAD_DB, help="offload DB path"),
+):
+    """
+    Destroy a VM (supports terraform destroy and pulumi destroy_stack).
+    """
+    if offload:
+        off = OffloadManager(offload_db)
+        if provider == "pulumi":
+            tid = off.enqueue(adapter="pulumi", task_type="destroy_stack", payload={"stack": name})
+        else:
+            tid = off.enqueue(adapter="terraform", task_type="destroy", payload={"adapter_id": f"terraform-{name}"})
+        typer.echo(json.dumps({"enqueued_task_id": tid}))
+        return
+
+    if provider == "pulumi":
+        for line in pulumi_adapter.destroy(name):
+            typer.echo(line)
+    else:
+        ta = TerraformAdapter(db_path)
+        ok = ta.destroy_instance(f"terraform-{name}")
+        typer.echo(json.dumps({"destroyed": ok, "name": name}))
+
+# -------------------------
+# Destroy alias for ergonomics
+# -------------------------
+@app.command("destroy")
+def destroy_alias(
+    name: str = typer.Argument(..., help="logical name for the VM to destroy"),
+    provider: str = typer.Option("terraform", help="provider (terraform|pulumi|auto)"),
+    db_path: Optional[str] = typer.Option(DEFAULT_DB, help="path to SQLite DB"),
+    offload: bool = typer.Option(False, "--offload", help="enqueue destroy to OffloadManager"),
+    offload_db: str = typer.Option(DEFAULT_OFFLOAD_DB, help="offload DB path"),
+):
+"""
+Alias for `destroy-vm`. Usage: `cloudbrew destroy <name>`.
+"""
+return destroy_vm(name, provider=provider, db_path=db_path, offload=offload, offload_db=offload_db)
+
+
+
+# -------------------------
+# Pulumi helper commands
+# -------------------------
+@app.command("pulumi-plan")
+def cli_pulumi_plan(stack: str = typer.Option("dev", help="stack name"),
+                    spec_file: str = typer.Option("spec.json", help="path to spec JSON")):
+    """
+    Run pulumi preview (plan) against a spec file and stream logs.
+    """
+    p = Path(spec_file)
+    if not p.exists():
+        typer.secho(f"Spec file not found: {spec_file}", fg=typer.colors.RED)
+        raise typer.Exit(code=2)
+    try:
+        spec = json.loads(p.read_text())
+    except Exception as e:
+        typer.secho(f"Failed to load spec file: {e}", fg=typer.colors.RED)
+        raise typer.Exit(code=3)
+
+    for line in pulumi_adapter.plan(spec, stack):
+        typer.echo(line)
+
+
+@app.command("pulumi-apply")
+def cli_pulumi_apply(stack: str = typer.Option("dev", help="stack name"),
+                     spec_file: str = typer.Option("spec.json", help="path to spec JSON"),
+                     offload: bool = typer.Option(False, help="enqueue apply to offload worker")):
+    """
+    Apply a spec via Pulumi. Use --offload to enqueue apply to OffloadManager.
+    """
+    p = Path(spec_file)
+    if not p.exists():
+        typer.secho(f"Spec file not found: {spec_file}", fg=typer.colors.RED)
+        raise typer.Exit(code=2)
+    try:
+        spec = json.loads(p.read_text())
+    except Exception as e:
+        typer.secho(f"Failed to load spec file: {e}", fg=typer.colors.RED)
+        raise typer.Exit(code=3)
+
+    if offload:
+        off = OffloadManager(DEFAULT_OFFLOAD_DB)
+        tid = off.enqueue(adapter="pulumi", task_type="apply_spec", payload={"spec": spec, "stack": stack})
+        typer.echo(json.dumps({"enqueued_task_id": tid}))
+        return
+
+    for line in pulumi_adapter.apply(spec, stack):
+        typer.echo(line)
+
+
+@app.command("pulumi-destroy")
+def cli_pulumi_destroy(stack: str = typer.Option("dev", help="stack name"),
+                       offload: bool = typer.Option(False, help="enqueue destroy to offload worker")):
+    """
+    Destroy a Pulumi stack. Use --offload to enqueue the destroy to the OffloadManager.
+    """
+    if offload:
+        off = OffloadManager(DEFAULT_OFFLOAD_DB)
+        tid = off.enqueue(adapter="pulumi", task_type="destroy_stack", payload={"stack": stack})
+        typer.echo(json.dumps({"enqueued_task_id": tid}))
+        return
+
+    for line in pulumi_adapter.destroy(stack):
+        typer.echo(line)
+
+
+# -------------------------
+# Generic plan + apply-plan commands
+# -------------------------
+@app.command("plan")
+def plan_cmd(
+    provider: str = typer.Option("terraform", help="provider (terraform|pulumi)"),
+    spec_file: Optional[str] = typer.Option(None, "--spec-file", "-f", help="path to JSON spec file"),
+    spec_json: Optional[str] = typer.Option(None, "--spec", help="inline JSON spec (mutually exclusive with --spec-file)"),
+    db_path: Optional[str] = typer.Option(DEFAULT_DB, help="path to SQLite DB"),
+):
+    """
+    Produce a plan for a given provider. Prints JSON summary.
+    """
+    if spec_file and spec_json:
+        raise typer.BadParameter("use only one of --spec-file or --spec")
+
+    if spec_file:
+        try:
+            with open(spec_file, "r", encoding="utf-8") as fh:
+                s = json.load(fh)
+        except Exception as e:
+            raise typer.Exit(f"Failed to load spec file: {e}")
+    elif spec_json:
+        try:
+            s = json.loads(spec_json)
+        except Exception as e:
+            raise typer.BadParameter(f"invalid --spec JSON: {e}")
+    else:
+        raise typer.BadParameter("either --spec-file or --spec must be provided")
+
+    if provider == "terraform":
+        ta = TerraformAdapter(db_path=db_path)
+        res = ta.create_instance(s.get("name", "plan-object"), s, plan_only=True)
+        typer.echo(json.dumps(res, indent=2))
+    elif provider == "pulumi":
+        gen = pulumi_adapter.plan(s, "dev")
+        try:
+            lines = []
+            for ln in gen:
+                lines.append(ln)
+            typer.echo(json.dumps({"plan_output": lines}, indent=2))
+        except TypeError:
+            typer.echo(json.dumps(gen, indent=2))
+    else:
+        raise typer.BadParameter(f"unsupported provider: {provider}")
+
+
+@app.command("apply-plan")
+def apply_plan_cmd(
+    provider: str = typer.Option("terraform", help="provider (terraform|pulumi)"),
+    plan_id: str = typer.Option(..., help="plan identifier (path for terraform)"),
+    yes: bool = typer.Option(False, "--yes", "-y", help="apply synchronously (default is plan-only)"),
+    async_apply: bool = typer.Option(False, "--async", help="enqueue apply to offload worker and return immediately"),
+    offload_db: str = typer.Option(DEFAULT_OFFLOAD_DB, help="offload DB path"),
+):
+    """
+    Apply a previously saved plan produced by `cloudbrew plan`.
+    """
+    if async_apply:
+        off = OffloadManager(offload_db)
+        payload = {"plan_id": plan_id}
+        tid = off.enqueue(provider, "apply_plan", payload)
+        typer.echo(json.dumps({"enqueued_task_id": tid, "plan_id": plan_id}, indent=2))
+        return
+
+    if provider == "terraform":
+        ta = TerraformAdapter()
+        res = ta.apply_plan(plan_id)
+        typer.echo(json.dumps(res, indent=2))
+    elif provider == "pulumi":
+        gen = pulumi_adapter.apply(plan_id, "dev")
+        try:
+            lines = []
+            for ln in gen:
+                lines.append(ln)
+            typer.echo(json.dumps({"apply_output": lines}, indent=2))
+        except TypeError:
+            typer.echo(json.dumps(gen, indent=2))
+    else:
+        raise typer.BadParameter(f"unsupported provider: {provider}")
 
 
 # -------------------------

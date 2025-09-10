@@ -16,6 +16,7 @@ LCF/cloud_adapters/gcp_adapter.py
 LCF/cloud_adapters/noop.py
 LCF/cloud_adapters/noop_adapter.py
 LCF/cloud_adapters/protocol.py
+LCF/cloud_adapters/pulumi_adapter.py
 LCF/cloud_adapters/terraform_adapter.py
 cloudbrew.egg-info/PKG-INFO
 cloudbrew.egg-info/SOURCES.txt
@@ -24,4 +25,5 @@ cloudbrew.egg-info/entry_points.txt
 cloudbrew.egg-info/requires.txt
 cloudbrew.egg-info/top_level.txt
 tests/__init__.py
+tests/test_autoscaler.py
 tests/test_orchestration.py
