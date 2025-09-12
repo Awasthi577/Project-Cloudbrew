@@ -306,6 +306,36 @@ offload_app = typer.Typer()
 app.add_typer(offload_app, name="offload")
 
 
+# Mount init + configure apps
+try:
+    from LCF import cli_init
+except Exception:
+    cli_init = None
+
+try:
+    from LCF import cli_configure
+except Exception:
+    cli_configure = None
+if cli_init:
+    try:
+        # cli_init.init is the command function decorated by typer
+        app.command(name="init")(cli_init.init)
+    except Exception:
+        # fallback: mount as sub-typer if direct registration fails
+        app.add_typer(cli_init.app, name="init")
+
+if cli_configure:
+    try:
+        app.command(name="configure")(cli_configure.init)  # if its command is named `init` too
+    except Exception:
+        try:
+            # if cli_configure exposes a different function name, try `configure`
+            app.command(name="configure")(cli_configure.configure)
+        except Exception:
+            app.add_typer(cli_configure.app, name="configure")
+
+
+
 # -------------------------
 # Static commands
 # -------------------------
