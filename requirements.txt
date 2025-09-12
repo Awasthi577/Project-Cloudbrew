@@ -5,4 +5,4 @@ moto==4.1.0
 pytest-xdist==3.2.0
 black==24.3.0
 flake8==6.1.0
-    
+typer[all]

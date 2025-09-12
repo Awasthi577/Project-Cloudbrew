@@ -1,133 +1,345 @@
+---
+
 # CloudBrew
 
-CloudBrew is a next-generation cross-cloud package manager and orchestration tool that makes provisioning infrastructure as simple as installing software.  
+CloudBrew is a **cross-cloud orchestration and package manager** that makes provisioning infrastructure as simple as installing software.
 
-Spin up EC2s, scale clusters, or deploy multi-tier apps across **AWS, GCP, and Azure** — all with a single command.  
-
----
-
-## Features
-
-### 1. Package-Manager Style Infra
-Install, update, and remove cloud resources like you do with Homebrew.  
-
-### 2. Native Fast Paths
-Simple tasks (VMs, storage, autoscaling groups) handled directly via cloud SDKs for **sub-2s execution**.  
-
-### 3. Orchestration Offloading
-Complex multi-tier infra (DB + VPC + LB) seamlessly offloaded to **Terraform** or **Pulumi**.  
-
-### 4. Progressive Learning
-CloudBrew “learns” patterns from Terraform/Pulumi runs and can later handle them **natively**, saving time & memory.  
-
-### 5. State Management
-Tracks resources created, detects drift, and ensures infra consistency.  
-
-### 6. Command Healing
-Friendly suggestions for ambiguous inputs, with intelligent defaults & provider-specific mappings.  
+It abstracts away Terraform and Pulumi into **one-line CLI commands**. CloudBrew dynamically resolves resources across AWS, Azure, and GCP, and falls back gracefully if binaries, providers, or credentials are missing.
 
 ---
 
-## Setup & Installation
+## Features & Their Implementation
+
+Below is the **complete feature list** with details of *how each is implemented in code*.
+
+---
+
+### 1. Dynamic Lookup & Resolver
+
+**What it does:**
+
+* Any unknown command (`cloudbrew bucket my-bucket`) is dynamically mapped to the correct provider resource (`aws_s3_bucket`, `azurerm_storage_container`, etc).
+
+**Implementation:**
+
+* **File:** `LCF/resource_resolver.py`
+* **Key functions:**
+
+  * `resolve(token, params)` → returns `{_provider, _resolved}`.
+  * `_query_terraform_schema()` → runs `terraform providers schema -json`, parses JSON streaming.
+* **Cache:**
+
+  * SQLite DB `.cloudbrew_cache/resources.db`.
+  * Cached mappings of `logical_type` → `provider resource`.
+* **Fallbacks:**
+
+  * Missing provider schema → uses cache.
+  * Ambiguous mapping → prints candidate list.
+  * Missing everything → falls back to noop adapter.
+
+---
+
+### 2. Terraform Adapter
+
+**What it does:**
+
+* Converts canonical VM spec into HCL, runs Terraform plan/apply/destroy, and streams output.
+* Cleans up `.cloudbrew_tf/` workdirs after runs.
+
+**Implementation:**
+
+* **File:** `LCF/cloud_adapters/terraform_adapter.py` (\~348 LOC).
+* **Key functions:**
+
+  * `stream_create_instance(logical_id, spec, plan_only=False)`
+  * `stream_apply_plan(plan_path)`
+  * `stream_destroy_instance(logical_id, spec)`
+  * `create_instance` (compat wrapper).
+* **HCL translation:** canonical VM spec (dict) → provider HCL blocks.
+* **Workdirs:** `.cloudbrew_tf/<logical>` (with `main.tf`, plan files).
+* **Cleanup:** `_cleanup()` deletes `.terraform/`, plan, and tf files.
+* **Fallbacks:**
+
+  * Terraform missing → error with hint (`CLOUDBREW_TERRAFORM_BIN`).
+  * Creds missing → fallback to `null_resource`.
+  * Network/provider download fails → cached schema or noop adapter.
+
+---
+
+### 3. Pulumi Adapter
+
+**What it does:**
+
+* Runs Pulumi plans/applies/destroys either via Automation API or subprocess CLI.
+
+**Implementation:**
+
+* **File:** `LCF/cloud_adapters/pulumi_adapter.py`.
+* **Key functions:**
+
+  * `plan(spec, stack_name)` → `pulumi preview` or Automation API.
+  * `apply(spec, stack_name)` → `pulumi up`.
+  * `destroy_instance(stack_name)` → `pulumi destroy`.
+* **Project template:** generates `Pulumi.yaml`, `__main__.py`, `spec.json`.
+* **Fallbacks:**
+
+  * Automation API not importable → subprocess fallback.
+  * Pulumi CLI missing → safe error.
+  * Spec translation not implemented → pass through raw spec.json.
+
+---
+
+### 4. CLI Wiring
+
+**What it does:**
+
+* Unified Typer-based CLI entrypoint (`setup.py → cloudbrew`).
+* Routes explicit commands or dynamic fallbacks.
+
+**Implementation:**
+
+* **File:** `LCF/cli.py` (Typer app).
+* **Commands:**
+
+  * Static: `create-vm`, `destroy-vm`, `status`, `plan`, `apply-plan`.
+  * Pulumi helpers: `pulumi-plan`, `pulumi-apply`, `pulumi-destroy`.
+  * Offload: `offload enqueue`, `offload run-worker`.
+  * Dynamic fallback: unknown verbs → `ResourceResolver`.
+* **Execution flow:**
+
+  ```
+  CLI → Parser → ResourceResolver (if needed) → Adapter (Terraform/Pulumi) 
+     → Streaming logs → Cleanup → Cache results
+  ```
+* **Flags:**
+
+  * Default = plan.
+  * `--yes` → apply.
+  * `--async` → enqueue for Offload worker.
+
+---
+
+### 5. Offload Manager & Worker
+
+**What it does:**
+
+* Lets you enqueue heavy/long jobs instead of running inline.
+* Worker polls jobs and executes them with retries.
+
+**Implementation:**
+
+* **File:** `LCF/offload_manager.py`.
+* **Storage:** SQLite DB `cloudbrew_offload.db`.
+* **Functions:**
+
+  * `enqueue(command, payload)`
+  * `fetch_pending()`
+  * `mark_done()`
+  * `run_worker(poll_interval)`
+* **Fallbacks:**
+
+  * If DB locked or missing → logs error, retries later.
+
+---
+
+### 6. Autoscaler
+
+**What it does:**
+
+* Runs scaling policies (`cpu>80%:scale+2`) against targets.
+* Persists cooldowns to avoid flapping.
+
+**Implementation:**
+
+* **File:** `LCF/autoscaler.py`.
+* **Functions:**
+
+  * `parse_autoscale_string(policy_str)` → dict of rules.
+  * `AutoscalerManager.run_once()` → checks rules, enqueues actions.
+  * `AutoscalerManager.run_loop()` → periodic loop.
+* **Storage:** `.cloudbrew_autoscaler.db` (SQLite).
+* **Integration:** enqueues scale actions to Offload worker.
+* **Fallbacks:**
+
+  * Invalid policy → noop with warning.
+  * No metrics → skip.
+
+---
+
+### 7. Status & State
+
+**What it does:**
+
+* Lists known resources and instances.
+* Tracks backhaul of past runs.
+
+**Implementation:**
+
+* **File:** `LCF/state.py`.
+* **DBs:**
+
+  * `.cloudbrew_state.json` → small instance store.
+  * `.cloudbrew_backhaul.db` → run logs (adapter, action, status).
+* **Functions:**
+
+  * `upsert_instance(logical_id, state)`
+  * `list_instances()`
+
+---
+
+### 8. Testing & CI
+
+**What it does:**
+
+* Unit, mocked, integration tests with pytest.
+* CI workflow runs pytest on push/PR.
+
+**Implementation:**
+
+* **Tests:** `tests/unit`, `tests/mocked`, `tests/integration`.
+* **Scenarios:**
+
+  * Terraform adapter streaming.
+  * Dynamic resolver mapping.
+  * Offload manager queue/worker.
+  * Autoscaler cooldowns.
+* **CI file:** `.github/workflows/ci.yml`.
+* **Fallbacks tested:** terraform missing, creds missing, ambiguous schema.
+
+---
+
+## CLI Reference (Single-Line Commands)
+
+### VM Lifecycle
 
 ```bash
-# Clone the repo
-git clone https://github.com/Awasthi577/Project-Cloudbrew.git
-cd Project-Cloudbrew
-
-# (Optional) create a virtual environment
-python -m venv .venv
-source .venv/bin/activate   # Linux/Mac
-.\.venv\Scripts\activate    # Windows
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Install CloudBrew CLI in editable mode
-pip install -e .
+cloudbrew create-vm myvm --image ubuntu-22.04 --size small --region us-east-1
+cloudbrew create-vm myvm ... --yes     # apply
+cloudbrew destroy-vm myvm --yes        # destroy
 ```
 
-### Verify installation:
-```bash
-cloudbrew --help
-```
-
-## Running Commands
-### Autoscaling
+### Generic Resource (Dynamic Lookup)
 
 ```bash
-cloudbrew autoscale create --name web-tier --min 1 --max 4 --cpu 50 --type t3.micro
+cloudbrew bucket my-bucket --region us-east-1 --storage-class standard
 ```
 
-### CloudBrew → Terraform
+### Pulumi
 
 ```bash
-cloudbrew terraform plan -f infra.yaml
-cloudbrew terraform apply -f infra.yaml
-cloudbrew terraform destroy -f infra.yaml
+cloudbrew pulumi-plan --stack dev --spec examples/sample.yml
+cloudbrew pulumi-apply --stack dev --yes
+cloudbrew pulumi-destroy --stack dev --yes
 ```
 
-## Provision from YAML
+### Offload
 
-```yaml
-resources:
-  - type: vm
-    name: web-tier
-    instance_type: t3.micro
-    autoscale:
-      min: 1
-      max: 4
-      cpu: 50
-```
-### Apply it:
-
-``` bash
-cloudbrew apply -f infra.yaml
+```bash
+cloudbrew create-vm web01 --image ubuntu --size small --region us-east-1 --async
+cloudbrew offload run-worker --db-path cloudbrew_offload.db
 ```
 
-## Tested Workflows
+### Autoscaler
 
-1. CLI wiring (Typer)  
-2. Autoscaler (create, min/max rules)  
-3. DSL parsing (infra.yaml → spec)  
-4. Terraform offloading (plan/apply/destroy)  
-5. Store & State tracking  
-6. No-op adapter for safe testing
+```bash
+cloudbrew autoscale --policy "cpu>80%:scale+2" --target mycluster
+```
 
+### Status
 
-## Roadmap
+```bash
+cloudbrew status
+```
 
-### MVP Phase (Foundations)
-1. Core CLI + DSL for human-friendly cloud commands  
-2. Native support for simple ops (VMs, storage, autoscale basics)  
-3. Offloading complex orchestration to Terraform  
-4. Built-in state management to track resources and detect drift  
+---
 
-### Early Adoption (Scaling Up)
-1. Add Pulumi support for alternative orchestration workflows  
-2. Advanced healing: detect and fix drift or partial failures  
-3. Remote state sync for teams and CI/CD pipelines  
-4. Pattern recognition engine to start learning common infra recipes  
+## Fallback Matrix
 
-### Mature Phase (Autonomous CloudBrew)
-1. Achieve 90% native execution (minimal Terraform/Pulumi use)  
-2. Intelligent resource management with caching & parallel execution  
-3. Self-healing infra that can auto-recover from failures or drift  
-4. User prompts before switching from offloaded → native execution  
-5. Progressive optimization for speed, memory efficiency, and reliability  
+| Component  | Primary Path         | Fallback 1       | Fallback 2     |
+| ---------- | -------------------- | ---------------- | -------------- |
+| Terraform  | terraform CLI        | noop adapter     | null\_resource |
+| Pulumi     | Automation API       | CLI subprocess   | noop adapter   |
+| Resolver   | provider schema JSON | cached DB        | candidate list |
+| CLI        | explicit subcommand  | dynamic fallback | noop/error     |
+| Offload    | sqlite queue         | inline run       | error log      |
+| Autoscaler | policy parse         | cooldown skip    | noop           |
 
+---
 
-## Failure Handling
+## Testing
 
-CloudBrew is designed to gracefully handle:
+Run all:
 
-1. Drift from manual console changes  
-2. API rate limits and latency issues  
-3. Orchestration partial failures  
-4. Ambiguous DSL inputs with guided suggestions  
-5. State drift and mismatched tracking  
-6. Provider SDK gaps and abstraction leaks  
-7. Dependency changes in Terraform/Pulumi  
-8. Latency under heavy load  
-9. Security/credential issues  
-10. Runaway infra usage  
+```bash
+pytest -q
+```
+
+Safe smoke test:
+
+```bash
+cloudbrew create-vm test --image ubuntu --size small --region us-east-1
+```
+
+Dynamic resolver demo:
+
+```bash
+cloudbrew bucket logs-bucket --region us-east-1
+```
+
+Inspect cache DB:
+
+```bash
+sqlite3 .cloudbrew_cache/resources.db "select * from resource_mappings;"
+```
+
+---
+
+## Project Structure
+
+```
+LCF/
+  cloud_adapters/
+    terraform_adapter.py
+    pulumi_adapter.py
+  autoscaler.py
+  resource_resolver.py
+  offload_manager.py
+  state.py
+tests/
+  unit/
+  mocked/
+  integration/
+.github/workflows/
+  ci.yml
+```
+
+---
+
+## Example Workflows
+
+Plan → Apply → Destroy:
+
+```bash
+cloudbrew create-vm myvm --image ubuntu --size small --region us-east-1
+cloudbrew create-vm myvm ... --yes
+cloudbrew destroy-vm myvm --yes
+```
+
+Dynamic discovery:
+
+```bash
+cloudbrew bucket mybucket --region us-east-1 --yes
+```
+
+Async workflow:
+
+```bash
+cloudbrew create-vm myvm --image ubuntu --size small --region us-east-1 --async
+cloudbrew offload run-worker
+```
+
+---
+
+With CloudBrew, **everything is one line** — all resources, all providers, dynamic lookups, safe fallbacks, autoscaling, and offload processing are unified into a single CLI.
+
+---
