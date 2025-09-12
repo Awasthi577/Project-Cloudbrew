@@ -8,11 +8,96 @@ It abstracts away Terraform and Pulumi into **one-line CLI commands**. CloudBrew
 
 ---
 
+## Quickstart Guide
+
+Follow these steps to get CloudBrew up and running on your machine.
+
+### 1. Initialize your project repository
+Create a new folder for your infrastructure code and initialize git:
+
+```bash
+mkdir my-cloudbrew-project
+cd my-cloudbrew-project
+git init
+```
+### 2. Clone or install CloudBrew
+
+``` bash
+git clone https://github.com/<your-username>/Project-Cloudbrew.git
+cd Project-Cloudbrew
+python -m venv .venv
+.venv\Scripts\activate  # on Windows
+# source .venv/bin/activate  # on Linux/macOS
+
+pip install -e ".[cloud-creds,dev]"
+
+```
+### 3. Configure CloudBrew for your cloud provider
+
+``` bash
+cloudbrew init
+```
+You’ll be prompted to select a provider:
+
+    1. aws
+
+    2. gcp
+
+    3. azure
+
+Enter your credentials when prompted.
+
+CloudBrew securely stores them in your system keyring (with Fernet fallback if unavailable).
+
+A config file is created at ~/.cloudbrew/config.json.
+
+For non-interactive defaults (no credentials, provider=none):
+
+``` bash
+cloudbrew init --yes
+```
+
+### 4. Verify Setup
+
+Check that your configuration file was created:
+
+``` bash
+type %USERPROFILE%\.cloudbrew\config.json   # on Windows
+cat ~/.cloudbrew/config.json                # on Linux/macOS
+```
+
+### 5. Run your first command
+
+Plan a VM with a single line:
+
+``` bash
+cloudbrew create-vm myvm --image ubuntu --size small --region us-east-1 --provider terraform
+```
+
+Or use the dynamic fallback to create a resource by short name:
+
+``` bash
+cloudbrew bucket my-bucket --region us-east-1
+```
+    1. By default this produces a plan only (no apply).
+
+    2. Add --yes to apply immediately.
+
+    3. Add --async to enqueue it into the Offload Manager for background execution.
+
+### 6. Destroy resources when finished
+
+``` bash
+cloudbrew destroy-vm myvm --provider terraform
+```
+
+
+---
+
 ## Features & Their Implementation
 
 Below is the **complete feature list** with details of *how each is implemented in code*.
 
----
 
 ### 1. Dynamic Lookup & Resolver
 
