@@ -1,0 +1,109 @@
+# CloudBrew 
+
+**CloudBrew** is a next-generation, vendor-neutral cloud orchestration CLI. It abstracts Infrastructure-as-Code behind a unified, intelligent interface that handles routing, policy enforcement, autoscaling, and task offloading.
+
+Stop writing boilerplate HCL or YAML for every resource. Just brew it.
+
+---
+
+## Key Features
+
+* **Intelligent Routing:** Automatically decides whether to provision resources via a **Hot Pool (L1)**, **Warm Pool (L2)**, or perform a **Cold Build (L3)** based on latency and availability.
+* **Infrastructure Support:** Built-in adapters for OpenTofu and Pulumi for seamless orchestration and unified workflows across 2 IaC engines.
+* **Dynamic Autoscaling:** Built-in logic to scale resources based on custom metrics (e.g., `1:5@cpu:70`) with cooldown handling.
+* **Governance & Policy:** Enforce constraints (Allowed Regions, Cost Budgets, Instance Types) via `policies.json` before infrastructure is touched.
+* **Stack Blueprints:** Deploy complex architectures (e.g., LAMP, K8s clusters) using Jinja2-templated blueprints.
+* **Drift Detection:** Detect manual changes in your cloud environment against your local state.
+* **async Task Offloading:** Heavy provisioning tasks can be offloaded to a background SQLite-backed worker queue.
+---
+
+## Installation
+
+### Prerequisites
+* **Python 3.9+**
+
+### Install via Pip
+```bash
+pip install cloudbrew
+```
+## Intelligent Provisioning (Smart Router)
+
+Let the Intelligent Router decide the best way to provision (Hot Cache vs Cold Build) and find the cheapest spot prices.
+
+``` bash
+cloudbrew create-vm worker-node --smart --yes
+```
+
+## Dynamic Resource Resolution
+
+CloudBrew uses fuzzy matching to find resources. You don't need to remember exact provider resource names.
+
+``` bash
+# CloudBrew resolves "bucket" to "aws_s3_bucket" or "google_storage_bucket"
+cloudbrew bucket my-data-lake --region us-east-1
+```
+
+## Deploying Stacks
+Deploy multi-resource environments using blueprints.
+
+``` bash
+# List available stacks
+cloudbrew stacks
+
+# Deploy a LAMP stack
+cloudbrew stack deploy lamp my-web-app --env prod --region us-east-1
+```
+
+## Autoscaling
+Apply autoscaling policies to your resources using the compact syntax: min:max@metric:threshold.
+
+``` bash
+# Scale 'web-worker' between 1 and 5 instances. 
+# Scale up if CPU > 70%, with a 60s cooldown.
+cloudbrew create --name web-worker --autoscale "1:5@cpu:70,60" --spec examples/spec.json
+```
+
+## Offloading Tasks (Async)
+Don't wait for task to finish. Offload the task to a background worker.
+
+``` bash
+# 1. Enqueue the task
+cloudbrew create-vm heavy-db --size large --async
+
+# 2. Run the worker (in a separate terminal)
+cloudbrew offload run-worker
+
+```
+
+## Drift Detection
+Check if your infrastructure has drifted from the known state.
+
+```bash
+cloudbrew drift web-server-01
+```
+
+## Policy Enforcement
+CloudBrew checks policies.json before every operation.
+
+```json
+
+{
+  "allowed_regions": ["us-east-1", "eu-central-1"],
+  "banned_instance_types": ["xlarge", "metal"],
+  "max_monthly_cost": 500
+}
+```
+If you try to create an xlarge instance or deploy to us-west-1, the CLI will block the operation and report a violation
+
+## Architecture
+
+**CLI Layer (Typer):** Parses commands and routes them.
+
+### Logic Layer (LCF):
+
+**1. Intelligent Router:** Optimizes placement.
+
+**2. Resource Resolver:** Maps intent ("bucket") to implementation.
+
+**3. Policy Engine:** Validates specs against rules.
+

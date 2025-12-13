@@ -1,0 +1,87 @@
+{
+  "resources": {
+    "resource_group": {
+      "type": "azurerm_resource_group",
+      "required": ["name", "location"],
+      "optional": ["tags"],
+      "defaults": {
+        "location": "East US"
+      }
+    },
+
+    "vnet": {
+      "type": "azurerm_virtual_network",
+      "required": ["name", "resource_group_name", "location"],
+      "defaults": {
+        "address_space": ["10.0.0.0/16"]
+      }
+    },
+
+    "subnet": {
+      "type": "azurerm_subnet",
+      "required": ["name", "resource_group_name", "virtual_network_name", "address_prefixes"],
+      "defaults": {
+        "address_prefixes": ["10.0.1.0/24"]
+      }
+    },
+
+    "public_ip": {
+      "type": "azurerm_public_ip",
+      "required": ["name", "resource_group_name", "location"],
+      "defaults": {
+        "allocation_method": "Dynamic"
+      }
+    },
+
+    "nsg": {
+      "type": "azurerm_network_security_group",
+      "required": ["name", "resource_group_name", "location"],
+      "defaults": {
+        "security_rules": []
+      }
+    },
+
+    "nic": {
+      "type": "azurerm_network_interface",
+      "required": ["name", "resource_group_name", "location", "subnet_id"],
+      "optional": ["public_ip_id", "nsg_id"],
+      "defaults": {
+        "enable_accelerated_networking": false
+      }
+    },
+
+    "disk": {
+      "type": "azurerm_managed_disk",
+      "required": ["name", "resource_group_name", "location"],
+      "optional": ["disk_size_gb", "storage_account_type"],
+      "defaults": {
+        "storage_account_type": "Standard_LRS"
+      }
+    },
+
+    "vm": {
+      "type": "azurerm_linux_virtual_machine",
+      "required": ["name", "resource_group_name", "location", "admin_username"],
+      "defaults": {
+        "size": "Standard_B1s",
+        "admin_username": "azureuser",
+        "os_disk": {
+          "storage_account_type": "Standard_LRS",
+          "disk_size_gb": 30
+        }
+      },
+      "dependencies": {
+        "nic": "generate",
+        "disk": "optional"
+      },
+      "expand": {
+        "network": {
+          "vnet": "generate_if_absent",
+          "subnet": "generate_if_absent",
+          "public_ip": "generate_if_requested",
+          "nsg": "generate_default"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "ami": "ami-08d7aabbb50c2c24e",
+  "instance_type": "t3.micro",
+  "region": "us-east-1",
+  "monitoring": false,
+  "tags": {
+    "Name": "cloudbrew-simple-test",
+    "Environment": "test"
+  }
+}

@@ -1,0 +1,60 @@
+{# ------------------------------------------------------------------
+   Safety Check: GCP requires a Zone
+------------------------------------------------------------------ #}
+{% if not spec.zone %}
+  {% set _ = 1 / 0 %} {# Crash if zone is missing #}
+{% endif %}
+
+resource "google_compute_instance" "{{ name }}" {
+  name         = "{{ name }}"
+  machine_type = "{{ spec.size | default(spec.machine_type) }}"
+  zone         = "{{ spec.zone }}"
+
+  # ------------------------------------------------------------------
+  # Boot Disk (Nested Block Wrapper)
+  # ------------------------------------------------------------------
+  boot_disk {
+    initialize_params {
+      image = "{{ spec.image | default('debian-cloud/debian-11') }}"
+      size  = {{ spec.disk_size | default(10) }}
+      type  = "{{ spec.disk_type | default('pd-balanced') }}"
+    }
+  }
+
+  # ------------------------------------------------------------------
+  # Network Interface (Defaults to 'default' network if unspecified)
+  # ------------------------------------------------------------------
+  network_interface {
+    network    = "{{ spec.network | default('default') }}"
+    
+    {% if spec.subnetwork %}
+    subnetwork = "{{ spec.subnetwork }}"
+    {% endif %}
+
+    # Ephemeral public IP (Standard for easy access)
+    access_config {
+      # Leave empty to get an ephemeral IP
+    }
+  }
+
+  # ------------------------------------------------------------------
+  # Tags (GCP uses a list of strings for tags, NOT a map)
+  # ------------------------------------------------------------------
+  {% if spec.tags %}
+  tags = [
+    {% for k, v in spec.tags.items() %}
+    "{{ k }}-{{ v }}",
+    {% endfor %}
+  ]
+  {% endif %}
+
+  # ------------------------------------------------------------------
+  # Service Account (Optional permissions)
+  # ------------------------------------------------------------------
+  {% if spec.service_account %}
+  service_account {
+    email  = "{{ spec.service_account.email }}"
+    scopes = {{ spec.service_account.scopes | default(["cloud-platform"]) | tojson }}
+  }
+  {% endif %}
+}

@@ -1,0 +1,1582 @@
+Resource Type,Resolution,HCL Generation,Tofu Validation,Error Details
+aws_accessanalyzer_analyzer,PASS,PASS,FAIL,Unsupported argument
+aws_accessanalyzer_archive_rule,PASS,PASS,FAIL,Unsupported argument
+aws_account_alternate_contact,PASS,PASS,FAIL,"expected alternate_contact_type to be one of [""BILLING"" ""OPERATIONS"" ""SECURITY""], got mock_value"
+aws_account_primary_contact,PASS,PASS,FAIL,Unsupported argument
+aws_account_region,PASS,PASS,FAIL,Unsupported argument
+aws_acm_certificate,PASS,PASS,FAIL,Unsupported argument
+aws_acm_certificate_validation,PASS,PASS,FAIL,Unsupported argument
+aws_acmpca_certificate,PASS,PASS,FAIL,Unsupported argument
+aws_acmpca_certificate_authority,PASS,PASS,FAIL,Unsupported argument
+aws_acmpca_certificate_authority_certificate,PASS,PASS,FAIL,Unsupported argument
+aws_acmpca_permission,PASS,PASS,FAIL,Unsupported argument
+aws_acmpca_policy,PASS,PASS,FAIL,Unsupported argument
+aws_alb,PASS,PASS,FAIL,Invalid combination of arguments
+aws_alb_listener,PASS,PASS,FAIL,Unsupported argument
+aws_alb_listener_certificate,PASS,PASS,FAIL,Unsupported argument
+aws_alb_listener_rule,PASS,PASS,FAIL,Unsupported argument
+aws_alb_target_group,PASS,PASS,PASS,
+aws_alb_target_group_attachment,PASS,PASS,FAIL,Unsupported argument
+aws_ami,PASS,PASS,PASS,
+aws_ami_copy,PASS,PASS,PASS,
+aws_ami_from_instance,PASS,PASS,PASS,
+aws_ami_launch_permission,PASS,PASS,FAIL,Unsupported argument
+aws_amplify_app,PASS,PASS,PASS,
+aws_amplify_backend_environment,PASS,PASS,FAIL,Unsupported argument
+aws_amplify_branch,PASS,PASS,FAIL,Unsupported argument
+aws_amplify_domain_association,PASS,PASS,FAIL,Unsupported argument
+aws_amplify_webhook,PASS,PASS,FAIL,Unsupported argument
+aws_api_gateway_account,PASS,PASS,FAIL,Unsupported argument
+aws_api_gateway_api_key,PASS,PASS,PASS,
+aws_api_gateway_authorizer,PASS,PASS,PASS,
+aws_api_gateway_base_path_mapping,PASS,PASS,FAIL,Unsupported argument
+aws_api_gateway_client_certificate,PASS,PASS,FAIL,Unsupported argument
+aws_api_gateway_deployment,PASS,PASS,FAIL,Unsupported argument
+aws_api_gateway_documentation_part,PASS,PASS,FAIL,Unsupported argument
+aws_api_gateway_documentation_version,PASS,PASS,FAIL,Unsupported argument
+aws_api_gateway_domain_name,PASS,PASS,FAIL,Unsupported argument
+aws_api_gateway_domain_name_access_association,PASS,PASS,FAIL,Unsupported argument
+aws_api_gateway_gateway_response,PASS,PASS,FAIL,Unsupported argument
+aws_api_gateway_integration,PASS,PASS,FAIL,Missing required provider
+aws_api_gateway_integration_response,PASS,PASS,FAIL,Unsupported argument
+aws_api_gateway_method,PASS,PASS,FAIL,Unsupported argument
+aws_api_gateway_method_response,PASS,PASS,FAIL,Unsupported argument
+aws_api_gateway_method_settings,PASS,PASS,FAIL,Unsupported argument
+aws_api_gateway_model,PASS,PASS,PASS,
+aws_api_gateway_request_validator,PASS,PASS,PASS,
+aws_api_gateway_resource,PASS,PASS,FAIL,Unsupported argument
+aws_api_gateway_rest_api,PASS,PASS,PASS,
+aws_api_gateway_rest_api_policy,PASS,PASS,FAIL,Unsupported argument
+aws_api_gateway_rest_api_put,PASS,PASS,FAIL,Unsupported argument
+aws_api_gateway_stage,PASS,PASS,FAIL,Unsupported argument
+aws_api_gateway_usage_plan,PASS,PASS,PASS,
+aws_api_gateway_usage_plan_key,PASS,PASS,FAIL,Value for unconfigurable attribute
+aws_api_gateway_vpc_link,PASS,PASS,PASS,
+aws_apigatewayv2_api,PASS,PASS,FAIL,"expected protocol_type to be one of [""WEBSOCKET"" ""HTTP""], got mock_value"
+aws_apigatewayv2_api_mapping,PASS,PASS,FAIL,Unsupported argument
+aws_apigatewayv2_authorizer,PASS,PASS,FAIL,"expected authorizer_type to be one of [""REQUEST"" ""JWT""], got mock_value"
+aws_apigatewayv2_deployment,PASS,PASS,FAIL,Unsupported argument
+aws_apigatewayv2_domain_name,PASS,PASS,FAIL,Unsupported argument
+aws_apigatewayv2_integration,PASS,PASS,FAIL,Unsupported argument
+aws_apigatewayv2_integration_response,PASS,PASS,FAIL,Unsupported argument
+aws_apigatewayv2_model,PASS,PASS,FAIL,invalid value for name (must be alphanumeric)
+aws_apigatewayv2_route,PASS,PASS,FAIL,Unsupported argument
+aws_apigatewayv2_route_response,PASS,PASS,FAIL,Unsupported argument
+aws_apigatewayv2_stage,PASS,PASS,PASS,
+aws_apigatewayv2_vpc_link,PASS,PASS,PASS,
+aws_app_cookie_stickiness_policy,PASS,PASS,FAIL,"only alphanumeric characters and hyphens allowed in ""name"""
+aws_appautoscaling_policy,PASS,PASS,PASS,
+aws_appautoscaling_scheduled_action,PASS,PASS,FAIL,Insufficient scalable_target_action blocks
+aws_appautoscaling_target,PASS,PASS,FAIL,Unsupported argument
+aws_appconfig_application,PASS,PASS,PASS,
+aws_appconfig_configuration_profile,PASS,PASS,PASS,
+aws_appconfig_deployment,PASS,PASS,FAIL,Unsupported argument
+aws_appconfig_deployment_strategy,PASS,PASS,FAIL,"expected replicate_to to be one of [""NONE"" ""SSM_DOCUMENT""], got mock_value"
+aws_appconfig_environment,PASS,PASS,FAIL,Invalid Attribute Value Match
+aws_appconfig_extension,PASS,PASS,FAIL,Insufficient action_point blocks
+aws_appconfig_extension_association,PASS,PASS,FAIL,Unsupported argument
+aws_appconfig_hosted_configuration_version,PASS,PASS,FAIL,Unsupported argument
+aws_appfabric_app_authorization,PASS,PASS,FAIL,Unsupported argument
+aws_appfabric_app_authorization_connection,PASS,PASS,FAIL,Unsupported argument
+aws_appfabric_app_bundle,PASS,PASS,FAIL,Unsupported argument
+aws_appfabric_ingestion,PASS,PASS,FAIL,Unsupported argument
+aws_appfabric_ingestion_destination,PASS,PASS,FAIL,Unsupported argument
+aws_appflow_connector_profile,PASS,PASS,FAIL,Insufficient connector_profile_config blocks
+aws_appflow_flow,PASS,PASS,FAIL,Insufficient trigger_config blocks
+aws_appintegrations_data_integration,PASS,PASS,FAIL,Insufficient schedule_config blocks
+aws_appintegrations_event_integration,PASS,PASS,FAIL,Insufficient event_filter blocks
+aws_applicationinsights_application,PASS,PASS,FAIL,Unsupported argument
+aws_appmesh_gateway_route,PASS,PASS,FAIL,Insufficient spec blocks
+aws_appmesh_mesh,PASS,PASS,PASS,
+aws_appmesh_route,PASS,PASS,FAIL,Insufficient spec blocks
+aws_appmesh_virtual_gateway,PASS,PASS,FAIL,Insufficient spec blocks
+aws_appmesh_virtual_node,PASS,PASS,FAIL,Insufficient spec blocks
+aws_appmesh_virtual_router,PASS,PASS,FAIL,Insufficient spec blocks
+aws_appmesh_virtual_service,PASS,PASS,FAIL,Insufficient spec blocks
+aws_apprunner_auto_scaling_configuration_version,PASS,PASS,FAIL,Unsupported argument
+aws_apprunner_connection,PASS,PASS,FAIL,Unsupported argument
+aws_apprunner_custom_domain_association,PASS,PASS,FAIL,Unsupported argument
+aws_apprunner_default_auto_scaling_configuration_version,PASS,PASS,FAIL,Unsupported argument
+aws_apprunner_deployment,PASS,PASS,FAIL,Unsupported argument
+aws_apprunner_observability_configuration,PASS,PASS,FAIL,Unsupported argument
+aws_apprunner_service,PASS,PASS,FAIL,Unsupported argument
+aws_apprunner_vpc_connector,PASS,PASS,FAIL,Unsupported argument
+aws_apprunner_vpc_ingress_connection,PASS,PASS,FAIL,Insufficient ingress_vpc_configuration blocks
+aws_appstream_directory_config,PASS,PASS,FAIL,Unsupported argument
+aws_appstream_fleet,PASS,PASS,FAIL,Insufficient compute_capacity blocks
+aws_appstream_fleet_stack_association,PASS,PASS,FAIL,Unsupported argument
+aws_appstream_image_builder,PASS,PASS,FAIL,Invalid combination of arguments
+aws_appstream_stack,PASS,PASS,PASS,
+aws_appstream_user,PASS,PASS,FAIL,Unsupported argument
+aws_appstream_user_stack_association,PASS,PASS,FAIL,Unsupported argument
+aws_appsync_api,PASS,PASS,FAIL,Invalid Block
+aws_appsync_api_cache,PASS,PASS,FAIL,Missing required provider
+aws_appsync_api_key,PASS,PASS,FAIL,Unsupported argument
+aws_appsync_channel_namespace,PASS,PASS,FAIL,Invalid Attribute Value Match
+aws_appsync_datasource,PASS,PASS,FAIL,Missing required provider
+aws_appsync_domain_name,PASS,PASS,FAIL,Unsupported argument
+aws_appsync_domain_name_api_association,PASS,PASS,FAIL,Unsupported argument
+aws_appsync_function,PASS,PASS,PASS,
+aws_appsync_graphql_api,PASS,PASS,FAIL,"expected authentication_type to be one of [""API_KEY"" ""AWS_IAM"" ""AMAZON_COGNITO_USER_POOLS"" ""OPENID_CONNECT"" ""AWS_LAMBDA""], got mock_value"
+aws_appsync_resolver,PASS,PASS,FAIL,Missing required provider
+aws_appsync_source_api_association,PASS,PASS,FAIL,Unsupported argument
+aws_appsync_type,PASS,PASS,FAIL,"expected format to be one of [""SDL"" ""JSON""], got mock_value"
+aws_athena_capacity_reservation,PASS,PASS,FAIL,Invalid Attribute Value
+aws_athena_data_catalog,PASS,PASS,FAIL,Missing required provider
+aws_athena_database,PASS,PASS,PASS,
+aws_athena_named_query,PASS,PASS,PASS,
+aws_athena_prepared_statement,PASS,PASS,PASS,
+aws_athena_workgroup,PASS,PASS,PASS,
+aws_auditmanager_account_registration,PASS,PASS,FAIL,Unsupported argument
+aws_auditmanager_assessment,PASS,PASS,FAIL,Invalid Block
+aws_auditmanager_assessment_delegation,PASS,PASS,FAIL,Unsupported argument
+aws_auditmanager_assessment_report,PASS,PASS,PASS,
+aws_auditmanager_control,PASS,PASS,PASS,
+aws_auditmanager_framework,PASS,PASS,PASS,
+aws_auditmanager_framework_share,PASS,PASS,FAIL,Unsupported argument
+aws_auditmanager_organization_admin_account_registration,PASS,PASS,FAIL,Unsupported argument
+aws_autoscaling_attachment,PASS,PASS,FAIL,Unsupported argument
+aws_autoscaling_group,PASS,PASS,FAIL,Invalid combination of arguments
+aws_autoscaling_group_tag,PASS,PASS,FAIL,Unsupported argument
+aws_autoscaling_lifecycle_hook,PASS,PASS,FAIL,"expected lifecycle_transition to be one of [""autoscaling:EC2_INSTANCE_LAUNCHING"" ""autoscaling:EC2_INSTANCE_TERMINATING""], got mock_value"
+aws_autoscaling_notification,PASS,PASS,FAIL,Unsupported argument
+aws_autoscaling_policy,PASS,PASS,PASS,
+aws_autoscaling_schedule,PASS,PASS,FAIL,Unsupported argument
+aws_autoscaling_traffic_source_attachment,PASS,PASS,FAIL,Unsupported argument
+aws_autoscalingplans_scaling_plan,PASS,PASS,FAIL,Insufficient application_source blocks
+aws_backup_framework,PASS,PASS,FAIL,Insufficient control blocks
+aws_backup_global_settings,PASS,PASS,FAIL,Unsupported argument
+aws_backup_logically_air_gapped_vault,PASS,PASS,FAIL,Invalid Attribute Value
+aws_backup_plan,PASS,PASS,FAIL,Insufficient rule blocks
+aws_backup_region_settings,PASS,PASS,FAIL,Unsupported argument
+aws_backup_report_plan,PASS,PASS,FAIL,Insufficient report_setting blocks
+aws_backup_restore_testing_plan,PASS,PASS,FAIL,Invalid Block
+aws_backup_restore_testing_selection,PASS,PASS,FAIL,Missing Attribute Configuration
+aws_backup_selection,PASS,PASS,FAIL,"""iam_role_arn"" (mock_value) is an invalid ARN: arn: invalid prefix"
+aws_backup_vault,PASS,PASS,PASS,
+aws_backup_vault_lock_configuration,PASS,PASS,FAIL,Unsupported argument
+aws_backup_vault_notifications,PASS,PASS,FAIL,Unsupported argument
+aws_backup_vault_policy,PASS,PASS,FAIL,Unsupported argument
+aws_batch_compute_environment,PASS,PASS,FAIL,Missing required provider
+aws_batch_job_definition,PASS,PASS,FAIL,Missing required provider
+aws_batch_job_queue,PASS,PASS,FAIL,Invalid Attribute Value Match
+aws_batch_scheduling_policy,PASS,PASS,PASS,
+aws_bcmdataexports_export,PASS,PASS,FAIL,Unsupported argument
+aws_bedrock_custom_model,PASS,PASS,FAIL,Unsupported argument
+aws_bedrock_guardrail,PASS,PASS,PASS,
+aws_bedrock_guardrail_version,PASS,PASS,FAIL,Unsupported argument
+aws_bedrock_inference_profile,PASS,PASS,PASS,
+aws_bedrock_model_invocation_logging_configuration,PASS,PASS,FAIL,Unsupported argument
+aws_bedrock_provisioned_model_throughput,PASS,PASS,FAIL,Unsupported argument
+aws_bedrockagent_agent,PASS,PASS,FAIL,Unsupported argument
+aws_bedrockagent_agent_action_group,PASS,PASS,FAIL,Unsupported argument
+aws_bedrockagent_agent_alias,PASS,PASS,FAIL,Unsupported argument
+aws_bedrockagent_agent_collaborator,PASS,PASS,FAIL,Unsupported argument
+aws_bedrockagent_agent_knowledge_base_association,PASS,PASS,FAIL,Unsupported argument
+aws_bedrockagent_data_source,PASS,PASS,FAIL,Invalid Block
+aws_bedrockagent_flow,PASS,PASS,FAIL,Invalid ARN Value
+aws_bedrockagent_knowledge_base,PASS,PASS,FAIL,Invalid ARN Value
+aws_bedrockagent_prompt,PASS,PASS,PASS,
+aws_bedrockagentcore_agent_runtime,PASS,PASS,FAIL,Unsupported argument
+aws_bedrockagentcore_agent_runtime_endpoint,PASS,PASS,PASS,
+aws_bedrockagentcore_api_key_credential_provider,PASS,PASS,FAIL,Invalid Attribute Combination
+aws_bedrockagentcore_browser,PASS,PASS,FAIL,Invalid Block
+aws_bedrockagentcore_code_interpreter,PASS,PASS,FAIL,Invalid Block
+aws_bedrockagentcore_gateway,PASS,PASS,FAIL,Invalid String Enum Value
+aws_bedrockagentcore_gateway_target,PASS,PASS,FAIL,Invalid Attribute Value Match
+aws_bedrockagentcore_memory,PASS,PASS,FAIL,Invalid Attribute Value
+aws_bedrockagentcore_memory_strategy,PASS,PASS,FAIL,Missing required provider
+aws_bedrockagentcore_oauth2_credential_provider,PASS,PASS,FAIL,Invalid String Enum Value
+aws_bedrockagentcore_token_vault_cmk,PASS,PASS,FAIL,Unsupported argument
+aws_bedrockagentcore_workload_identity,PASS,PASS,PASS,
+aws_billing_view,PASS,PASS,PASS,
+aws_budgets_budget,PASS,PASS,FAIL,"expected time_unit to be one of [""DAILY"" ""MONTHLY"" ""QUARTERLY"" ""ANNUALLY"" ""CUSTOM""], got mock_value"
+aws_budgets_budget_action,PASS,PASS,FAIL,Unsupported argument
+aws_ce_anomaly_monitor,PASS,PASS,FAIL,"expected monitor_type to be one of [""DIMENSIONAL"" ""CUSTOM""], got mock_value"
+aws_ce_anomaly_subscription,PASS,PASS,FAIL,Insufficient subscriber blocks
+aws_ce_cost_allocation_tag,PASS,PASS,FAIL,Unsupported argument
+aws_ce_cost_category,PASS,PASS,FAIL,Insufficient rule blocks
+aws_chatbot_slack_channel_configuration,PASS,PASS,FAIL,Unsupported argument
+aws_chatbot_teams_channel_configuration,PASS,PASS,FAIL,Unsupported argument
+aws_chime_voice_connector,PASS,PASS,PASS,
+aws_chime_voice_connector_group,PASS,PASS,PASS,
+aws_chime_voice_connector_logging,PASS,PASS,FAIL,Unsupported argument
+aws_chime_voice_connector_origination,PASS,PASS,FAIL,Unsupported argument
+aws_chime_voice_connector_streaming,PASS,PASS,FAIL,Unsupported argument
+aws_chime_voice_connector_termination,PASS,PASS,FAIL,Unsupported argument
+aws_chime_voice_connector_termination_credentials,PASS,PASS,FAIL,Unsupported argument
+aws_chimesdkmediapipelines_media_insights_pipeline_configuration,PASS,PASS,FAIL,Insufficient elements blocks
+aws_chimesdkvoice_global_settings,PASS,PASS,FAIL,Unsupported argument
+aws_chimesdkvoice_sip_media_application,PASS,PASS,FAIL,Insufficient endpoints blocks
+aws_chimesdkvoice_sip_rule,PASS,PASS,FAIL,Insufficient target_applications blocks
+aws_chimesdkvoice_voice_profile_domain,PASS,PASS,FAIL,Insufficient server_side_encryption_configuration blocks
+aws_cleanrooms_collaboration,PASS,PASS,PASS,
+aws_cleanrooms_configured_table,PASS,PASS,FAIL,Insufficient table_reference blocks
+aws_cleanrooms_membership,PASS,PASS,FAIL,Unsupported argument
+aws_cloud9_environment_ec2,PASS,PASS,FAIL,"expected image_id to be one of [""amazonlinux-1-x86_64"" ""amazonlinux-2-x86_64"" ""amazonlinux-2023-x86_64"" ""ubuntu-18.04-x86_64"" ""ubuntu-22.04-x86_64"" ""resolve:ssm:/aws/service/cloud9/amis/amazonlinux-1-x86_64"" ""resolve:ssm:/aws/service/cloud9/amis/amazonlinux-2-x86_64"" ""resolve:ssm:/aws/service/cloud9/amis/amazonlinux-2023-x86_64"" ""resolve:ssm:/aws/service/cloud9/amis/ubuntu-18.04-x86_64"" ""resolve:ssm:/aws/service/cloud9/amis/ubuntu-22.04-x86_64""], got mock_value"
+aws_cloud9_environment_membership,PASS,PASS,FAIL,Unsupported argument
+aws_cloudcontrolapi_resource,PASS,PASS,FAIL,Unsupported argument
+aws_cloudformation_stack,PASS,PASS,PASS,
+aws_cloudformation_stack_instances,PASS,PASS,FAIL,Unsupported argument
+aws_cloudformation_stack_set,PASS,PASS,FAIL,invalid value for name (must contain only alphanumeric and hyphen characters)
+aws_cloudformation_stack_set_instance,PASS,PASS,FAIL,Unsupported argument
+aws_cloudformation_type,PASS,PASS,FAIL,Unsupported argument
+aws_cloudfront_cache_policy,PASS,PASS,FAIL,Insufficient parameters_in_cache_key_and_forwarded_to_origin blocks
+aws_cloudfront_continuous_deployment_policy,PASS,PASS,FAIL,Unsupported argument
+aws_cloudfront_distribution,PASS,PASS,FAIL,Unsupported argument
+aws_cloudfront_field_level_encryption_config,PASS,PASS,FAIL,Unsupported argument
+aws_cloudfront_field_level_encryption_profile,PASS,PASS,FAIL,Insufficient encryption_entities blocks
+aws_cloudfront_function,PASS,PASS,FAIL,"expected runtime to be one of [""cloudfront-js-1.0"" ""cloudfront-js-2.0""], got mock_value"
+aws_cloudfront_key_group,PASS,PASS,PASS,
+aws_cloudfront_key_value_store,PASS,PASS,PASS,
+aws_cloudfront_monitoring_subscription,PASS,PASS,FAIL,Unsupported argument
+aws_cloudfront_origin_access_control,PASS,PASS,FAIL,"expected origin_access_control_origin_type to be one of [""s3"" ""mediastore"" ""mediapackagev2"" ""lambda""], got mock_value"
+aws_cloudfront_origin_access_identity,PASS,PASS,FAIL,Unsupported argument
+aws_cloudfront_origin_request_policy,PASS,PASS,FAIL,Insufficient cookies_config blocks
+aws_cloudfront_public_key,PASS,PASS,PASS,
+aws_cloudfront_realtime_log_config,PASS,PASS,FAIL,Insufficient endpoint blocks
+aws_cloudfront_response_headers_policy,PASS,PASS,FAIL,Missing required argument
+aws_cloudfront_vpc_origin,PASS,PASS,FAIL,Unsupported argument
+aws_cloudfrontkeyvaluestore_key,PASS,PASS,FAIL,Unsupported argument
+aws_cloudfrontkeyvaluestore_keys_exclusive,PASS,PASS,FAIL,Unsupported argument
+aws_cloudhsm_v2_cluster,PASS,PASS,FAIL,Unsupported argument
+aws_cloudhsm_v2_hsm,PASS,PASS,FAIL,Unsupported argument
+aws_cloudsearch_domain,PASS,PASS,FAIL,"invalid value for name (Search domain names must start with a lowercase letter (a-z) and be at least 3 and no more than 28 lower-case letters, digits or hyphens)"
+aws_cloudsearch_domain_service_access_policy,PASS,PASS,FAIL,Unsupported argument
+aws_cloudtrail,PASS,PASS,PASS,
+aws_cloudtrail_event_data_store,PASS,PASS,PASS,
+aws_cloudtrail_organization_delegated_admin_account,PASS,PASS,FAIL,Invalid Configuration for Read-Only Attribute
+aws_cloudwatch_composite_alarm,PASS,PASS,FAIL,Unsupported argument
+aws_cloudwatch_contributor_insight_rule,PASS,PASS,FAIL,Unsupported argument
+aws_cloudwatch_contributor_managed_insight_rule,PASS,PASS,FAIL,Unsupported argument
+aws_cloudwatch_dashboard,PASS,PASS,FAIL,Unsupported argument
+aws_cloudwatch_event_api_destination,PASS,PASS,FAIL,"""connection_arn"" (mock_value) is an invalid ARN: arn: invalid prefix"
+aws_cloudwatch_event_archive,PASS,PASS,FAIL,"""event_source_arn"" (mock_value) is an invalid ARN: arn: invalid prefix"
+aws_cloudwatch_event_bus,PASS,PASS,PASS,
+aws_cloudwatch_event_bus_policy,PASS,PASS,FAIL,Unsupported argument
+aws_cloudwatch_event_connection,PASS,PASS,FAIL,Insufficient auth_parameters blocks
+aws_cloudwatch_event_endpoint,PASS,PASS,FAIL,Insufficient routing_config blocks
+aws_cloudwatch_event_permission,PASS,PASS,FAIL,Unsupported argument
+aws_cloudwatch_event_rule,PASS,PASS,FAIL,Missing required argument
+aws_cloudwatch_event_target,PASS,PASS,FAIL,Unsupported argument
+aws_cloudwatch_log_account_policy,PASS,PASS,FAIL,Unsupported argument
+aws_cloudwatch_log_anomaly_detector,PASS,PASS,FAIL,Unsupported argument
+aws_cloudwatch_log_data_protection_policy,PASS,PASS,FAIL,Unsupported argument
+aws_cloudwatch_log_delivery,PASS,PASS,FAIL,Unsupported argument
+aws_cloudwatch_log_delivery_destination,PASS,PASS,FAIL,Missing Configuration
+aws_cloudwatch_log_delivery_destination_policy,PASS,PASS,FAIL,Unsupported argument
+aws_cloudwatch_log_delivery_source,PASS,PASS,FAIL,Invalid ARN Value
+aws_cloudwatch_log_destination,PASS,PASS,FAIL,"""role_arn"" (mock_value) is an invalid ARN: arn: invalid prefix"
+aws_cloudwatch_log_destination_policy,PASS,PASS,FAIL,Unsupported argument
+aws_cloudwatch_log_group,PASS,PASS,PASS,
+aws_cloudwatch_log_index_policy,PASS,PASS,FAIL,Unsupported argument
+aws_cloudwatch_log_metric_filter,PASS,PASS,FAIL,Insufficient metric_transformation blocks
+aws_cloudwatch_log_resource_policy,PASS,PASS,FAIL,Unsupported argument
+aws_cloudwatch_log_stream,PASS,PASS,PASS,
+aws_cloudwatch_log_subscription_filter,PASS,PASS,FAIL,"""destination_arn"" (mock_value) is an invalid ARN: arn: invalid prefix"
+aws_cloudwatch_log_transformer,PASS,PASS,FAIL,Unsupported argument
+aws_cloudwatch_metric_alarm,PASS,PASS,FAIL,Unsupported argument
+aws_cloudwatch_metric_stream,PASS,PASS,FAIL,"""role_arn"" (mock_value) is an invalid ARN: arn: invalid prefix"
+aws_cloudwatch_query_definition,PASS,PASS,PASS,
+aws_codeartifact_domain,PASS,PASS,FAIL,Unsupported argument
+aws_codeartifact_domain_permissions_policy,PASS,PASS,FAIL,Unsupported argument
+aws_codeartifact_repository,PASS,PASS,FAIL,Unsupported argument
+aws_codeartifact_repository_permissions_policy,PASS,PASS,FAIL,Unsupported argument
+aws_codebuild_fleet,PASS,PASS,FAIL,"expected compute_type to be one of [""BUILD_GENERAL1_SMALL"" ""BUILD_GENERAL1_MEDIUM"" ""BUILD_GENERAL1_LARGE"" ""BUILD_GENERAL1_XLARGE"" ""BUILD_GENERAL1_2XLARGE"" ""BUILD_LAMBDA_1GB"" ""BUILD_LAMBDA_2GB"" ""BUILD_LAMBDA_4GB"" ""BUILD_LAMBDA_8GB"" ""BUILD_LAMBDA_10GB"" ""ATTRIBUTE_BASED_COMPUTE"" ""CUSTOM_INSTANCE_TYPE""], got mock_value"
+aws_codebuild_project,PASS,PASS,FAIL,Insufficient environment blocks
+aws_codebuild_report_group,PASS,PASS,FAIL,Missing required provider
+aws_codebuild_resource_policy,PASS,PASS,FAIL,Unsupported argument
+aws_codebuild_source_credential,PASS,PASS,FAIL,Unsupported argument
+aws_codebuild_webhook,PASS,PASS,FAIL,Unsupported argument
+aws_codecatalyst_dev_environment,PASS,PASS,FAIL,Unsupported argument
+aws_codecatalyst_project,PASS,PASS,FAIL,Value for unconfigurable attribute
+aws_codecatalyst_source_repository,PASS,PASS,PASS,
+aws_codecommit_approval_rule_template,PASS,PASS,FAIL,"""content"" contains an invalid JSON: invalid character 'm' looking for beginning of value"
+aws_codecommit_approval_rule_template_association,PASS,PASS,FAIL,Unsupported argument
+aws_codecommit_repository,PASS,PASS,FAIL,Unsupported argument
+aws_codecommit_trigger,PASS,PASS,FAIL,Unsupported argument
+aws_codeconnections_connection,PASS,PASS,PASS,
+aws_codeconnections_host,PASS,PASS,FAIL,Invalid String Enum Value
+aws_codedeploy_app,PASS,PASS,PASS,
+aws_codedeploy_deployment_config,PASS,PASS,FAIL,Unsupported argument
+aws_codedeploy_deployment_group,PASS,PASS,FAIL,Unsupported argument
+aws_codeguruprofiler_profiling_group,PASS,PASS,FAIL,Invalid Block
+aws_codegurureviewer_repository_association,PASS,PASS,FAIL,Insufficient repository blocks
+aws_codepipeline,PASS,PASS,FAIL,Insufficient stage blocks
+aws_codepipeline_custom_action_type,PASS,PASS,FAIL,Unsupported argument
+aws_codepipeline_webhook,PASS,PASS,FAIL,Insufficient filter blocks
+aws_codestarconnections_connection,PASS,PASS,PASS,
+aws_codestarconnections_host,PASS,PASS,FAIL,"expected provider_type to be one of [""Bitbucket"" ""GitHub"" ""GitHubEnterpriseServer"" ""GitLab"" ""GitLabSelfManaged""], got mock_value"
+aws_codestarnotifications_notification_rule,PASS,PASS,FAIL,"expected detail_type to be one of [""BASIC"" ""FULL""], got mock_value"
+aws_cognito_identity_pool,PASS,PASS,FAIL,Unsupported argument
+aws_cognito_identity_pool_provider_principal_tag,PASS,PASS,FAIL,Unsupported argument
+aws_cognito_identity_pool_roles_attachment,PASS,PASS,FAIL,Unsupported argument
+aws_cognito_identity_provider,PASS,PASS,FAIL,Unsupported argument
+aws_cognito_log_delivery_configuration,PASS,PASS,FAIL,Unsupported argument
+aws_cognito_managed_login_branding,PASS,PASS,FAIL,Unsupported argument
+aws_cognito_managed_user_pool_client,PASS,PASS,FAIL,Invalid Configuration for Read-Only Attribute
+aws_cognito_resource_server,PASS,PASS,PASS,
+aws_cognito_risk_configuration,PASS,PASS,FAIL,Unsupported argument
+aws_cognito_user,PASS,PASS,FAIL,Unsupported argument
+aws_cognito_user_group,PASS,PASS,PASS,
+aws_cognito_user_in_group,PASS,PASS,FAIL,Unsupported argument
+aws_cognito_user_pool,PASS,PASS,PASS,
+aws_cognito_user_pool_client,PASS,PASS,PASS,
+aws_cognito_user_pool_domain,PASS,PASS,FAIL,Unsupported argument
+aws_cognito_user_pool_ui_customization,PASS,PASS,FAIL,Unsupported argument
+aws_comprehend_document_classifier,PASS,PASS,FAIL,Insufficient input_data_config blocks
+aws_comprehend_entity_recognizer,PASS,PASS,FAIL,Insufficient input_data_config blocks
+aws_computeoptimizer_enrollment_status,PASS,PASS,FAIL,Unsupported argument
+aws_computeoptimizer_recommendation_preferences,PASS,PASS,FAIL,Unsupported argument
+aws_config_aggregate_authorization,PASS,PASS,FAIL,Unsupported argument
+aws_config_config_rule,PASS,PASS,FAIL,Insufficient source blocks
+aws_config_configuration_aggregator,PASS,PASS,PASS,
+aws_config_configuration_recorder,PASS,PASS,FAIL,"""role_arn"" (mock_value) is an invalid ARN: arn: invalid prefix"
+aws_config_configuration_recorder_status,PASS,PASS,PASS,
+aws_config_conformance_pack,PASS,PASS,FAIL,Missing required argument
+aws_config_delivery_channel,PASS,PASS,PASS,
+aws_config_organization_conformance_pack,PASS,PASS,FAIL,invalid value for name (must contain only alphanumeric and hyphen characters)
+aws_config_organization_custom_policy_rule,PASS,PASS,FAIL,Not enough list items
+aws_config_organization_custom_rule,PASS,PASS,FAIL,"""lambda_function_arn"" (mock_value) is an invalid ARN: arn: invalid prefix"
+aws_config_organization_managed_rule,PASS,PASS,PASS,
+aws_config_remediation_configuration,PASS,PASS,FAIL,Unsupported argument
+aws_config_retention_configuration,PASS,PASS,FAIL,Invalid Configuration for Read-Only Attribute
+aws_connect_bot_association,PASS,PASS,FAIL,Unsupported argument
+aws_connect_contact_flow,PASS,PASS,PASS,
+aws_connect_contact_flow_module,PASS,PASS,PASS,
+aws_connect_hours_of_operation,PASS,PASS,FAIL,Insufficient config blocks
+aws_connect_instance,PASS,PASS,FAIL,Unsupported argument
+aws_connect_instance_storage_config,PASS,PASS,FAIL,Unsupported argument
+aws_connect_lambda_function_association,PASS,PASS,FAIL,Unsupported argument
+aws_connect_phone_number,PASS,PASS,FAIL,Missing required provider
+aws_connect_phone_number_contact_flow_association,PASS,PASS,FAIL,Unsupported argument
+aws_connect_queue,PASS,PASS,PASS,
+aws_connect_quick_connect,PASS,PASS,FAIL,Insufficient quick_connect_config blocks
+aws_connect_routing_profile,PASS,PASS,FAIL,Insufficient media_concurrencies blocks
+aws_connect_security_profile,PASS,PASS,PASS,
+aws_connect_user,PASS,PASS,FAIL,Insufficient phone_config blocks
+aws_connect_user_hierarchy_group,PASS,PASS,PASS,
+aws_connect_user_hierarchy_structure,PASS,PASS,FAIL,Unsupported argument
+aws_connect_vocabulary,PASS,PASS,FAIL,"expected language_code to be one of [""ar-AE"" ""de-CH"" ""de-DE"" ""en-AB"" ""en-AU"" ""en-GB"" ""en-IE"" ""en-IN"" ""en-US"" ""en-WL"" ""es-ES"" ""es-US"" ""fr-CA"" ""fr-FR"" ""hi-IN"" ""it-IT"" ""ja-JP"" ""ko-KR"" ""pt-BR"" ""pt-PT"" ""zh-CN"" ""en-NZ"" ""en-ZA"" ""ca-ES"" ""da-DK"" ""fi-FI"" ""id-ID"" ""ms-MY"" ""nl-NL"" ""no-NO"" ""pl-PL"" ""sv-SE"" ""tl-PH""], got mock_value"
+aws_controltower_baseline,PASS,PASS,FAIL,Unsupported argument
+aws_controltower_control,PASS,PASS,FAIL,Unsupported argument
+aws_controltower_landing_zone,PASS,PASS,FAIL,Unsupported argument
+aws_costoptimizationhub_enrollment_status,PASS,PASS,FAIL,Unsupported argument
+aws_costoptimizationhub_preferences,PASS,PASS,FAIL,Unsupported argument
+aws_cur_report_definition,PASS,PASS,FAIL,Unsupported argument
+aws_customer_gateway,PASS,PASS,FAIL,Missing required provider
+aws_customerprofiles_domain,PASS,PASS,FAIL,Unsupported argument
+aws_customerprofiles_profile,PASS,PASS,FAIL,Unsupported argument
+aws_dataexchange_data_set,PASS,PASS,FAIL,"expected asset_type to be one of [""S3_SNAPSHOT"" ""REDSHIFT_DATA_SHARE"" ""API_GATEWAY_API"" ""S3_DATA_ACCESS"" ""LAKE_FORMATION_DATA_PERMISSION""], got mock_value"
+aws_dataexchange_event_action,PASS,PASS,FAIL,Unsupported argument
+aws_dataexchange_revision,PASS,PASS,FAIL,Unsupported argument
+aws_dataexchange_revision_assets,PASS,PASS,FAIL,Unsupported argument
+aws_datapipeline_pipeline,PASS,PASS,PASS,
+aws_datapipeline_pipeline_definition,PASS,PASS,FAIL,Unsupported argument
+aws_datasync_agent,PASS,PASS,PASS,
+aws_datasync_location_azure_blob,PASS,PASS,FAIL,Unsupported argument
+aws_datasync_location_efs,PASS,PASS,FAIL,Unsupported argument
+aws_datasync_location_fsx_lustre_file_system,PASS,PASS,FAIL,Unsupported argument
+aws_datasync_location_fsx_ontap_file_system,PASS,PASS,FAIL,Unsupported argument
+aws_datasync_location_fsx_openzfs_file_system,PASS,PASS,FAIL,Unsupported argument
+aws_datasync_location_fsx_windows_file_system,PASS,PASS,FAIL,Unsupported argument
+aws_datasync_location_hdfs,PASS,PASS,FAIL,Unsupported argument
+aws_datasync_location_nfs,PASS,PASS,FAIL,Unsupported argument
+aws_datasync_location_object_storage,PASS,PASS,FAIL,Unsupported argument
+aws_datasync_location_s3,PASS,PASS,FAIL,Unsupported argument
+aws_datasync_location_smb,PASS,PASS,FAIL,Unsupported argument
+aws_datasync_task,PASS,PASS,FAIL,"""destination_location_arn"" (mock_value) is an invalid ARN: arn: invalid prefix"
+aws_datazone_asset_type,PASS,PASS,PASS,
+aws_datazone_domain,PASS,PASS,FAIL,Invalid ARN Value
+aws_datazone_environment,PASS,PASS,PASS,
+aws_datazone_environment_blueprint_configuration,PASS,PASS,FAIL,Unsupported argument
+aws_datazone_environment_profile,PASS,PASS,FAIL,Invalid Attribute Value Match
+aws_datazone_form_type,PASS,PASS,FAIL,Invalid Attribute Value Match
+aws_datazone_glossary,PASS,PASS,PASS,
+aws_datazone_glossary_term,PASS,PASS,PASS,
+aws_datazone_project,PASS,PASS,FAIL,Invalid Attribute Value Match
+aws_datazone_user_profile,PASS,PASS,FAIL,Unsupported argument
+aws_dax_cluster,PASS,PASS,FAIL,Unsupported argument
+aws_dax_parameter_group,PASS,PASS,PASS,
+aws_dax_subnet_group,PASS,PASS,PASS,
+aws_db_cluster_snapshot,PASS,PASS,FAIL,Unsupported argument
+aws_db_event_subscription,PASS,PASS,FAIL,"""sns_topic"" (mock_value) is an invalid ARN: arn: invalid prefix"
+aws_db_instance,PASS,PASS,FAIL,Unsupported argument
+aws_db_instance_automated_backups_replication,PASS,PASS,FAIL,Unsupported argument
+aws_db_instance_role_association,PASS,PASS,FAIL,Unsupported argument
+aws_db_option_group,PASS,PASS,PASS,
+aws_db_parameter_group,PASS,PASS,PASS,
+aws_db_proxy,PASS,PASS,FAIL,"""role_arn"" (mock_value) is an invalid ARN: arn: invalid prefix"
+aws_db_proxy_default_target_group,PASS,PASS,FAIL,"only lowercase alphanumeric characters and hyphens allowed in ""db_proxy_name"""
+aws_db_proxy_endpoint,PASS,PASS,FAIL,Unsupported argument
+aws_db_proxy_target,PASS,PASS,FAIL,Unsupported argument
+aws_db_snapshot,PASS,PASS,FAIL,Unsupported argument
+aws_db_snapshot_copy,PASS,PASS,FAIL,Unsupported argument
+aws_db_subnet_group,PASS,PASS,PASS,
+aws_default_network_acl,PASS,PASS,FAIL,Unsupported argument
+aws_default_route_table,PASS,PASS,FAIL,Unsupported argument
+aws_default_security_group,PASS,PASS,FAIL,Value for unconfigurable attribute
+aws_default_subnet,PASS,PASS,FAIL,Unsupported argument
+aws_default_vpc,PASS,PASS,FAIL,Unsupported argument
+aws_default_vpc_dhcp_options,PASS,PASS,FAIL,Unsupported argument
+aws_detective_graph,PASS,PASS,FAIL,Unsupported argument
+aws_detective_invitation_accepter,PASS,PASS,FAIL,Unsupported argument
+aws_detective_member,PASS,PASS,FAIL,Unsupported argument
+aws_detective_organization_admin_account,PASS,PASS,FAIL,Unsupported argument
+aws_detective_organization_configuration,PASS,PASS,FAIL,Unsupported argument
+aws_devicefarm_device_pool,PASS,PASS,FAIL,Insufficient rule blocks
+aws_devicefarm_instance_profile,PASS,PASS,PASS,
+aws_devicefarm_network_profile,PASS,PASS,FAIL,"""project_arn"" (mock_value) is an invalid ARN: arn: invalid prefix"
+aws_devicefarm_project,PASS,PASS,PASS,
+aws_devicefarm_test_grid_project,PASS,PASS,PASS,
+aws_devicefarm_upload,PASS,PASS,FAIL,Missing required provider
+aws_devopsguru_event_sources_config,PASS,PASS,FAIL,Unsupported argument
+aws_devopsguru_notification_channel,PASS,PASS,FAIL,Unsupported argument
+aws_devopsguru_resource_collection,PASS,PASS,FAIL,Missing required provider
+aws_devopsguru_service_integration,PASS,PASS,FAIL,Unsupported argument
+aws_directory_service_conditional_forwarder,PASS,PASS,FAIL,Unsupported argument
+aws_directory_service_directory,PASS,PASS,FAIL,invalid value for name (must be a fully qualified domain name and cannot end with a trailing period)
+aws_directory_service_log_subscription,PASS,PASS,FAIL,Unsupported argument
+aws_directory_service_radius_settings,PASS,PASS,FAIL,Unsupported argument
+aws_directory_service_region,PASS,PASS,FAIL,Unsupported argument
+aws_directory_service_shared_directory,PASS,PASS,FAIL,Unsupported argument
+aws_directory_service_shared_directory_accepter,PASS,PASS,FAIL,Unsupported argument
+aws_directory_service_trust,PASS,PASS,FAIL,Unsupported argument
+aws_dlm_lifecycle_policy,PASS,PASS,FAIL,Unsupported argument
+aws_dms_certificate,PASS,PASS,FAIL,Unsupported argument
+aws_dms_endpoint,PASS,PASS,FAIL,Unsupported argument
+aws_dms_event_subscription,PASS,PASS,FAIL,"""sns_topic_arn"" (mock_value) is an invalid ARN: arn: invalid prefix"
+aws_dms_replication_config,PASS,PASS,FAIL,Unsupported argument
+aws_dms_replication_instance,PASS,PASS,FAIL,Unsupported argument
+aws_dms_replication_subnet_group,PASS,PASS,FAIL,Unsupported argument
+aws_dms_replication_task,PASS,PASS,FAIL,Unsupported argument
+aws_dms_s3_endpoint,PASS,PASS,FAIL,Unsupported argument
+aws_docdb_cluster,PASS,PASS,FAIL,Unsupported argument
+aws_docdb_cluster_instance,PASS,PASS,FAIL,Unsupported argument
+aws_docdb_cluster_parameter_group,PASS,PASS,PASS,
+aws_docdb_cluster_snapshot,PASS,PASS,FAIL,Unsupported argument
+aws_docdb_event_subscription,PASS,PASS,FAIL,"""sns_topic_arn"" (mock_value) is an invalid ARN: arn: invalid prefix"
+aws_docdb_global_cluster,PASS,PASS,FAIL,Unsupported argument
+aws_docdb_subnet_group,PASS,PASS,FAIL,Not enough list items
+aws_docdbelastic_cluster,PASS,PASS,FAIL,Invalid String Enum Value
+aws_drs_replication_configuration_template,PASS,PASS,FAIL,Unsupported argument
+aws_dsql_cluster,PASS,PASS,FAIL,Unsupported argument
+aws_dsql_cluster_peering,PASS,PASS,FAIL,Unsupported argument
+aws_dx_bgp_peer,PASS,PASS,FAIL,Unsupported argument
+aws_dx_connection,PASS,PASS,FAIL,"expected bandwidth to be one of [""1Gbps"" ""2Gbps"" ""5Gbps"" ""10Gbps"" ""25Gbps"" ""100Gbps"" ""400Gbps"" ""50Mbps"" ""100Mbps"" ""200Mbps"" ""300Mbps"" ""400Mbps"" ""500Mbps""], got mock_value"
+aws_dx_connection_association,PASS,PASS,FAIL,Unsupported argument
+aws_dx_connection_confirmation,PASS,PASS,FAIL,Unsupported argument
+aws_dx_gateway,PASS,PASS,FAIL,"""amazon_side_asn"" (""mock_value"") must be a 64-bit integer"
+aws_dx_gateway_association,PASS,PASS,FAIL,Unsupported argument
+aws_dx_gateway_association_proposal,PASS,PASS,FAIL,Unsupported argument
+aws_dx_hosted_connection,PASS,PASS,FAIL,"expected bandwidth to be one of [""1Gbps"" ""2Gbps"" ""5Gbps"" ""10Gbps"" ""25Gbps"" ""100Gbps"" ""400Gbps"" ""50Mbps"" ""100Mbps"" ""200Mbps"" ""300Mbps"" ""400Mbps"" ""500Mbps""], got mock_value"
+aws_dx_hosted_private_virtual_interface,PASS,PASS,FAIL,"expected address_family to be one of [""ipv4"" ""ipv6""], got mock_value"
+aws_dx_hosted_private_virtual_interface_accepter,PASS,PASS,FAIL,Unsupported argument
+aws_dx_hosted_public_virtual_interface,PASS,PASS,FAIL,"""owner_account_id"" doesn't look like AWS Account ID (exactly 12 digits): ""mock_value"""
+aws_dx_hosted_public_virtual_interface_accepter,PASS,PASS,FAIL,Unsupported argument
+aws_dx_hosted_transit_virtual_interface,PASS,PASS,FAIL,"expected address_family to be one of [""ipv4"" ""ipv6""], got mock_value"
+aws_dx_hosted_transit_virtual_interface_accepter,PASS,PASS,FAIL,Unsupported argument
+aws_dx_lag,PASS,PASS,FAIL,"expected connections_bandwidth to be one of [""1Gbps"" ""2Gbps"" ""5Gbps"" ""10Gbps"" ""25Gbps"" ""100Gbps"" ""400Gbps"" ""50Mbps"" ""100Mbps"" ""200Mbps"" ""300Mbps"" ""400Mbps"" ""500Mbps""], got mock_value"
+aws_dx_macsec_key_association,PASS,PASS,FAIL,Unsupported argument
+aws_dx_private_virtual_interface,PASS,PASS,FAIL,Invalid combination of arguments
+aws_dx_public_virtual_interface,PASS,PASS,FAIL,"expected address_family to be one of [""ipv4"" ""ipv6""], got mock_value"
+aws_dx_transit_virtual_interface,PASS,PASS,FAIL,"expected address_family to be one of [""ipv4"" ""ipv6""], got mock_value"
+aws_dynamodb_contributor_insights,PASS,PASS,FAIL,Unsupported argument
+aws_dynamodb_global_table,PASS,PASS,FAIL,Insufficient replica blocks
+aws_dynamodb_kinesis_streaming_destination,PASS,PASS,FAIL,Unsupported argument
+aws_dynamodb_resource_policy,PASS,PASS,FAIL,Unsupported argument
+aws_dynamodb_table,PASS,PASS,PASS,
+aws_dynamodb_table_export,PASS,PASS,FAIL,Unsupported argument
+aws_dynamodb_table_item,PASS,PASS,FAIL,Unsupported argument
+aws_dynamodb_table_replica,PASS,PASS,FAIL,Unsupported argument
+aws_dynamodb_tag,PASS,PASS,FAIL,Unsupported argument
+aws_ebs_default_kms_key,PASS,PASS,FAIL,Unsupported argument
+aws_ebs_encryption_by_default,PASS,PASS,FAIL,Unsupported argument
+aws_ebs_fast_snapshot_restore,PASS,PASS,FAIL,Unsupported argument
+aws_ebs_snapshot,PASS,PASS,FAIL,Unsupported argument
+aws_ebs_snapshot_block_public_access,PASS,PASS,FAIL,Unsupported argument
+aws_ebs_snapshot_copy,PASS,PASS,FAIL,Unsupported argument
+aws_ebs_snapshot_import,PASS,PASS,FAIL,Unsupported argument
+aws_ebs_volume,PASS,PASS,FAIL,Unsupported argument
+aws_ec2_allowed_images_settings,PASS,PASS,FAIL,Unsupported argument
+aws_ec2_availability_zone_group,PASS,PASS,FAIL,Unsupported argument
+aws_ec2_capacity_block_reservation,PASS,PASS,FAIL,Unsupported argument
+aws_ec2_capacity_reservation,PASS,PASS,FAIL,Unsupported argument
+aws_ec2_carrier_gateway,PASS,PASS,FAIL,Unsupported argument
+aws_ec2_client_vpn_authorization_rule,PASS,PASS,FAIL,Unsupported argument
+aws_ec2_client_vpn_endpoint,PASS,PASS,FAIL,Unsupported argument
+aws_ec2_client_vpn_network_association,PASS,PASS,FAIL,Unsupported argument
+aws_ec2_client_vpn_route,PASS,PASS,FAIL,Unsupported argument
+aws_ec2_default_credit_specification,PASS,PASS,FAIL,Unsupported argument
+aws_ec2_fleet,PASS,PASS,FAIL,Unsupported argument
+aws_ec2_host,PASS,PASS,FAIL,Unsupported argument
+aws_ec2_image_block_public_access,PASS,PASS,FAIL,Unsupported argument
+aws_ec2_instance_connect_endpoint,PASS,PASS,FAIL,Unsupported argument
+aws_ec2_instance_metadata_defaults,PASS,PASS,FAIL,Unsupported argument
+aws_ec2_instance_state,PASS,PASS,FAIL,Unsupported argument
+aws_ec2_local_gateway_route,PASS,PASS,FAIL,Unsupported argument
+aws_ec2_local_gateway_route_table_vpc_association,PASS,PASS,FAIL,Unsupported argument
+aws_ec2_managed_prefix_list,PASS,PASS,FAIL,"expected address_family to be one of [""IPv4"" ""IPv6""], got mock_value"
+aws_ec2_managed_prefix_list_entry,PASS,PASS,FAIL,Unsupported argument
+aws_ec2_network_insights_analysis,PASS,PASS,FAIL,Unsupported argument
+aws_ec2_network_insights_path,PASS,PASS,FAIL,Unsupported argument
+aws_ec2_serial_console_access,PASS,PASS,FAIL,Unsupported argument
+aws_ec2_subnet_cidr_reservation,PASS,PASS,FAIL,Unsupported argument
+aws_ec2_tag,PASS,PASS,FAIL,Unsupported argument
+aws_ec2_traffic_mirror_filter,PASS,PASS,FAIL,Unsupported argument
+aws_ec2_traffic_mirror_filter_rule,PASS,PASS,FAIL,Unsupported argument
+aws_ec2_traffic_mirror_session,PASS,PASS,FAIL,Unsupported argument
+aws_ec2_traffic_mirror_target,PASS,PASS,FAIL,Unsupported argument
+aws_ec2_transit_gateway,PASS,PASS,FAIL,Unsupported argument
+aws_ec2_transit_gateway_connect,PASS,PASS,FAIL,Unsupported argument
+aws_ec2_transit_gateway_connect_peer,PASS,PASS,FAIL,Unsupported argument
+aws_ec2_transit_gateway_default_route_table_association,PASS,PASS,FAIL,Unsupported argument
+aws_ec2_transit_gateway_default_route_table_propagation,PASS,PASS,FAIL,Unsupported argument
+aws_ec2_transit_gateway_multicast_domain,PASS,PASS,FAIL,Unsupported argument
+aws_ec2_transit_gateway_multicast_domain_association,PASS,PASS,FAIL,Unsupported argument
+aws_ec2_transit_gateway_multicast_group_member,PASS,PASS,FAIL,Unsupported argument
+aws_ec2_transit_gateway_multicast_group_source,PASS,PASS,FAIL,Unsupported argument
+aws_ec2_transit_gateway_peering_attachment,PASS,PASS,FAIL,Unsupported argument
+aws_ec2_transit_gateway_peering_attachment_accepter,PASS,PASS,FAIL,Unsupported argument
+aws_ec2_transit_gateway_policy_table,PASS,PASS,FAIL,Unsupported argument
+aws_ec2_transit_gateway_policy_table_association,PASS,PASS,FAIL,Unsupported argument
+aws_ec2_transit_gateway_prefix_list_reference,PASS,PASS,FAIL,Unsupported argument
+aws_ec2_transit_gateway_route,PASS,PASS,FAIL,Unsupported argument
+aws_ec2_transit_gateway_route_table,PASS,PASS,FAIL,Unsupported argument
+aws_ec2_transit_gateway_route_table_association,PASS,PASS,FAIL,Unsupported argument
+aws_ec2_transit_gateway_route_table_propagation,PASS,PASS,FAIL,Unsupported argument
+aws_ec2_transit_gateway_vpc_attachment,PASS,PASS,FAIL,Unsupported argument
+aws_ec2_transit_gateway_vpc_attachment_accepter,PASS,PASS,FAIL,Unsupported argument
+aws_ecr_account_setting,PASS,PASS,FAIL,Invalid Attribute Value Match
+aws_ecr_lifecycle_policy,PASS,PASS,FAIL,Unsupported argument
+aws_ecr_pull_through_cache_rule,PASS,PASS,FAIL,Unsupported argument
+aws_ecr_registry_policy,PASS,PASS,FAIL,Unsupported argument
+aws_ecr_registry_scanning_configuration,PASS,PASS,FAIL,Unsupported argument
+aws_ecr_replication_configuration,PASS,PASS,FAIL,Unsupported argument
+aws_ecr_repository,PASS,PASS,PASS,
+aws_ecr_repository_creation_template,PASS,PASS,FAIL,Unsupported argument
+aws_ecr_repository_policy,PASS,PASS,FAIL,Unsupported argument
+aws_ecrpublic_repository,PASS,PASS,FAIL,Unsupported argument
+aws_ecrpublic_repository_policy,PASS,PASS,FAIL,Unsupported argument
+aws_ecs_account_setting_default,PASS,PASS,FAIL,"expected name to be one of [""serviceLongArnFormat"" ""taskLongArnFormat"" ""containerInstanceLongArnFormat"" ""awsvpcTrunking"" ""containerInsights"" ""fargateFIPSMode"" ""tagResourceAuthorization"" ""fargateTaskRetirementWaitPeriod"" ""guardDutyActivate"" ""defaultLogDriverMode"" ""dualStackIPv6""], got mock_value"
+aws_ecs_capacity_provider,PASS,PASS,PASS,
+aws_ecs_cluster,PASS,PASS,PASS,
+aws_ecs_cluster_capacity_providers,PASS,PASS,FAIL,Unsupported argument
+aws_ecs_express_gateway_service,PASS,PASS,FAIL,Unsupported argument
+aws_ecs_service,PASS,PASS,PASS,
+aws_ecs_tag,PASS,PASS,FAIL,Unsupported argument
+aws_ecs_task_definition,PASS,PASS,FAIL,Unsupported argument
+aws_ecs_task_set,PASS,PASS,FAIL,Unsupported argument
+aws_efs_access_point,PASS,PASS,FAIL,Unsupported argument
+aws_efs_backup_policy,PASS,PASS,FAIL,Unsupported argument
+aws_efs_file_system,PASS,PASS,FAIL,Value for unconfigurable attribute
+aws_efs_file_system_policy,PASS,PASS,FAIL,Unsupported argument
+aws_efs_mount_target,PASS,PASS,FAIL,Unsupported argument
+aws_efs_replication_configuration,PASS,PASS,FAIL,Unsupported argument
+aws_egress_only_internet_gateway,PASS,PASS,FAIL,Unsupported argument
+aws_eip,PASS,PASS,FAIL,Unsupported argument
+aws_eip_association,PASS,PASS,FAIL,Unsupported argument
+aws_eip_domain_name,PASS,PASS,FAIL,Unsupported argument
+aws_eks_access_entry,PASS,PASS,FAIL,Unsupported argument
+aws_eks_access_policy_association,PASS,PASS,FAIL,Unsupported argument
+aws_eks_addon,PASS,PASS,FAIL,Unsupported argument
+aws_eks_capability,PASS,PASS,FAIL,Missing required provider
+aws_eks_cluster,PASS,PASS,FAIL,Insufficient vpc_config blocks
+aws_eks_fargate_profile,PASS,PASS,FAIL,Unsupported argument
+aws_eks_identity_provider_config,PASS,PASS,FAIL,Unsupported argument
+aws_eks_node_group,PASS,PASS,FAIL,Unsupported argument
+aws_eks_pod_identity_association,PASS,PASS,FAIL,Unsupported argument
+aws_elastic_beanstalk_application,PASS,PASS,PASS,
+aws_elastic_beanstalk_application_version,PASS,PASS,PASS,
+aws_elastic_beanstalk_configuration_template,PASS,PASS,PASS,
+aws_elastic_beanstalk_environment,PASS,PASS,PASS,
+aws_elasticache_cluster,PASS,PASS,FAIL,Unsupported argument
+aws_elasticache_global_replication_group,PASS,PASS,FAIL,Unsupported argument
+aws_elasticache_parameter_group,PASS,PASS,PASS,
+aws_elasticache_replication_group,PASS,PASS,FAIL,Unsupported argument
+aws_elasticache_reserved_cache_node,PASS,PASS,FAIL,Unsupported argument
+aws_elasticache_serverless_cache,PASS,PASS,PASS,
+aws_elasticache_subnet_group,PASS,PASS,PASS,
+aws_elasticache_user,PASS,PASS,FAIL,Unsupported argument
+aws_elasticache_user_group,PASS,PASS,FAIL,Unsupported argument
+aws_elasticache_user_group_association,PASS,PASS,FAIL,Unsupported argument
+aws_elasticsearch_domain,PASS,PASS,FAIL,Unsupported argument
+aws_elasticsearch_domain_policy,PASS,PASS,FAIL,Unsupported argument
+aws_elasticsearch_domain_saml_options,PASS,PASS,FAIL,Unsupported argument
+aws_elasticsearch_vpc_endpoint,PASS,PASS,FAIL,Unsupported argument
+aws_elastictranscoder_pipeline,PASS,PASS,FAIL,"""role"" (mock_value) is an invalid ARN: arn: invalid prefix"
+aws_elastictranscoder_preset,PASS,PASS,FAIL,"expected container to be one of [""flac"" ""flv"" ""fmp4"" ""gif"" ""mp2"" ""mp3"" ""mp4"" ""mpg"" ""mxf"" ""oga"" ""ogg"" ""ts"" ""wav"" ""webm""], got mock_value"
+aws_elb,PASS,PASS,FAIL,Insufficient listener blocks
+aws_elb_attachment,PASS,PASS,FAIL,Unsupported argument
+aws_emr_block_public_access_configuration,PASS,PASS,FAIL,Unsupported argument
+aws_emr_cluster,PASS,PASS,PASS,
+aws_emr_instance_fleet,PASS,PASS,PASS,
+aws_emr_instance_group,PASS,PASS,PASS,
+aws_emr_managed_scaling_policy,PASS,PASS,FAIL,Unsupported argument
+aws_emr_security_configuration,PASS,PASS,FAIL,"""configuration"" contains an invalid JSON: invalid character 'm' looking for beginning of value"
+aws_emr_studio,PASS,PASS,FAIL,Not enough list items
+aws_emr_studio_session_mapping,PASS,PASS,FAIL,Unsupported argument
+aws_emrcontainers_job_template,PASS,PASS,FAIL,Insufficient job_template_data blocks
+aws_emrcontainers_virtual_cluster,PASS,PASS,FAIL,Insufficient container_provider blocks
+aws_emrserverless_application,PASS,PASS,FAIL,Missing required provider
+aws_evidently_feature,PASS,PASS,FAIL,Insufficient variations blocks
+aws_evidently_launch,PASS,PASS,FAIL,Insufficient groups blocks
+aws_evidently_project,PASS,PASS,PASS,
+aws_evidently_segment,PASS,PASS,FAIL,"""pattern"" contains an invalid JSON: invalid character 'm' looking for beginning of value"
+aws_finspace_kx_cluster,PASS,PASS,FAIL,Missing required provider
+aws_finspace_kx_database,PASS,PASS,PASS,
+aws_finspace_kx_dataview,PASS,PASS,FAIL,"expected az_mode to be one of [""SINGLE"" ""MULTI""], got mock_value"
+aws_finspace_kx_environment,PASS,PASS,FAIL,"""kms_key_id"" (mock_value) is an invalid ARN: arn: invalid prefix"
+aws_finspace_kx_scaling_group,PASS,PASS,PASS,
+aws_finspace_kx_user,PASS,PASS,FAIL,"""iam_role"" (mock_value) is an invalid ARN: arn: invalid prefix"
+aws_finspace_kx_volume,PASS,PASS,FAIL,Missing required provider
+aws_fis_experiment_template,PASS,PASS,FAIL,Unsupported argument
+aws_fis_target_account_configuration,PASS,PASS,FAIL,Unsupported argument
+aws_flow_log,PASS,PASS,FAIL,Unsupported argument
+aws_fms_admin_account,PASS,PASS,FAIL,Unsupported argument
+aws_fms_policy,PASS,PASS,FAIL,Insufficient security_service_policy_data blocks
+aws_fms_resource_set,PASS,PASS,FAIL,Unsupported argument
+aws_fsx_backup,PASS,PASS,FAIL,Unsupported argument
+aws_fsx_data_repository_association,PASS,PASS,FAIL,Unsupported argument
+aws_fsx_file_cache,PASS,PASS,FAIL,Unsupported argument
+aws_fsx_lustre_file_system,PASS,PASS,FAIL,Unsupported argument
+aws_fsx_ontap_file_system,PASS,PASS,FAIL,Unsupported argument
+aws_fsx_ontap_storage_virtual_machine,PASS,PASS,FAIL,"expected length of file_system_id to be in the range (11 - 21), got mock_value"
+aws_fsx_ontap_volume,PASS,PASS,FAIL,Invalid combination of arguments
+aws_fsx_openzfs_file_system,PASS,PASS,FAIL,Unsupported argument
+aws_fsx_openzfs_snapshot,PASS,PASS,FAIL,"expected length of volume_id to be in the range (23 - 23), got mock_value"
+aws_fsx_openzfs_volume,PASS,PASS,FAIL,"expected length of parent_volume_id to be in the range (23 - 23), got mock_value"
+aws_fsx_s3_access_point_attachment,PASS,PASS,FAIL,Missing required provider
+aws_fsx_windows_file_system,PASS,PASS,FAIL,Unsupported argument
+aws_gamelift_alias,PASS,PASS,FAIL,Insufficient routing_strategy blocks
+aws_gamelift_build,PASS,PASS,FAIL,Insufficient storage_location blocks
+aws_gamelift_fleet,PASS,PASS,FAIL,Invalid combination of arguments
+aws_gamelift_game_server_group,PASS,PASS,FAIL,Unsupported argument
+aws_gamelift_game_session_queue,PASS,PASS,PASS,
+aws_gamelift_script,PASS,PASS,FAIL,Invalid combination of arguments
+aws_glacier_vault,PASS,PASS,PASS,
+aws_glacier_vault_lock,PASS,PASS,FAIL,Unsupported argument
+aws_globalaccelerator_accelerator,PASS,PASS,FAIL,invalid value for name (only alphanumeric characters and hyphens are allowed)
+aws_globalaccelerator_cross_account_attachment,PASS,PASS,PASS,
+aws_globalaccelerator_custom_routing_accelerator,PASS,PASS,FAIL,invalid value for name (only alphanumeric characters and hyphens are allowed)
+aws_globalaccelerator_custom_routing_endpoint_group,PASS,PASS,FAIL,Unsupported argument
+aws_globalaccelerator_custom_routing_listener,PASS,PASS,FAIL,Unsupported argument
+aws_globalaccelerator_endpoint_group,PASS,PASS,FAIL,Unsupported argument
+aws_globalaccelerator_listener,PASS,PASS,FAIL,Unsupported argument
+aws_glue_catalog_database,PASS,PASS,PASS,
+aws_glue_catalog_table,PASS,PASS,PASS,
+aws_glue_catalog_table_optimizer,PASS,PASS,FAIL,Missing required provider
+aws_glue_classifier,PASS,PASS,PASS,
+aws_glue_connection,PASS,PASS,PASS,
+aws_glue_crawler,PASS,PASS,FAIL,Missing required argument
+aws_glue_data_catalog_encryption_settings,PASS,PASS,FAIL,Unsupported argument
+aws_glue_data_quality_ruleset,PASS,PASS,PASS,
+aws_glue_dev_endpoint,PASS,PASS,FAIL,"""role_arn"" (mock_value) is an invalid ARN: arn: invalid prefix"
+aws_glue_job,PASS,PASS,FAIL,Insufficient command blocks
+aws_glue_ml_transform,PASS,PASS,FAIL,Insufficient input_record_tables blocks
+aws_glue_partition,PASS,PASS,FAIL,Unsupported argument
+aws_glue_partition_index,PASS,PASS,FAIL,Unsupported argument
+aws_glue_registry,PASS,PASS,FAIL,Unsupported argument
+aws_glue_resource_policy,PASS,PASS,FAIL,Unsupported argument
+aws_glue_schema,PASS,PASS,FAIL,Unsupported argument
+aws_glue_security_configuration,PASS,PASS,FAIL,Insufficient encryption_configuration blocks
+aws_glue_trigger,PASS,PASS,FAIL,Missing required provider
+aws_glue_user_defined_function,PASS,PASS,FAIL,"expected owner_type to be one of [""USER"" ""ROLE"" ""GROUP""], got mock_value"
+aws_glue_workflow,PASS,PASS,PASS,
+aws_grafana_license_association,PASS,PASS,FAIL,Unsupported argument
+aws_grafana_role_association,PASS,PASS,FAIL,Unsupported argument
+aws_grafana_workspace,PASS,PASS,FAIL,"expected permission_type to be one of [""CUSTOMER_MANAGED"" ""SERVICE_MANAGED""], got mock_value"
+aws_grafana_workspace_api_key,PASS,PASS,FAIL,Unsupported argument
+aws_grafana_workspace_saml_configuration,PASS,PASS,FAIL,Unsupported argument
+aws_grafana_workspace_service_account,PASS,PASS,FAIL,Invalid String Enum Value
+aws_grafana_workspace_service_account_token,PASS,PASS,PASS,
+aws_guardduty_detector,PASS,PASS,FAIL,Unsupported argument
+aws_guardduty_detector_feature,PASS,PASS,FAIL,"expected status to be one of [""ENABLED"" ""DISABLED""], got mock_value"
+aws_guardduty_filter,PASS,PASS,FAIL,Insufficient finding_criteria blocks
+aws_guardduty_invite_accepter,PASS,PASS,FAIL,Unsupported argument
+aws_guardduty_ipset,PASS,PASS,FAIL,"expected format to be one of [""TXT"" ""STIX"" ""OTX_CSV"" ""ALIEN_VAULT"" ""PROOF_POINT"" ""FIRE_EYE""], got mock_value"
+aws_guardduty_malware_protection_plan,PASS,PASS,FAIL,Unsupported argument
+aws_guardduty_member,PASS,PASS,FAIL,Unsupported argument
+aws_guardduty_member_detector_feature,PASS,PASS,FAIL,Invalid Attribute Value
+aws_guardduty_organization_admin_account,PASS,PASS,FAIL,Unsupported argument
+aws_guardduty_organization_configuration,PASS,PASS,FAIL,Unsupported argument
+aws_guardduty_organization_configuration_feature,PASS,PASS,FAIL,"expected name to be one of [""S3_DATA_EVENTS"" ""EKS_AUDIT_LOGS"" ""EBS_MALWARE_PROTECTION"" ""RDS_LOGIN_EVENTS"" ""EKS_RUNTIME_MONITORING"" ""LAMBDA_NETWORK_LOGS"" ""RUNTIME_MONITORING""], got mock_value"
+aws_guardduty_publishing_destination,PASS,PASS,FAIL,Unsupported argument
+aws_guardduty_threatintelset,PASS,PASS,FAIL,"expected format to be one of [""TXT"" ""STIX"" ""OTX_CSV"" ""ALIEN_VAULT"" ""PROOF_POINT"" ""FIRE_EYE""], got mock_value"
+aws_iam_access_key,PASS,PASS,FAIL,Unsupported argument
+aws_iam_account_alias,PASS,PASS,FAIL,Unsupported argument
+aws_iam_account_password_policy,PASS,PASS,FAIL,Unsupported argument
+aws_iam_group,PASS,PASS,PASS,
+aws_iam_group_membership,PASS,PASS,PASS,
+aws_iam_group_policies_exclusive,PASS,PASS,FAIL,Unsupported argument
+aws_iam_group_policy,PASS,PASS,FAIL,"""policy"" contains an invalid JSON policy: not a JSON object"
+aws_iam_group_policy_attachment,PASS,PASS,FAIL,Unsupported argument
+aws_iam_group_policy_attachments_exclusive,PASS,PASS,FAIL,Unsupported argument
+aws_iam_instance_profile,PASS,PASS,PASS,
+aws_iam_openid_connect_provider,PASS,PASS,FAIL,Unsupported argument
+aws_iam_organizations_features,PASS,PASS,FAIL,Unsupported argument
+aws_iam_policy,PASS,PASS,FAIL,"""policy"" contains an invalid JSON policy: not a JSON object"
+aws_iam_policy_attachment,PASS,PASS,FAIL,Missing required argument
+aws_iam_role,PASS,PASS,FAIL,"""assume_role_policy"" contains an invalid JSON policy: not a JSON object"
+aws_iam_role_policies_exclusive,PASS,PASS,FAIL,Unsupported argument
+aws_iam_role_policy,PASS,PASS,FAIL,"""policy"" contains an invalid JSON policy: not a JSON object"
+aws_iam_role_policy_attachment,PASS,PASS,FAIL,Unsupported argument
+aws_iam_role_policy_attachments_exclusive,PASS,PASS,FAIL,Unsupported argument
+aws_iam_saml_provider,PASS,PASS,FAIL,"expected length of saml_metadata_document to be in the range (1000 - 10000000), got mock_value"
+aws_iam_security_token_service_preferences,PASS,PASS,FAIL,Unsupported argument
+aws_iam_server_certificate,PASS,PASS,PASS,
+aws_iam_service_linked_role,PASS,PASS,FAIL,invalid value for aws_service_name (must be a full service hostname e.g. elasticbeanstalk.amazonaws.com)
+aws_iam_service_specific_credential,PASS,PASS,FAIL,Unsupported argument
+aws_iam_signing_certificate,PASS,PASS,FAIL,Unsupported argument
+aws_iam_user,PASS,PASS,PASS,
+aws_iam_user_group_membership,PASS,PASS,FAIL,Unsupported argument
+aws_iam_user_login_profile,PASS,PASS,FAIL,Unsupported argument
+aws_iam_user_policies_exclusive,PASS,PASS,FAIL,Unsupported argument
+aws_iam_user_policy,PASS,PASS,FAIL,"""policy"" contains an invalid JSON policy: not a JSON object"
+aws_iam_user_policy_attachment,PASS,PASS,FAIL,Unsupported argument
+aws_iam_user_policy_attachments_exclusive,PASS,PASS,FAIL,Unsupported argument
+aws_iam_user_ssh_key,PASS,PASS,FAIL,Unsupported argument
+aws_iam_virtual_mfa_device,PASS,PASS,FAIL,Unsupported argument
+aws_identitystore_group,PASS,PASS,FAIL,Unsupported argument
+aws_identitystore_group_membership,PASS,PASS,FAIL,Unsupported argument
+aws_identitystore_user,PASS,PASS,FAIL,Missing required argument
+aws_imagebuilder_component,PASS,PASS,FAIL,"expected platform to be one of [""Windows"" ""Linux"" ""macOS""], got mock_value"
+aws_imagebuilder_container_recipe,PASS,PASS,FAIL,Insufficient target_repository blocks
+aws_imagebuilder_distribution_configuration,PASS,PASS,FAIL,Insufficient distribution blocks
+aws_imagebuilder_image,PASS,PASS,FAIL,Invalid combination of arguments
+aws_imagebuilder_image_pipeline,PASS,PASS,FAIL,Invalid combination of arguments
+aws_imagebuilder_image_recipe,PASS,PASS,FAIL,Insufficient component blocks
+aws_imagebuilder_infrastructure_configuration,PASS,PASS,PASS,
+aws_imagebuilder_lifecycle_policy,PASS,PASS,FAIL,Invalid String Enum Value
+aws_imagebuilder_workflow,PASS,PASS,FAIL,Missing required provider
+aws_inspector2_delegated_admin_account,PASS,PASS,FAIL,Unsupported argument
+aws_inspector2_enabler,PASS,PASS,FAIL,Unsupported argument
+aws_inspector2_filter,PASS,PASS,FAIL,Invalid String Enum Value
+aws_inspector2_member_association,PASS,PASS,FAIL,Unsupported argument
+aws_inspector2_organization_configuration,PASS,PASS,FAIL,Unsupported argument
+aws_inspector_assessment_target,PASS,PASS,PASS,
+aws_inspector_assessment_template,PASS,PASS,PASS,
+aws_inspector_resource_group,PASS,PASS,FAIL,Unsupported argument
+aws_instance,PASS,PASS,FAIL,Unsupported argument
+aws_internet_gateway,PASS,PASS,FAIL,Unsupported argument
+aws_internet_gateway_attachment,PASS,PASS,FAIL,Unsupported argument
+aws_internetmonitor_monitor,PASS,PASS,FAIL,Unsupported argument
+aws_invoicing_invoice_unit,PASS,PASS,PASS,
+aws_iot_authorizer,PASS,PASS,FAIL,"""authorizer_function_arn"" (mock_value) is an invalid ARN: arn: invalid prefix"
+aws_iot_billing_group,PASS,PASS,PASS,
+aws_iot_ca_certificate,PASS,PASS,FAIL,Unsupported argument
+aws_iot_certificate,PASS,PASS,FAIL,Unsupported argument
+aws_iot_domain_configuration,PASS,PASS,PASS,
+aws_iot_event_configurations,PASS,PASS,FAIL,Unsupported argument
+aws_iot_indexing_configuration,PASS,PASS,FAIL,Unsupported argument
+aws_iot_logging_options,PASS,PASS,FAIL,Unsupported argument
+aws_iot_policy,PASS,PASS,FAIL,"""policy"" contains an invalid JSON: invalid character 'm' looking for beginning of value"
+aws_iot_policy_attachment,PASS,PASS,FAIL,Unsupported argument
+aws_iot_provisioning_template,PASS,PASS,FAIL,"""provisioning_role_arn"" (mock_value) is an invalid ARN: arn: invalid prefix"
+aws_iot_role_alias,PASS,PASS,FAIL,Unsupported argument
+aws_iot_thing,PASS,PASS,PASS,
+aws_iot_thing_group,PASS,PASS,PASS,
+aws_iot_thing_group_membership,PASS,PASS,FAIL,Unsupported argument
+aws_iot_thing_principal_attachment,PASS,PASS,FAIL,Unsupported argument
+aws_iot_thing_type,PASS,PASS,PASS,
+aws_iot_topic_rule,PASS,PASS,PASS,
+aws_iot_topic_rule_destination,PASS,PASS,FAIL,Unsupported argument
+aws_ivs_channel,PASS,PASS,PASS,
+aws_ivs_playback_key_pair,PASS,PASS,PASS,
+aws_ivs_recording_configuration,PASS,PASS,FAIL,Insufficient destination_configuration blocks
+aws_ivschat_logging_configuration,PASS,PASS,PASS,
+aws_ivschat_room,PASS,PASS,PASS,
+aws_kendra_data_source,PASS,PASS,FAIL,Missing required provider
+aws_kendra_experience,PASS,PASS,FAIL,"""role_arn"" (mock_value) is an invalid ARN: arn: invalid prefix"
+aws_kendra_faq,PASS,PASS,FAIL,Insufficient s3_path blocks
+aws_kendra_index,PASS,PASS,FAIL,"""role_arn"" (mock_value) is an invalid ARN: arn: invalid prefix"
+aws_kendra_query_suggestions_block_list,PASS,PASS,FAIL,Insufficient source_s3_path blocks
+aws_kendra_thesaurus,PASS,PASS,FAIL,Insufficient source_s3_path blocks
+aws_key_pair,PASS,PASS,FAIL,Unsupported argument
+aws_keyspaces_keyspace,PASS,PASS,PASS,
+aws_keyspaces_table,PASS,PASS,FAIL,Unsupported argument
+aws_kinesis_analytics_application,PASS,PASS,PASS,
+aws_kinesis_firehose_delivery_stream,PASS,PASS,FAIL,"expected destination to be one of [""elasticsearch"" ""extended_s3"" ""http_endpoint"" ""iceberg"" ""opensearch"" ""opensearchserverless"" ""redshift"" ""snowflake"" ""splunk""], got mock_value"
+aws_kinesis_resource_policy,PASS,PASS,FAIL,Unsupported argument
+aws_kinesis_stream,PASS,PASS,PASS,
+aws_kinesis_stream_consumer,PASS,PASS,FAIL,"""stream_arn"" (mock_value) is an invalid ARN: arn: invalid prefix"
+aws_kinesis_video_stream,PASS,PASS,PASS,
+aws_kinesisanalyticsv2_application,PASS,PASS,FAIL,"expected runtime_environment to be one of [""SQL-1_0"" ""FLINK-1_6"" ""FLINK-1_8"" ""ZEPPELIN-FLINK-1_0"" ""FLINK-1_11"" ""FLINK-1_13"" ""ZEPPELIN-FLINK-2_0"" ""FLINK-1_15"" ""ZEPPELIN-FLINK-3_0"" ""FLINK-1_18"" ""FLINK-1_19"" ""FLINK-1_20""], got mock_value"
+aws_kinesisanalyticsv2_application_snapshot,PASS,PASS,FAIL,Unsupported argument
+aws_kms_alias,PASS,PASS,FAIL,"""name"" must begin with 'alias/' and only contain [0-9A-Za-z_/-]"
+aws_kms_ciphertext,PASS,PASS,FAIL,Unsupported argument
+aws_kms_custom_key_store,PASS,PASS,FAIL,Unsupported argument
+aws_kms_external_key,PASS,PASS,FAIL,Unsupported argument
+aws_kms_grant,PASS,PASS,FAIL,"""grantee_principal"" (mock_value) is an invalid ARN: arn: invalid prefix"
+aws_kms_key,PASS,PASS,FAIL,Unsupported argument
+aws_kms_key_policy,PASS,PASS,FAIL,Unsupported argument
+aws_kms_replica_external_key,PASS,PASS,FAIL,Unsupported argument
+aws_kms_replica_key,PASS,PASS,FAIL,Unsupported argument
+aws_lakeformation_data_cells_filter,PASS,PASS,FAIL,Unsupported argument
+aws_lakeformation_data_lake_settings,PASS,PASS,FAIL,Unsupported argument
+aws_lakeformation_identity_center_configuration,PASS,PASS,FAIL,Unsupported argument
+aws_lakeformation_lf_tag,PASS,PASS,FAIL,Unsupported argument
+aws_lakeformation_lf_tag_expression,PASS,PASS,FAIL,Invalid Block
+aws_lakeformation_opt_in,PASS,PASS,FAIL,Unsupported argument
+aws_lakeformation_permissions,PASS,PASS,FAIL,Unsupported argument
+aws_lakeformation_resource,PASS,PASS,FAIL,Unsupported argument
+aws_lakeformation_resource_lf_tag,PASS,PASS,FAIL,Unsupported argument
+aws_lakeformation_resource_lf_tags,PASS,PASS,FAIL,Unsupported argument
+aws_lambda_alias,PASS,PASS,PASS,
+aws_lambda_capacity_provider,PASS,PASS,FAIL,Invalid Block
+aws_lambda_code_signing_config,PASS,PASS,FAIL,Unsupported argument
+aws_lambda_event_source_mapping,PASS,PASS,FAIL,Unsupported argument
+aws_lambda_function,PASS,PASS,FAIL,Unsupported argument
+aws_lambda_function_event_invoke_config,PASS,PASS,FAIL,Unsupported argument
+aws_lambda_function_recursion_config,PASS,PASS,FAIL,Unsupported argument
+aws_lambda_function_url,PASS,PASS,FAIL,Unsupported argument
+aws_lambda_invocation,PASS,PASS,FAIL,Unsupported argument
+aws_lambda_layer_version,PASS,PASS,FAIL,Unsupported argument
+aws_lambda_layer_version_permission,PASS,PASS,FAIL,Unsupported argument
+aws_lambda_permission,PASS,PASS,FAIL,Unsupported argument
+aws_lambda_provisioned_concurrency_config,PASS,PASS,FAIL,Unsupported argument
+aws_lambda_runtime_management_config,PASS,PASS,FAIL,Unsupported argument
+aws_launch_configuration,PASS,PASS,PASS,
+aws_launch_template,PASS,PASS,PASS,
+aws_lb,PASS,PASS,FAIL,Invalid combination of arguments
+aws_lb_cookie_stickiness_policy,PASS,PASS,PASS,
+aws_lb_listener,PASS,PASS,FAIL,Unsupported argument
+aws_lb_listener_certificate,PASS,PASS,FAIL,Unsupported argument
+aws_lb_listener_rule,PASS,PASS,FAIL,Unsupported argument
+aws_lb_ssl_negotiation_policy,PASS,PASS,PASS,
+aws_lb_target_group,PASS,PASS,PASS,
+aws_lb_target_group_attachment,PASS,PASS,FAIL,Unsupported argument
+aws_lb_trust_store,PASS,PASS,PASS,
+aws_lb_trust_store_revocation,PASS,PASS,FAIL,Unsupported argument
+aws_lex_bot,PASS,PASS,FAIL,Insufficient intent blocks
+aws_lex_bot_alias,PASS,PASS,FAIL,"expected value of bot_version to match regular expression ""\\$LATEST|[0-9]+"", got mock_value"
+aws_lex_intent,PASS,PASS,FAIL,Insufficient fulfillment_activity blocks
+aws_lex_slot_type,PASS,PASS,FAIL,Insufficient enumeration_value blocks
+aws_lexv2models_bot,PASS,PASS,FAIL,Invalid ARN Value
+aws_lexv2models_bot_locale,PASS,PASS,PASS,
+aws_lexv2models_bot_version,PASS,PASS,FAIL,Unsupported argument
+aws_lexv2models_intent,PASS,PASS,PASS,
+aws_lexv2models_slot,PASS,PASS,FAIL,Invalid Block
+aws_lexv2models_slot_type,PASS,PASS,PASS,
+aws_licensemanager_association,PASS,PASS,FAIL,Unsupported argument
+aws_licensemanager_grant,PASS,PASS,FAIL,Not enough list items
+aws_licensemanager_grant_accepter,PASS,PASS,FAIL,"""grant_arn"" (mock_value) is an invalid ARN: arn: invalid prefix"
+aws_licensemanager_license_configuration,PASS,PASS,FAIL,"expected license_counting_type to be one of [""vCPU"" ""Instance"" ""Core"" ""Socket""], got mock_value"
+aws_lightsail_bucket,PASS,PASS,PASS,
+aws_lightsail_bucket_access_key,PASS,PASS,FAIL,Unsupported argument
+aws_lightsail_bucket_resource_access,PASS,PASS,FAIL,Unsupported argument
+aws_lightsail_certificate,PASS,PASS,PASS,
+aws_lightsail_container_service,PASS,PASS,FAIL,"expected power to be one of [""nano"" ""micro"" ""small"" ""medium"" ""large"" ""xlarge""], got mock_value"
+aws_lightsail_container_service_deployment_version,PASS,PASS,FAIL,Unsupported argument
+aws_lightsail_database,PASS,PASS,FAIL,Unsupported argument
+aws_lightsail_disk,PASS,PASS,PASS,
+aws_lightsail_disk_attachment,PASS,PASS,FAIL,Unsupported argument
+aws_lightsail_distribution,PASS,PASS,FAIL,Insufficient origin blocks
+aws_lightsail_domain,PASS,PASS,FAIL,Unsupported argument
+aws_lightsail_domain_entry,PASS,PASS,FAIL,Missing required provider
+aws_lightsail_instance,PASS,PASS,PASS,
+aws_lightsail_instance_public_ports,PASS,PASS,FAIL,Unsupported argument
+aws_lightsail_key_pair,PASS,PASS,PASS,
+aws_lightsail_lb,PASS,PASS,PASS,
+aws_lightsail_lb_attachment,PASS,PASS,FAIL,Unsupported argument
+aws_lightsail_lb_certificate,PASS,PASS,PASS,
+aws_lightsail_lb_certificate_attachment,PASS,PASS,FAIL,Unsupported argument
+aws_lightsail_lb_https_redirection_policy,PASS,PASS,FAIL,Unsupported argument
+aws_lightsail_lb_stickiness_policy,PASS,PASS,FAIL,Unsupported argument
+aws_lightsail_static_ip,PASS,PASS,PASS,
+aws_lightsail_static_ip_attachment,PASS,PASS,FAIL,Unsupported argument
+aws_load_balancer_backend_server_policy,PASS,PASS,FAIL,Unsupported argument
+aws_load_balancer_listener_policy,PASS,PASS,FAIL,Unsupported argument
+aws_load_balancer_policy,PASS,PASS,FAIL,Unsupported argument
+aws_location_geofence_collection,PASS,PASS,FAIL,Unsupported argument
+aws_location_map,PASS,PASS,FAIL,Unsupported argument
+aws_location_place_index,PASS,PASS,FAIL,Unsupported argument
+aws_location_route_calculator,PASS,PASS,FAIL,Unsupported argument
+aws_location_tracker,PASS,PASS,FAIL,Unsupported argument
+aws_location_tracker_association,PASS,PASS,FAIL,Unsupported argument
+aws_m2_application,PASS,PASS,FAIL,Invalid String Enum Value
+aws_m2_deployment,PASS,PASS,FAIL,Unsupported argument
+aws_m2_environment,PASS,PASS,FAIL,Invalid String Enum Value
+aws_macie2_account,PASS,PASS,FAIL,Unsupported argument
+aws_macie2_classification_export_configuration,PASS,PASS,FAIL,Unsupported argument
+aws_macie2_classification_job,PASS,PASS,FAIL,Insufficient s3_job_definition blocks
+aws_macie2_custom_data_identifier,PASS,PASS,PASS,
+aws_macie2_findings_filter,PASS,PASS,FAIL,Insufficient finding_criteria blocks
+aws_macie2_invitation_accepter,PASS,PASS,FAIL,Unsupported argument
+aws_macie2_member,PASS,PASS,FAIL,Unsupported argument
+aws_macie2_organization_admin_account,PASS,PASS,FAIL,Unsupported argument
+aws_macie2_organization_configuration,PASS,PASS,FAIL,Unsupported argument
+aws_main_route_table_association,PASS,PASS,FAIL,Unsupported argument
+aws_media_convert_queue,PASS,PASS,PASS,
+aws_media_package_channel,PASS,PASS,FAIL,Unsupported argument
+aws_media_packagev2_channel_group,PASS,PASS,PASS,
+aws_media_store_container,PASS,PASS,PASS,
+aws_media_store_container_policy,PASS,PASS,FAIL,Unsupported argument
+aws_medialive_channel,PASS,PASS,FAIL,Insufficient input_specification blocks
+aws_medialive_input,PASS,PASS,FAIL,Missing required provider
+aws_medialive_input_security_group,PASS,PASS,FAIL,Unsupported argument
+aws_medialive_multiplex,PASS,PASS,FAIL,Not enough list items
+aws_medialive_multiplex_program,PASS,PASS,FAIL,Unsupported argument
+aws_memorydb_acl,PASS,PASS,PASS,
+aws_memorydb_cluster,PASS,PASS,PASS,
+aws_memorydb_multi_region_cluster,PASS,PASS,FAIL,Unsupported argument
+aws_memorydb_parameter_group,PASS,PASS,PASS,
+aws_memorydb_snapshot,PASS,PASS,PASS,
+aws_memorydb_subnet_group,PASS,PASS,FAIL,Not enough list items
+aws_memorydb_user,PASS,PASS,FAIL,Unsupported argument
+aws_mq_broker,PASS,PASS,FAIL,Unsupported argument
+aws_mq_configuration,PASS,PASS,FAIL,"expected engine_type to be one of [""ACTIVEMQ"" ""RABBITMQ""], got mock_value"
+aws_msk_cluster,PASS,PASS,FAIL,Unsupported argument
+aws_msk_cluster_policy,PASS,PASS,FAIL,Unsupported argument
+aws_msk_configuration,PASS,PASS,PASS,
+aws_msk_replicator,PASS,PASS,FAIL,Unsupported argument
+aws_msk_scram_secret_association,PASS,PASS,FAIL,Unsupported argument
+aws_msk_serverless_cluster,PASS,PASS,FAIL,Unsupported argument
+aws_msk_single_scram_secret_association,PASS,PASS,FAIL,Unsupported argument
+aws_msk_vpc_connection,PASS,PASS,FAIL,Unsupported argument
+aws_mskconnect_connector,PASS,PASS,FAIL,Insufficient kafka_cluster blocks
+aws_mskconnect_custom_plugin,PASS,PASS,FAIL,Insufficient location blocks
+aws_mskconnect_worker_configuration,PASS,PASS,PASS,
+aws_mwaa_environment,PASS,PASS,FAIL,Insufficient network_configuration blocks
+aws_nat_gateway,PASS,PASS,FAIL,Unsupported argument
+aws_nat_gateway_eip_association,PASS,PASS,FAIL,Unsupported argument
+aws_neptune_cluster,PASS,PASS,FAIL,Unsupported argument
+aws_neptune_cluster_endpoint,PASS,PASS,FAIL,Unsupported argument
+aws_neptune_cluster_instance,PASS,PASS,FAIL,Unsupported argument
+aws_neptune_cluster_parameter_group,PASS,PASS,PASS,
+aws_neptune_cluster_snapshot,PASS,PASS,FAIL,Unsupported argument
+aws_neptune_event_subscription,PASS,PASS,FAIL,"""sns_topic_arn"" (mock_value) is an invalid ARN: arn: invalid prefix"
+aws_neptune_global_cluster,PASS,PASS,FAIL,Unsupported argument
+aws_neptune_parameter_group,PASS,PASS,PASS,
+aws_neptune_subnet_group,PASS,PASS,FAIL,Not enough list items
+aws_neptunegraph_graph,PASS,PASS,FAIL,Unsupported argument
+aws_network_acl,PASS,PASS,FAIL,Unsupported argument
+aws_network_acl_association,PASS,PASS,FAIL,Unsupported argument
+aws_network_acl_rule,PASS,PASS,FAIL,Unsupported argument
+aws_network_interface,PASS,PASS,FAIL,Unsupported argument
+aws_network_interface_attachment,PASS,PASS,FAIL,Unsupported argument
+aws_network_interface_permission,PASS,PASS,FAIL,Unsupported argument
+aws_network_interface_sg_attachment,PASS,PASS,FAIL,Unsupported argument
+aws_networkfirewall_firewall,PASS,PASS,FAIL,Invalid combination of arguments
+aws_networkfirewall_firewall_policy,PASS,PASS,FAIL,Insufficient firewall_policy blocks
+aws_networkfirewall_firewall_transit_gateway_attachment_accepter,PASS,PASS,FAIL,Unsupported argument
+aws_networkfirewall_logging_configuration,PASS,PASS,FAIL,Unsupported argument
+aws_networkfirewall_resource_policy,PASS,PASS,FAIL,Unsupported argument
+aws_networkfirewall_rule_group,PASS,PASS,FAIL,Missing required provider
+aws_networkfirewall_tls_inspection_configuration,PASS,PASS,FAIL,Missing Attribute Configuration
+aws_networkfirewall_vpc_endpoint_association,PASS,PASS,FAIL,Unsupported argument
+aws_networkflowmonitor_monitor,PASS,PASS,FAIL,Unsupported argument
+aws_networkflowmonitor_scope,PASS,PASS,FAIL,Unsupported argument
+aws_networkmanager_attachment_accepter,PASS,PASS,FAIL,Unsupported argument
+aws_networkmanager_connect_attachment,PASS,PASS,FAIL,Unsupported argument
+aws_networkmanager_connect_peer,PASS,PASS,FAIL,Unsupported argument
+aws_networkmanager_connection,PASS,PASS,FAIL,Unsupported argument
+aws_networkmanager_core_network,PASS,PASS,FAIL,Unsupported argument
+aws_networkmanager_core_network_policy_attachment,PASS,PASS,FAIL,Unsupported argument
+aws_networkmanager_customer_gateway_association,PASS,PASS,FAIL,Unsupported argument
+aws_networkmanager_device,PASS,PASS,FAIL,Unsupported argument
+aws_networkmanager_dx_gateway_attachment,PASS,PASS,FAIL,Unsupported argument
+aws_networkmanager_global_network,PASS,PASS,FAIL,Unsupported argument
+aws_networkmanager_link,PASS,PASS,FAIL,Unsupported argument
+aws_networkmanager_link_association,PASS,PASS,FAIL,Unsupported argument
+aws_networkmanager_site,PASS,PASS,FAIL,Unsupported argument
+aws_networkmanager_site_to_site_vpn_attachment,PASS,PASS,FAIL,Unsupported argument
+aws_networkmanager_transit_gateway_connect_peer_association,PASS,PASS,FAIL,Unsupported argument
+aws_networkmanager_transit_gateway_peering,PASS,PASS,FAIL,Unsupported argument
+aws_networkmanager_transit_gateway_registration,PASS,PASS,FAIL,Unsupported argument
+aws_networkmanager_transit_gateway_route_table_attachment,PASS,PASS,FAIL,Unsupported argument
+aws_networkmanager_vpc_attachment,PASS,PASS,FAIL,Unsupported argument
+aws_networkmonitor_monitor,PASS,PASS,FAIL,Unsupported argument
+aws_networkmonitor_probe,PASS,PASS,FAIL,Unsupported argument
+aws_notifications_channel_association,PASS,PASS,FAIL,Unsupported argument
+aws_notifications_event_rule,PASS,PASS,FAIL,Unsupported argument
+aws_notifications_notification_configuration,PASS,PASS,PASS,
+aws_notifications_notification_hub,PASS,PASS,FAIL,Unsupported argument
+aws_notificationscontacts_email_contact,PASS,PASS,FAIL,Invalid Attribute Value Match
+aws_oam_link,PASS,PASS,FAIL,Unsupported argument
+aws_oam_sink,PASS,PASS,PASS,
+aws_oam_sink_policy,PASS,PASS,FAIL,Unsupported argument
+aws_observabilityadmin_centralization_rule_for_organization,PASS,PASS,FAIL,Unsupported argument
+aws_odb_cloud_autonomous_vm_cluster,PASS,PASS,FAIL,Unsupported argument
+aws_odb_cloud_exadata_infrastructure,PASS,PASS,FAIL,Unsupported argument
+aws_odb_cloud_vm_cluster,PASS,PASS,FAIL,Unsupported argument
+aws_odb_network,PASS,PASS,FAIL,Unsupported argument
+aws_odb_network_peering_connection,PASS,PASS,FAIL,Unsupported argument
+aws_opensearch_authorize_vpc_endpoint_access,PASS,PASS,FAIL,Unsupported argument
+aws_opensearch_domain,PASS,PASS,FAIL,Unsupported argument
+aws_opensearch_domain_policy,PASS,PASS,FAIL,Unsupported argument
+aws_opensearch_domain_saml_options,PASS,PASS,FAIL,Unsupported argument
+aws_opensearch_inbound_connection_accepter,PASS,PASS,FAIL,Unsupported argument
+aws_opensearch_outbound_connection,PASS,PASS,FAIL,Unsupported argument
+aws_opensearch_package,PASS,PASS,FAIL,Unsupported argument
+aws_opensearch_package_association,PASS,PASS,FAIL,Unsupported argument
+aws_opensearch_vpc_endpoint,PASS,PASS,FAIL,Unsupported argument
+aws_opensearchserverless_access_policy,PASS,PASS,FAIL,Missing required provider
+aws_opensearchserverless_collection,PASS,PASS,FAIL,Invalid Attribute Value Match
+aws_opensearchserverless_lifecycle_policy,PASS,PASS,FAIL,Missing required provider
+aws_opensearchserverless_security_config,PASS,PASS,FAIL,Missing required provider
+aws_opensearchserverless_security_policy,PASS,PASS,FAIL,Missing required provider
+aws_opensearchserverless_vpc_endpoint,PASS,PASS,FAIL,Invalid Attribute Value
+aws_organizations_account,PASS,PASS,FAIL,invalid value for email (must be a valid email address)
+aws_organizations_delegated_administrator,PASS,PASS,FAIL,"""account_id"" doesn't look like AWS Account ID (exactly 12 digits): ""mock_value"""
+aws_organizations_organization,PASS,PASS,FAIL,Unsupported argument
+aws_organizations_organizational_unit,PASS,PASS,FAIL,invalid value for parent_id (see https://docs.aws.amazon.com/organizations/latest/APIReference/API_CreateOrganizationalUnit.html#organizations-CreateOrganizationalUnit-request-ParentId)
+aws_organizations_policy,PASS,PASS,FAIL,"""content"" contains an invalid JSON: invalid character 'm' looking for beginning of value"
+aws_organizations_policy_attachment,PASS,PASS,FAIL,Unsupported argument
+aws_organizations_resource_policy,PASS,PASS,FAIL,Unsupported argument
+aws_osis_pipeline,PASS,PASS,FAIL,Unsupported argument
+aws_paymentcryptography_key,PASS,PASS,FAIL,Unsupported argument
+aws_paymentcryptography_key_alias,PASS,PASS,FAIL,Unsupported argument
+aws_pinpoint_adm_channel,PASS,PASS,FAIL,Unsupported argument
+aws_pinpoint_apns_channel,PASS,PASS,FAIL,Unsupported argument
+aws_pinpoint_apns_sandbox_channel,PASS,PASS,FAIL,Unsupported argument
+aws_pinpoint_apns_voip_channel,PASS,PASS,FAIL,Unsupported argument
+aws_pinpoint_apns_voip_sandbox_channel,PASS,PASS,FAIL,Unsupported argument
+aws_pinpoint_app,PASS,PASS,PASS,
+aws_pinpoint_baidu_channel,PASS,PASS,FAIL,Unsupported argument
+aws_pinpoint_email_channel,PASS,PASS,FAIL,Unsupported argument
+aws_pinpoint_email_template,PASS,PASS,FAIL,Unsupported argument
+aws_pinpoint_event_stream,PASS,PASS,FAIL,Unsupported argument
+aws_pinpoint_gcm_channel,PASS,PASS,FAIL,Unsupported argument
+aws_pinpoint_sms_channel,PASS,PASS,FAIL,Unsupported argument
+aws_pinpointsmsvoicev2_configuration_set,PASS,PASS,PASS,
+aws_pinpointsmsvoicev2_opt_out_list,PASS,PASS,PASS,
+aws_pinpointsmsvoicev2_phone_number,PASS,PASS,FAIL,Unsupported argument
+aws_pipes_pipe,PASS,PASS,FAIL,"""role_arn"" (mock_value) is an invalid ARN: arn: invalid prefix"
+aws_placement_group,PASS,PASS,FAIL,"expected strategy to be one of [""cluster"" ""spread"" ""partition""], got mock_value"
+aws_prometheus_alert_manager_definition,PASS,PASS,FAIL,Unsupported argument
+aws_prometheus_query_logging_configuration,PASS,PASS,FAIL,Unsupported argument
+aws_prometheus_resource_policy,PASS,PASS,FAIL,Unsupported argument
+aws_prometheus_rule_group_namespace,PASS,PASS,PASS,
+aws_prometheus_scraper,PASS,PASS,FAIL,Unsupported argument
+aws_prometheus_workspace,PASS,PASS,FAIL,Unsupported argument
+aws_prometheus_workspace_configuration,PASS,PASS,FAIL,Unsupported argument
+aws_proxy_protocol_policy,PASS,PASS,FAIL,Unsupported argument
+aws_qbusiness_application,PASS,PASS,FAIL,Unsupported argument
+aws_qldb_ledger,PASS,PASS,FAIL,"expected permissions_mode to be one of [""ALLOW_ALL"" ""STANDARD""], got mock_value"
+aws_qldb_stream,PASS,PASS,FAIL,Unsupported argument
+aws_quicksight_account_settings,PASS,PASS,FAIL,Unsupported argument
+aws_quicksight_account_subscription,PASS,PASS,FAIL,Unsupported argument
+aws_quicksight_analysis,PASS,PASS,FAIL,Invalid combination of arguments
+aws_quicksight_custom_permissions,PASS,PASS,FAIL,Unsupported argument
+aws_quicksight_dashboard,PASS,PASS,FAIL,Invalid combination of arguments
+aws_quicksight_data_set,PASS,PASS,FAIL,"expected import_mode to be one of [""SPICE"" ""DIRECT_QUERY""], got mock_value"
+aws_quicksight_data_source,PASS,PASS,FAIL,Missing required provider
+aws_quicksight_folder,PASS,PASS,PASS,
+aws_quicksight_folder_membership,PASS,PASS,FAIL,Unsupported argument
+aws_quicksight_group,PASS,PASS,FAIL,Unsupported argument
+aws_quicksight_group_membership,PASS,PASS,FAIL,Unsupported argument
+aws_quicksight_iam_policy_assignment,PASS,PASS,FAIL,Unsupported argument
+aws_quicksight_ingestion,PASS,PASS,FAIL,Unsupported argument
+aws_quicksight_ip_restriction,PASS,PASS,FAIL,Unsupported argument
+aws_quicksight_key_registration,PASS,PASS,FAIL,Unsupported argument
+aws_quicksight_namespace,PASS,PASS,FAIL,Unsupported argument
+aws_quicksight_refresh_schedule,PASS,PASS,FAIL,Unsupported argument
+aws_quicksight_role_custom_permission,PASS,PASS,FAIL,Unsupported argument
+aws_quicksight_role_membership,PASS,PASS,FAIL,Unsupported argument
+aws_quicksight_template,PASS,PASS,FAIL,Invalid combination of arguments
+aws_quicksight_template_alias,PASS,PASS,FAIL,Unsupported argument
+aws_quicksight_theme,PASS,PASS,PASS,
+aws_quicksight_user,PASS,PASS,FAIL,Unsupported argument
+aws_quicksight_user_custom_permission,PASS,PASS,FAIL,Unsupported argument
+aws_quicksight_vpc_connection,PASS,PASS,FAIL,Invalid Attribute Value
+aws_ram_principal_association,PASS,PASS,FAIL,Unsupported argument
+aws_ram_resource_association,PASS,PASS,FAIL,Unsupported argument
+aws_ram_resource_share,PASS,PASS,PASS,
+aws_ram_resource_share_accepter,PASS,PASS,FAIL,Unsupported argument
+aws_ram_sharing_with_organization,PASS,PASS,FAIL,Unsupported argument
+aws_rbin_rule,PASS,PASS,FAIL,Unsupported argument
+aws_rds_certificate,PASS,PASS,FAIL,Unsupported argument
+aws_rds_cluster,PASS,PASS,FAIL,Unsupported argument
+aws_rds_cluster_activity_stream,PASS,PASS,FAIL,Unsupported argument
+aws_rds_cluster_endpoint,PASS,PASS,FAIL,Unsupported argument
+aws_rds_cluster_instance,PASS,PASS,FAIL,Unsupported argument
+aws_rds_cluster_parameter_group,PASS,PASS,PASS,
+aws_rds_cluster_role_association,PASS,PASS,FAIL,Unsupported argument
+aws_rds_cluster_snapshot_copy,PASS,PASS,FAIL,Unsupported argument
+aws_rds_custom_db_engine_version,PASS,PASS,FAIL,Unsupported argument
+aws_rds_export_task,PASS,PASS,FAIL,Unsupported argument
+aws_rds_global_cluster,PASS,PASS,FAIL,Unsupported argument
+aws_rds_instance_state,PASS,PASS,FAIL,Unsupported argument
+aws_rds_integration,PASS,PASS,FAIL,Unsupported argument
+aws_rds_reserved_instance,PASS,PASS,FAIL,Unsupported argument
+aws_rds_shard_group,PASS,PASS,FAIL,Unsupported argument
+aws_redshift_authentication_profile,PASS,PASS,FAIL,Unsupported argument
+aws_redshift_cluster,PASS,PASS,FAIL,Unsupported argument
+aws_redshift_cluster_iam_roles,PASS,PASS,FAIL,Unsupported argument
+aws_redshift_cluster_snapshot,PASS,PASS,FAIL,Unsupported argument
+aws_redshift_data_share_authorization,PASS,PASS,FAIL,Unsupported argument
+aws_redshift_data_share_consumer_association,PASS,PASS,FAIL,Unsupported argument
+aws_redshift_endpoint_access,PASS,PASS,FAIL,Unsupported argument
+aws_redshift_endpoint_authorization,PASS,PASS,FAIL,Unsupported argument
+aws_redshift_event_subscription,PASS,PASS,FAIL,"""sns_topic_arn"" (mock_value) is an invalid ARN: arn: invalid prefix"
+aws_redshift_hsm_client_certificate,PASS,PASS,FAIL,Unsupported argument
+aws_redshift_hsm_configuration,PASS,PASS,FAIL,Unsupported argument
+aws_redshift_integration,PASS,PASS,FAIL,Unsupported argument
+aws_redshift_logging,PASS,PASS,FAIL,Unsupported argument
+aws_redshift_parameter_group,PASS,PASS,FAIL,invalid value for name (must contain only lowercase alphanumeric characters and hyphens)
+aws_redshift_partner,PASS,PASS,FAIL,Unsupported argument
+aws_redshift_resource_policy,PASS,PASS,FAIL,Unsupported argument
+aws_redshift_scheduled_action,PASS,PASS,FAIL,Insufficient target_action blocks
+aws_redshift_snapshot_copy,PASS,PASS,FAIL,Unsupported argument
+aws_redshift_snapshot_copy_grant,PASS,PASS,FAIL,Unsupported argument
+aws_redshift_snapshot_schedule,PASS,PASS,FAIL,Unsupported argument
+aws_redshift_snapshot_schedule_association,PASS,PASS,FAIL,Unsupported argument
+aws_redshift_subnet_group,PASS,PASS,FAIL,invalid value for name (must contain only lowercase alphanumeric characters and hyphens)
+aws_redshift_usage_limit,PASS,PASS,FAIL,Unsupported argument
+aws_redshiftdata_statement,PASS,PASS,FAIL,Unsupported argument
+aws_redshiftserverless_custom_domain_association,PASS,PASS,FAIL,Unsupported argument
+aws_redshiftserverless_endpoint_access,PASS,PASS,FAIL,Unsupported argument
+aws_redshiftserverless_namespace,PASS,PASS,FAIL,Unsupported argument
+aws_redshiftserverless_resource_policy,PASS,PASS,FAIL,Unsupported argument
+aws_redshiftserverless_snapshot,PASS,PASS,FAIL,Unsupported argument
+aws_redshiftserverless_usage_limit,PASS,PASS,FAIL,Unsupported argument
+aws_redshiftserverless_workgroup,PASS,PASS,FAIL,Unsupported argument
+aws_rekognition_collection,PASS,PASS,FAIL,Unsupported argument
+aws_rekognition_project,PASS,PASS,PASS,
+aws_rekognition_stream_processor,PASS,PASS,FAIL,Invalid ARN Value
+aws_resiliencehub_resiliency_policy,PASS,PASS,FAIL,Invalid String Enum Value
+aws_resourceexplorer2_index,PASS,PASS,FAIL,Missing required provider
+aws_resourceexplorer2_view,PASS,PASS,FAIL,Invalid Attribute Value Match
+aws_resourcegroups_group,PASS,PASS,PASS,
+aws_resourcegroups_resource,PASS,PASS,FAIL,Unsupported argument
+aws_rolesanywhere_profile,PASS,PASS,PASS,
+aws_rolesanywhere_trust_anchor,PASS,PASS,FAIL,Insufficient source blocks
+aws_route,PASS,PASS,FAIL,Unsupported argument
+aws_route53_cidr_collection,PASS,PASS,PASS,
+aws_route53_cidr_location,PASS,PASS,PASS,
+aws_route53_delegation_set,PASS,PASS,FAIL,Unsupported argument
+aws_route53_health_check,PASS,PASS,FAIL,Missing required provider
+aws_route53_hosted_zone_dnssec,PASS,PASS,FAIL,Unsupported argument
+aws_route53_key_signing_key,PASS,PASS,FAIL,"""key_management_service_arn"" (mock_value) is an invalid ARN: arn: invalid prefix"
+aws_route53_query_log,PASS,PASS,FAIL,Unsupported argument
+aws_route53_record,PASS,PASS,FAIL,Missing required provider
+aws_route53_records_exclusive,PASS,PASS,FAIL,Unsupported argument
+aws_route53_resolver_config,PASS,PASS,FAIL,Unsupported argument
+aws_route53_resolver_dnssec_config,PASS,PASS,FAIL,Unsupported argument
+aws_route53_resolver_endpoint,PASS,PASS,FAIL,Insufficient ip_address blocks
+aws_route53_resolver_firewall_config,PASS,PASS,FAIL,Unsupported argument
+aws_route53_resolver_firewall_domain_list,PASS,PASS,PASS,
+aws_route53_resolver_firewall_rule,PASS,PASS,FAIL,"expected action to be one of [""ALLOW"" ""BLOCK"" ""ALERT""], got mock_value"
+aws_route53_resolver_firewall_rule_group,PASS,PASS,PASS,
+aws_route53_resolver_firewall_rule_group_association,PASS,PASS,PASS,
+aws_route53_resolver_query_log_config,PASS,PASS,FAIL,"""destination_arn"" (mock_value) is an invalid ARN: arn: invalid prefix"
+aws_route53_resolver_query_log_config_association,PASS,PASS,FAIL,Unsupported argument
+aws_route53_resolver_rule,PASS,PASS,FAIL,"expected rule_type to be one of [""FORWARD"" ""SYSTEM"" ""RECURSIVE"" ""DELEGATE""], got mock_value"
+aws_route53_resolver_rule_association,PASS,PASS,PASS,
+aws_route53_traffic_policy,PASS,PASS,PASS,
+aws_route53_traffic_policy_instance,PASS,PASS,PASS,
+aws_route53_vpc_association_authorization,PASS,PASS,FAIL,Unsupported argument
+aws_route53_zone,PASS,PASS,PASS,
+aws_route53_zone_association,PASS,PASS,FAIL,Unsupported argument
+aws_route53domains_delegation_signer_record,PASS,PASS,FAIL,Unsupported argument
+aws_route53domains_domain,PASS,PASS,FAIL,Unsupported argument
+aws_route53domains_registered_domain,PASS,PASS,FAIL,Unsupported argument
+aws_route53profiles_association,PASS,PASS,PASS,
+aws_route53profiles_profile,PASS,PASS,PASS,
+aws_route53profiles_resource_association,PASS,PASS,PASS,
+aws_route53recoverycontrolconfig_cluster,PASS,PASS,PASS,
+aws_route53recoverycontrolconfig_control_panel,PASS,PASS,PASS,
+aws_route53recoverycontrolconfig_routing_control,PASS,PASS,PASS,
+aws_route53recoverycontrolconfig_safety_rule,PASS,PASS,FAIL,Insufficient rule_config blocks
+aws_route53recoveryreadiness_cell,PASS,PASS,FAIL,Unsupported argument
+aws_route53recoveryreadiness_readiness_check,PASS,PASS,FAIL,Unsupported argument
+aws_route53recoveryreadiness_recovery_group,PASS,PASS,FAIL,Unsupported argument
+aws_route53recoveryreadiness_resource_set,PASS,PASS,FAIL,Unsupported argument
+aws_route_table,PASS,PASS,FAIL,Unsupported argument
+aws_route_table_association,PASS,PASS,FAIL,Unsupported argument
+aws_rum_app_monitor,PASS,PASS,FAIL,Invalid combination of arguments
+aws_rum_metrics_destination,PASS,PASS,FAIL,Unsupported argument
+aws_s3_access_point,PASS,PASS,PASS,
+aws_s3_account_public_access_block,PASS,PASS,FAIL,Unsupported argument
+aws_s3_bucket,PASS,PASS,FAIL,Unsupported argument
+aws_s3_bucket_abac,PASS,PASS,FAIL,Unsupported argument
+aws_s3_bucket_accelerate_configuration,PASS,PASS,FAIL,Unsupported argument
+aws_s3_bucket_acl,PASS,PASS,FAIL,Unsupported argument
+aws_s3_bucket_analytics_configuration,PASS,PASS,PASS,
+aws_s3_bucket_cors_configuration,PASS,PASS,FAIL,Unsupported argument
+aws_s3_bucket_intelligent_tiering_configuration,PASS,PASS,FAIL,Insufficient tiering blocks
+aws_s3_bucket_inventory,PASS,PASS,FAIL,Insufficient schedule blocks
+aws_s3_bucket_lifecycle_configuration,PASS,PASS,FAIL,Unsupported argument
+aws_s3_bucket_logging,PASS,PASS,FAIL,Unsupported argument
+aws_s3_bucket_metadata_configuration,PASS,PASS,FAIL,Unsupported argument
+aws_s3_bucket_metric,PASS,PASS,PASS,
+aws_s3_bucket_notification,PASS,PASS,FAIL,Unsupported argument
+aws_s3_bucket_object,PASS,PASS,FAIL,Unsupported argument
+aws_s3_bucket_object_lock_configuration,PASS,PASS,FAIL,Unsupported argument
+aws_s3_bucket_ownership_controls,PASS,PASS,FAIL,Unsupported argument
+aws_s3_bucket_policy,PASS,PASS,FAIL,Unsupported argument
+aws_s3_bucket_public_access_block,PASS,PASS,FAIL,Unsupported argument
+aws_s3_bucket_replication_configuration,PASS,PASS,FAIL,Unsupported argument
+aws_s3_bucket_request_payment_configuration,PASS,PASS,FAIL,Unsupported argument
+aws_s3_bucket_server_side_encryption_configuration,PASS,PASS,FAIL,Unsupported argument
+aws_s3_bucket_versioning,PASS,PASS,FAIL,Unsupported argument
+aws_s3_bucket_website_configuration,PASS,PASS,FAIL,Unsupported argument
+aws_s3_directory_bucket,PASS,PASS,FAIL,Unsupported argument
+aws_s3_object,PASS,PASS,FAIL,Unsupported argument
+aws_s3_object_copy,PASS,PASS,FAIL,Unsupported argument
+aws_s3control_access_grant,PASS,PASS,FAIL,Unsupported argument
+aws_s3control_access_grants_instance,PASS,PASS,FAIL,Unsupported argument
+aws_s3control_access_grants_instance_resource_policy,PASS,PASS,FAIL,Unsupported argument
+aws_s3control_access_grants_location,PASS,PASS,FAIL,Unsupported argument
+aws_s3control_access_point_policy,PASS,PASS,FAIL,Unsupported argument
+aws_s3control_bucket,PASS,PASS,FAIL,Unsupported argument
+aws_s3control_bucket_lifecycle_configuration,PASS,PASS,FAIL,Unsupported argument
+aws_s3control_bucket_policy,PASS,PASS,FAIL,Unsupported argument
+aws_s3control_directory_bucket_access_point_scope,PASS,PASS,FAIL,Invalid Attribute Value
+aws_s3control_multi_region_access_point,PASS,PASS,FAIL,Unsupported argument
+aws_s3control_multi_region_access_point_policy,PASS,PASS,FAIL,Unsupported argument
+aws_s3control_object_lambda_access_point,PASS,PASS,FAIL,Insufficient configuration blocks
+aws_s3control_object_lambda_access_point_policy,PASS,PASS,FAIL,"""policy"" contains an invalid JSON: invalid character 'm' looking for beginning of value"
+aws_s3control_storage_lens_configuration,PASS,PASS,FAIL,Unsupported argument
+aws_s3outposts_endpoint,PASS,PASS,FAIL,Unsupported argument
+aws_s3tables_namespace,PASS,PASS,FAIL,Unsupported argument
+aws_s3tables_table,PASS,PASS,FAIL,Invalid ARN Value
+aws_s3tables_table_bucket,PASS,PASS,FAIL,Invalid Attribute Value Match
+aws_s3tables_table_bucket_policy,PASS,PASS,FAIL,Unsupported argument
+aws_s3tables_table_bucket_replication,PASS,PASS,FAIL,Unsupported argument
+aws_s3tables_table_policy,PASS,PASS,FAIL,Invalid IAM Policy Value
+aws_s3tables_table_replication,PASS,PASS,FAIL,Unsupported argument
+aws_s3vectors_index,PASS,PASS,FAIL,Unsupported argument
+aws_s3vectors_vector_bucket,PASS,PASS,FAIL,Unsupported argument
+aws_s3vectors_vector_bucket_policy,PASS,PASS,FAIL,Unsupported argument
+aws_sagemaker_app,PASS,PASS,FAIL,Unsupported argument
+aws_sagemaker_app_image_config,PASS,PASS,FAIL,Unsupported argument
+aws_sagemaker_code_repository,PASS,PASS,FAIL,Unsupported argument
+aws_sagemaker_data_quality_job_definition,PASS,PASS,FAIL,Insufficient data_quality_app_specification blocks
+aws_sagemaker_device,PASS,PASS,FAIL,Unsupported argument
+aws_sagemaker_device_fleet,PASS,PASS,FAIL,Unsupported argument
+aws_sagemaker_domain,PASS,PASS,FAIL,Unsupported argument
+aws_sagemaker_endpoint,PASS,PASS,FAIL,"only alphanumeric characters and hyphens allowed in ""endpoint_config_name"": ""mock_value"""
+aws_sagemaker_endpoint_configuration,PASS,PASS,FAIL,Insufficient production_variants blocks
+aws_sagemaker_feature_group,PASS,PASS,FAIL,Unsupported argument
+aws_sagemaker_flow_definition,PASS,PASS,FAIL,Unsupported argument
+aws_sagemaker_hub,PASS,PASS,FAIL,Unsupported argument
+aws_sagemaker_human_task_ui,PASS,PASS,FAIL,Unsupported argument
+aws_sagemaker_image,PASS,PASS,FAIL,Unsupported argument
+aws_sagemaker_image_version,PASS,PASS,FAIL,Unsupported argument
+aws_sagemaker_mlflow_tracking_server,PASS,PASS,FAIL,Unsupported argument
+aws_sagemaker_model,PASS,PASS,FAIL,"""execution_role_arn"" (mock_value) is an invalid ARN: arn: invalid prefix"
+aws_sagemaker_model_package_group,PASS,PASS,FAIL,Unsupported argument
+aws_sagemaker_model_package_group_policy,PASS,PASS,FAIL,Unsupported argument
+aws_sagemaker_monitoring_schedule,PASS,PASS,FAIL,Insufficient monitoring_schedule_config blocks
+aws_sagemaker_notebook_instance,PASS,PASS,FAIL,"""role_arn"" (mock_value) is an invalid ARN: arn: invalid prefix"
+aws_sagemaker_notebook_instance_lifecycle_configuration,PASS,PASS,PASS,
+aws_sagemaker_pipeline,PASS,PASS,FAIL,Unsupported argument
+aws_sagemaker_project,PASS,PASS,FAIL,Unsupported argument
+aws_sagemaker_servicecatalog_portfolio_status,PASS,PASS,FAIL,Unsupported argument
+aws_sagemaker_space,PASS,PASS,FAIL,Unsupported argument
+aws_sagemaker_studio_lifecycle_config,PASS,PASS,FAIL,Unsupported argument
+aws_sagemaker_user_profile,PASS,PASS,FAIL,Unsupported argument
+aws_sagemaker_workforce,PASS,PASS,FAIL,Unsupported argument
+aws_sagemaker_workteam,PASS,PASS,FAIL,Unsupported argument
+aws_scheduler_schedule,PASS,PASS,FAIL,Insufficient flexible_time_window blocks
+aws_scheduler_schedule_group,PASS,PASS,PASS,
+aws_schemas_discoverer,PASS,PASS,FAIL,Unsupported argument
+aws_schemas_registry,PASS,PASS,PASS,
+aws_schemas_registry_policy,PASS,PASS,FAIL,Unsupported argument
+aws_schemas_schema,PASS,PASS,FAIL,Missing required provider
+aws_secretsmanager_secret,PASS,PASS,PASS,
+aws_secretsmanager_secret_policy,PASS,PASS,FAIL,Unsupported argument
+aws_secretsmanager_secret_rotation,PASS,PASS,FAIL,Unsupported argument
+aws_secretsmanager_secret_version,PASS,PASS,FAIL,Unsupported argument
+aws_security_group,PASS,PASS,PASS,
+aws_security_group_rule,PASS,PASS,FAIL,Missing required provider
+aws_securityhub_account,PASS,PASS,FAIL,Unsupported argument
+aws_securityhub_action_target,PASS,PASS,FAIL,invalid value for identifier (must contain only alphanumeric characters)
+aws_securityhub_automation_rule,PASS,PASS,FAIL,Unsupported argument
+aws_securityhub_configuration_policy,PASS,PASS,FAIL,Insufficient configuration_policy blocks
+aws_securityhub_configuration_policy_association,PASS,PASS,FAIL,Unsupported argument
+aws_securityhub_finding_aggregator,PASS,PASS,FAIL,Unsupported argument
+aws_securityhub_insight,PASS,PASS,FAIL,Insufficient filters blocks
+aws_securityhub_invite_accepter,PASS,PASS,FAIL,Unsupported argument
+aws_securityhub_member,PASS,PASS,FAIL,Unsupported argument
+aws_securityhub_organization_admin_account,PASS,PASS,FAIL,Unsupported argument
+aws_securityhub_organization_configuration,PASS,PASS,FAIL,Unsupported argument
+aws_securityhub_product_subscription,PASS,PASS,FAIL,Unsupported argument
+aws_securityhub_standards_control,PASS,PASS,FAIL,Unsupported argument
+aws_securityhub_standards_control_association,PASS,PASS,FAIL,Unsupported argument
+aws_securityhub_standards_subscription,PASS,PASS,FAIL,Unsupported argument
+aws_securitylake_aws_log_source,PASS,PASS,FAIL,Unsupported argument
+aws_securitylake_custom_log_source,PASS,PASS,FAIL,Unsupported argument
+aws_securitylake_data_lake,PASS,PASS,FAIL,Unsupported argument
+aws_securitylake_subscriber,PASS,PASS,FAIL,Unsupported argument
+aws_securitylake_subscriber_notification,PASS,PASS,FAIL,Unsupported argument
+aws_serverlessapplicationrepository_cloudformation_stack,PASS,PASS,FAIL,"""application_id"" (mock_value) is an invalid ARN: arn: invalid prefix"
+aws_service_discovery_http_namespace,PASS,PASS,PASS,
+aws_service_discovery_instance,PASS,PASS,FAIL,Unsupported argument
+aws_service_discovery_private_dns_namespace,PASS,PASS,PASS,
+aws_service_discovery_public_dns_namespace,PASS,PASS,PASS,
+aws_service_discovery_service,PASS,PASS,PASS,
+aws_servicecatalog_budget_resource_association,PASS,PASS,FAIL,Unsupported argument
+aws_servicecatalog_constraint,PASS,PASS,FAIL,Missing required provider
+aws_servicecatalog_organizations_access,PASS,PASS,FAIL,Unsupported argument
+aws_servicecatalog_portfolio,PASS,PASS,PASS,
+aws_servicecatalog_portfolio_share,PASS,PASS,FAIL,Missing required provider
+aws_servicecatalog_principal_portfolio_association,PASS,PASS,FAIL,Unsupported argument
+aws_servicecatalog_product,PASS,PASS,FAIL,Missing required provider
+aws_servicecatalog_product_portfolio_association,PASS,PASS,FAIL,Unsupported argument
+aws_servicecatalog_provisioned_product,PASS,PASS,FAIL,Invalid combination of arguments
+aws_servicecatalog_provisioning_artifact,PASS,PASS,FAIL,Invalid combination of arguments
+aws_servicecatalog_service_action,PASS,PASS,FAIL,Insufficient definition blocks
+aws_servicecatalog_tag_option,PASS,PASS,FAIL,Unsupported argument
+aws_servicecatalog_tag_option_resource_association,PASS,PASS,FAIL,Unsupported argument
+aws_servicecatalogappregistry_application,PASS,PASS,PASS,
+aws_servicecatalogappregistry_attribute_group,PASS,PASS,FAIL,Invalid JSON String Value
+aws_servicecatalogappregistry_attribute_group_association,PASS,PASS,FAIL,Unsupported argument
+aws_servicequotas_service_quota,PASS,PASS,FAIL,Unsupported argument
+aws_servicequotas_template,PASS,PASS,FAIL,Unsupported argument
+aws_servicequotas_template_association,PASS,PASS,FAIL,Unsupported argument
+aws_ses_active_receipt_rule_set,PASS,PASS,FAIL,Unsupported argument
+aws_ses_configuration_set,PASS,PASS,PASS,
+aws_ses_domain_dkim,PASS,PASS,FAIL,Unsupported argument
+aws_ses_domain_identity,PASS,PASS,FAIL,Unsupported argument
+aws_ses_domain_identity_verification,PASS,PASS,FAIL,Unsupported argument
+aws_ses_domain_mail_from,PASS,PASS,FAIL,Unsupported argument
+aws_ses_email_identity,PASS,PASS,FAIL,Unsupported argument
+aws_ses_event_destination,PASS,PASS,PASS,
+aws_ses_identity_notification_topic,PASS,PASS,FAIL,Unsupported argument
+aws_ses_identity_policy,PASS,PASS,FAIL,"""policy"" contains an invalid JSON: invalid character 'm' looking for beginning of value"
+aws_ses_receipt_filter,PASS,PASS,FAIL,"expected ""cidr"" to be a valid CIDR Value, got mock_value: invalid CIDR address: mock_value"
+aws_ses_receipt_rule,PASS,PASS,PASS,
+aws_ses_receipt_rule_set,PASS,PASS,FAIL,Unsupported argument
+aws_ses_template,PASS,PASS,PASS,
+aws_sesv2_account_suppression_attributes,PASS,PASS,FAIL,Unsupported argument
+aws_sesv2_account_vdm_attributes,PASS,PASS,FAIL,Unsupported argument
+aws_sesv2_configuration_set,PASS,PASS,FAIL,Unsupported argument
+aws_sesv2_configuration_set_event_destination,PASS,PASS,FAIL,Unsupported argument
+aws_sesv2_contact_list,PASS,PASS,FAIL,Unsupported argument
+aws_sesv2_dedicated_ip_assignment,PASS,PASS,FAIL,Unsupported argument
+aws_sesv2_dedicated_ip_pool,PASS,PASS,FAIL,Unsupported argument
+aws_sesv2_email_identity,PASS,PASS,FAIL,Unsupported argument
+aws_sesv2_email_identity_feedback_attributes,PASS,PASS,FAIL,Unsupported argument
+aws_sesv2_email_identity_mail_from_attributes,PASS,PASS,FAIL,Unsupported argument
+aws_sesv2_email_identity_policy,PASS,PASS,FAIL,Unsupported argument
+aws_sfn_activity,PASS,PASS,PASS,
+aws_sfn_alias,PASS,PASS,FAIL,Insufficient routing_configuration blocks
+aws_sfn_state_machine,PASS,PASS,FAIL,"""role_arn"" (mock_value) is an invalid ARN: arn: invalid prefix"
+aws_shield_application_layer_automatic_response,PASS,PASS,FAIL,Unsupported argument
+aws_shield_drt_access_log_bucket_association,PASS,PASS,FAIL,Unsupported argument
+aws_shield_drt_access_role_arn_association,PASS,PASS,FAIL,Unsupported argument
+aws_shield_proactive_engagement,PASS,PASS,FAIL,Unsupported argument
+aws_shield_protection,PASS,PASS,FAIL,"""resource_arn"" (mock_value) is an invalid ARN: arn: invalid prefix"
+aws_shield_protection_group,PASS,PASS,FAIL,Unsupported argument
+aws_shield_protection_health_check_association,PASS,PASS,FAIL,Unsupported argument
+aws_shield_subscription,PASS,PASS,FAIL,Unsupported argument
+aws_signer_signing_job,PASS,PASS,FAIL,Unsupported argument
+aws_signer_signing_profile,PASS,PASS,FAIL,"expected platform_id to be one of [""AWSLambda-SHA384-ECDSA"" ""Notation-OCI-SHA384-ECDSA"" ""AWSIoTDeviceManagement-SHA256-ECDSA"" ""AmazonFreeRTOS-TI-CC3220SF"" ""AmazonFreeRTOS-Default""], got mock_value"
+aws_signer_signing_profile_permission,PASS,PASS,FAIL,Unsupported argument
+aws_snapshot_create_volume_permission,PASS,PASS,FAIL,Unsupported argument
+aws_sns_platform_application,PASS,PASS,PASS,
+aws_sns_sms_preferences,PASS,PASS,FAIL,Unsupported argument
+aws_sns_topic,PASS,PASS,PASS,
+aws_sns_topic_data_protection_policy,PASS,PASS,FAIL,Unsupported argument
+aws_sns_topic_policy,PASS,PASS,FAIL,Unsupported argument
+aws_sns_topic_subscription,PASS,PASS,FAIL,Unsupported argument
+aws_spot_datafeed_subscription,PASS,PASS,FAIL,Unsupported argument
+aws_spot_fleet_request,PASS,PASS,FAIL,Unsupported argument
+aws_spot_instance_request,PASS,PASS,FAIL,Unsupported argument
+aws_sqs_queue,PASS,PASS,PASS,
+aws_sqs_queue_policy,PASS,PASS,FAIL,Unsupported argument
+aws_sqs_queue_redrive_allow_policy,PASS,PASS,FAIL,Unsupported argument
+aws_sqs_queue_redrive_policy,PASS,PASS,FAIL,Unsupported argument
+aws_ssm_activation,PASS,PASS,PASS,
+aws_ssm_association,PASS,PASS,PASS,
+aws_ssm_default_patch_baseline,PASS,PASS,FAIL,Unsupported argument
+aws_ssm_document,PASS,PASS,FAIL,"expected document_type to be one of [""Command"" ""Policy"" ""Automation"" ""Session"" ""Package"" ""ApplicationConfiguration"" ""ApplicationConfigurationSchema"" ""DeploymentStrategy"" ""ChangeCalendar"" ""Automation.ChangeTemplate"" ""ProblemAnalysis"" ""ProblemAnalysisTemplate"" ""CloudFormation"" ""ConformancePackTemplate"" ""QuickSetup"" ""ManualApprovalPolicy"" ""AutoApprovalPolicy""], got mock_value"
+aws_ssm_maintenance_window,PASS,PASS,PASS,
+aws_ssm_maintenance_window_target,PASS,PASS,FAIL,Insufficient targets blocks
+aws_ssm_maintenance_window_task,PASS,PASS,FAIL,"expected task_type to be one of [""RUN_COMMAND"" ""AUTOMATION"" ""STEP_FUNCTIONS"" ""LAMBDA""], got mock_value"
+aws_ssm_parameter,PASS,PASS,FAIL,Missing required provider
+aws_ssm_patch_baseline,PASS,PASS,PASS,
+aws_ssm_patch_group,PASS,PASS,FAIL,Unsupported argument
+aws_ssm_resource_data_sync,PASS,PASS,FAIL,Insufficient s3_destination blocks
+aws_ssm_service_setting,PASS,PASS,FAIL,Unsupported argument
+aws_ssmcontacts_contact,PASS,PASS,FAIL,Missing required provider
+aws_ssmcontacts_contact_channel,PASS,PASS,FAIL,Missing required provider
+aws_ssmcontacts_plan,PASS,PASS,FAIL,Unsupported argument
+aws_ssmcontacts_rotation,PASS,PASS,FAIL,Invalid Block
+aws_ssmincidents_replication_set,PASS,PASS,FAIL,Unsupported argument
+aws_ssmincidents_response_plan,PASS,PASS,FAIL,Insufficient incident_template blocks
+aws_ssmquicksetup_configuration_manager,PASS,PASS,FAIL,Invalid Block
+aws_ssoadmin_account_assignment,PASS,PASS,FAIL,Unsupported argument
+aws_ssoadmin_application,PASS,PASS,FAIL,Invalid ARN Value
+aws_ssoadmin_application_access_scope,PASS,PASS,FAIL,Unsupported argument
+aws_ssoadmin_application_assignment,PASS,PASS,FAIL,Unsupported argument
+aws_ssoadmin_application_assignment_configuration,PASS,PASS,FAIL,Unsupported argument
+aws_ssoadmin_customer_managed_policy_attachment,PASS,PASS,FAIL,Unsupported argument
+aws_ssoadmin_instance_access_control_attributes,PASS,PASS,FAIL,Unsupported argument
+aws_ssoadmin_managed_policy_attachment,PASS,PASS,FAIL,Unsupported argument
+aws_ssoadmin_permission_set,PASS,PASS,FAIL,"""instance_arn"" (mock_value) is an invalid ARN: arn: invalid prefix"
+aws_ssoadmin_permission_set_inline_policy,PASS,PASS,FAIL,Unsupported argument
+aws_ssoadmin_permissions_boundary_attachment,PASS,PASS,FAIL,Unsupported argument
+aws_ssoadmin_trusted_token_issuer,PASS,PASS,FAIL,Invalid String Enum Value
+aws_storagegateway_cache,PASS,PASS,FAIL,Unsupported argument
+aws_storagegateway_cached_iscsi_volume,PASS,PASS,FAIL,Unsupported argument
+aws_storagegateway_file_system_association,PASS,PASS,FAIL,Unsupported argument
+aws_storagegateway_gateway,PASS,PASS,FAIL,Unsupported argument
+aws_storagegateway_nfs_file_share,PASS,PASS,FAIL,Unsupported argument
+aws_storagegateway_smb_file_share,PASS,PASS,FAIL,Unsupported argument
+aws_storagegateway_stored_iscsi_volume,PASS,PASS,FAIL,Unsupported argument
+aws_storagegateway_tape_pool,PASS,PASS,FAIL,Unsupported argument
+aws_storagegateway_upload_buffer,PASS,PASS,FAIL,Unsupported argument
+aws_storagegateway_working_storage,PASS,PASS,FAIL,Unsupported argument
+aws_subnet,PASS,PASS,FAIL,Unsupported argument
+aws_swf_domain,PASS,PASS,FAIL,"""workflow_execution_retention_period_in_days"" must be between 0 and 90 days inclusive"
+aws_synthetics_canary,PASS,PASS,FAIL,Insufficient schedule blocks
+aws_synthetics_group,PASS,PASS,PASS,
+aws_synthetics_group_association,PASS,PASS,FAIL,Unsupported argument
+aws_timestreaminfluxdb_db_cluster,PASS,PASS,FAIL,Invalid String Enum Value
+aws_timestreaminfluxdb_db_instance,PASS,PASS,FAIL,Invalid Attribute Value
+aws_timestreamquery_scheduled_query,PASS,PASS,FAIL,Invalid Block
+aws_timestreamwrite_database,PASS,PASS,FAIL,Unsupported argument
+aws_timestreamwrite_table,PASS,PASS,FAIL,Unsupported argument
+aws_transcribe_language_model,PASS,PASS,FAIL,Unsupported argument
+aws_transcribe_medical_vocabulary,PASS,PASS,FAIL,Unsupported argument
+aws_transcribe_vocabulary,PASS,PASS,FAIL,Unsupported argument
+aws_transcribe_vocabulary_filter,PASS,PASS,FAIL,Unsupported argument
+aws_transfer_access,PASS,PASS,FAIL,Unsupported argument
+aws_transfer_agreement,PASS,PASS,FAIL,Unsupported argument
+aws_transfer_certificate,PASS,PASS,FAIL,Unsupported argument
+aws_transfer_connector,PASS,PASS,FAIL,Unsupported argument
+aws_transfer_host_key,PASS,PASS,FAIL,Unsupported argument
+aws_transfer_profile,PASS,PASS,FAIL,Unsupported argument
+aws_transfer_server,PASS,PASS,FAIL,Unsupported argument
+aws_transfer_ssh_key,PASS,PASS,FAIL,Unsupported argument
+aws_transfer_tag,PASS,PASS,FAIL,Unsupported argument
+aws_transfer_user,PASS,PASS,FAIL,Unsupported argument
+aws_transfer_web_app,PASS,PASS,FAIL,Unsupported argument
+aws_transfer_web_app_customization,PASS,PASS,FAIL,Unsupported argument
+aws_transfer_workflow,PASS,PASS,FAIL,Unsupported argument
+aws_verifiedaccess_endpoint,PASS,PASS,FAIL,Unsupported argument
+aws_verifiedaccess_group,PASS,PASS,FAIL,Unsupported argument
+aws_verifiedaccess_instance,PASS,PASS,FAIL,Unsupported argument
+aws_verifiedaccess_instance_logging_configuration,PASS,PASS,FAIL,Unsupported argument
+aws_verifiedaccess_instance_trust_provider_attachment,PASS,PASS,FAIL,Unsupported argument
+aws_verifiedaccess_trust_provider,PASS,PASS,FAIL,Unsupported argument
+aws_verifiedpermissions_identity_source,PASS,PASS,FAIL,Unsupported argument
+aws_verifiedpermissions_policy,PASS,PASS,FAIL,Unsupported argument
+aws_verifiedpermissions_policy_store,PASS,PASS,FAIL,Unsupported argument
+aws_verifiedpermissions_policy_template,PASS,PASS,FAIL,Unsupported argument
+aws_verifiedpermissions_schema,PASS,PASS,FAIL,Unsupported argument
+aws_volume_attachment,PASS,PASS,FAIL,Unsupported argument
+aws_vpc,PASS,PASS,FAIL,Unsupported argument
+aws_vpc_block_public_access_exclusion,PASS,PASS,FAIL,Unsupported argument
+aws_vpc_block_public_access_options,PASS,PASS,FAIL,Unsupported argument
+aws_vpc_dhcp_options,PASS,PASS,FAIL,Unsupported argument
+aws_vpc_dhcp_options_association,PASS,PASS,FAIL,Unsupported argument
+aws_vpc_encryption_control,PASS,PASS,FAIL,Unsupported argument
+aws_vpc_endpoint,PASS,PASS,FAIL,Unsupported argument
+aws_vpc_endpoint_connection_accepter,PASS,PASS,FAIL,Unsupported argument
+aws_vpc_endpoint_connection_notification,PASS,PASS,FAIL,Unsupported argument
+aws_vpc_endpoint_policy,PASS,PASS,FAIL,Unsupported argument
+aws_vpc_endpoint_private_dns,PASS,PASS,FAIL,Unsupported argument
+aws_vpc_endpoint_route_table_association,PASS,PASS,FAIL,Unsupported argument
+aws_vpc_endpoint_security_group_association,PASS,PASS,FAIL,Unsupported argument
+aws_vpc_endpoint_service,PASS,PASS,FAIL,Unsupported argument
+aws_vpc_endpoint_service_allowed_principal,PASS,PASS,FAIL,Unsupported argument
+aws_vpc_endpoint_service_private_dns_verification,PASS,PASS,FAIL,Unsupported argument
+aws_vpc_endpoint_subnet_association,PASS,PASS,FAIL,Unsupported argument
+aws_vpc_ipam,PASS,PASS,FAIL,Unsupported argument
+aws_vpc_ipam_organization_admin_account,PASS,PASS,FAIL,"""delegated_admin_account_id"" doesn't look like AWS Account ID (exactly 12 digits): ""mock_value"""
+aws_vpc_ipam_pool,PASS,PASS,FAIL,Unsupported argument
+aws_vpc_ipam_pool_cidr,PASS,PASS,FAIL,Unsupported argument
+aws_vpc_ipam_pool_cidr_allocation,PASS,PASS,FAIL,Unsupported argument
+aws_vpc_ipam_preview_next_cidr,PASS,PASS,FAIL,Unsupported argument
+aws_vpc_ipam_resource_discovery,PASS,PASS,FAIL,Unsupported argument
+aws_vpc_ipam_resource_discovery_association,PASS,PASS,FAIL,Unsupported argument
+aws_vpc_ipam_scope,PASS,PASS,FAIL,Unsupported argument
+aws_vpc_ipv4_cidr_block_association,PASS,PASS,FAIL,Unsupported argument
+aws_vpc_ipv6_cidr_block_association,PASS,PASS,FAIL,Unsupported argument
+aws_vpc_network_performance_metric_subscription,PASS,PASS,FAIL,Unsupported argument
+aws_vpc_peering_connection,PASS,PASS,FAIL,Unsupported argument
+aws_vpc_peering_connection_accepter,PASS,PASS,FAIL,Unsupported argument
+aws_vpc_peering_connection_options,PASS,PASS,FAIL,Unsupported argument
+aws_vpc_route_server,PASS,PASS,FAIL,Unsupported argument
+aws_vpc_route_server_endpoint,PASS,PASS,FAIL,Unsupported argument
+aws_vpc_route_server_peer,PASS,PASS,FAIL,Unsupported argument
+aws_vpc_route_server_propagation,PASS,PASS,FAIL,Unsupported argument
+aws_vpc_route_server_vpc_association,PASS,PASS,FAIL,Unsupported argument
+aws_vpc_security_group_egress_rule,PASS,PASS,FAIL,Unsupported argument
+aws_vpc_security_group_ingress_rule,PASS,PASS,FAIL,Unsupported argument
+aws_vpc_security_group_vpc_association,PASS,PASS,FAIL,Unsupported argument
+aws_vpclattice_access_log_subscription,PASS,PASS,FAIL,Unsupported argument
+aws_vpclattice_auth_policy,PASS,PASS,FAIL,Unsupported argument
+aws_vpclattice_domain_verification,PASS,PASS,FAIL,Unsupported argument
+aws_vpclattice_listener,PASS,PASS,FAIL,Insufficient default_action blocks
+aws_vpclattice_listener_rule,PASS,PASS,FAIL,Insufficient action blocks
+aws_vpclattice_resource_configuration,PASS,PASS,FAIL,Invalid Attribute Combination
+aws_vpclattice_resource_gateway,PASS,PASS,PASS,
+aws_vpclattice_resource_policy,PASS,PASS,FAIL,Unsupported argument
+aws_vpclattice_service,PASS,PASS,PASS,
+aws_vpclattice_service_network,PASS,PASS,PASS,
+aws_vpclattice_service_network_resource_association,PASS,PASS,FAIL,Unsupported argument
+aws_vpclattice_service_network_service_association,PASS,PASS,FAIL,Unsupported argument
+aws_vpclattice_service_network_vpc_association,PASS,PASS,FAIL,Unsupported argument
+aws_vpclattice_target_group,PASS,PASS,FAIL,Missing required provider
+aws_vpclattice_target_group_attachment,PASS,PASS,FAIL,Unsupported argument
+aws_vpn_concentrator,PASS,PASS,FAIL,Missing required provider
+aws_vpn_connection,PASS,PASS,FAIL,Missing required provider
+aws_vpn_connection_route,PASS,PASS,FAIL,Unsupported argument
+aws_vpn_gateway,PASS,PASS,FAIL,Unsupported argument
+aws_vpn_gateway_attachment,PASS,PASS,FAIL,Unsupported argument
+aws_vpn_gateway_route_propagation,PASS,PASS,FAIL,Unsupported argument
+aws_waf_byte_match_set,PASS,PASS,PASS,
+aws_waf_geo_match_set,PASS,PASS,PASS,
+aws_waf_ipset,PASS,PASS,PASS,
+aws_waf_rate_based_rule,PASS,PASS,FAIL,"expected rate_limit to be at least (100), got 1"
+aws_waf_regex_match_set,PASS,PASS,PASS,
+aws_waf_regex_pattern_set,PASS,PASS,PASS,
+aws_waf_rule,PASS,PASS,FAIL,invalid value for metric_name (must contain only alphanumeric characters)
+aws_waf_rule_group,PASS,PASS,FAIL,"Only alphanumeric characters allowed in ""metric_name"": ""mock_value"""
+aws_waf_size_constraint_set,PASS,PASS,PASS,
+aws_waf_sql_injection_match_set,PASS,PASS,PASS,
+aws_waf_web_acl,PASS,PASS,FAIL,Insufficient default_action blocks
+aws_waf_xss_match_set,PASS,PASS,PASS,
+aws_wafregional_byte_match_set,PASS,PASS,PASS,
+aws_wafregional_geo_match_set,PASS,PASS,PASS,
+aws_wafregional_ipset,PASS,PASS,PASS,
+aws_wafregional_rate_based_rule,PASS,PASS,FAIL,"Only alphanumeric characters allowed in ""metric_name"": ""mock_value"""
+aws_wafregional_regex_match_set,PASS,PASS,PASS,
+aws_wafregional_regex_pattern_set,PASS,PASS,PASS,
+aws_wafregional_rule,PASS,PASS,PASS,
+aws_wafregional_rule_group,PASS,PASS,FAIL,"Only alphanumeric characters allowed in ""metric_name"": ""mock_value"""
+aws_wafregional_size_constraint_set,PASS,PASS,PASS,
+aws_wafregional_sql_injection_match_set,PASS,PASS,PASS,
+aws_wafregional_web_acl,PASS,PASS,FAIL,Insufficient default_action blocks
+aws_wafregional_web_acl_association,PASS,PASS,FAIL,Unsupported argument
+aws_wafregional_xss_match_set,PASS,PASS,PASS,
+aws_wafv2_api_key,PASS,PASS,FAIL,Unsupported argument
+aws_wafv2_ip_set,PASS,PASS,FAIL,"expected scope to be one of [""CLOUDFRONT"" ""REGIONAL""], got mock_value"
+aws_wafv2_regex_pattern_set,PASS,PASS,FAIL,"expected scope to be one of [""CLOUDFRONT"" ""REGIONAL""], got mock_value"
+aws_wafv2_rule_group,PASS,PASS,FAIL,Insufficient visibility_config blocks
+aws_wafv2_web_acl,PASS,PASS,FAIL,Insufficient default_action blocks
+aws_wafv2_web_acl_association,PASS,PASS,FAIL,Unsupported argument
+aws_wafv2_web_acl_logging_configuration,PASS,PASS,FAIL,Unsupported argument
+aws_wafv2_web_acl_rule_group_association,PASS,PASS,FAIL,Unsupported argument
+aws_workspaces_connection_alias,PASS,PASS,FAIL,Unsupported argument
+aws_workspaces_directory,PASS,PASS,FAIL,Unsupported argument
+aws_workspaces_ip_group,PASS,PASS,PASS,
+aws_workspaces_workspace,PASS,PASS,FAIL,Unsupported argument
+aws_workspacesweb_browser_settings,PASS,PASS,FAIL,Unsupported argument
+aws_workspacesweb_browser_settings_association,PASS,PASS,FAIL,Unsupported argument
+aws_workspacesweb_data_protection_settings,PASS,PASS,FAIL,Unsupported argument
+aws_workspacesweb_data_protection_settings_association,PASS,PASS,FAIL,Unsupported argument
+aws_workspacesweb_identity_provider,PASS,PASS,FAIL,Unsupported argument
+aws_workspacesweb_ip_access_settings,PASS,PASS,FAIL,Unsupported argument
+aws_workspacesweb_ip_access_settings_association,PASS,PASS,FAIL,Unsupported argument
+aws_workspacesweb_network_settings,PASS,PASS,FAIL,Unsupported argument
+aws_workspacesweb_network_settings_association,PASS,PASS,FAIL,Unsupported argument
+aws_workspacesweb_portal,PASS,PASS,FAIL,Unsupported argument
+aws_workspacesweb_session_logger,PASS,PASS,FAIL,Unsupported argument
+aws_workspacesweb_session_logger_association,PASS,PASS,FAIL,Unsupported argument
+aws_workspacesweb_trust_store,PASS,PASS,FAIL,Unsupported argument
+aws_workspacesweb_trust_store_association,PASS,PASS,FAIL,Unsupported argument
+aws_workspacesweb_user_access_logging_settings,PASS,PASS,FAIL,Unsupported argument
+aws_workspacesweb_user_access_logging_settings_association,PASS,PASS,FAIL,Unsupported argument
+aws_workspacesweb_user_settings,PASS,PASS,FAIL,Unsupported argument
+aws_workspacesweb_user_settings_association,PASS,PASS,FAIL,Unsupported argument
+aws_xray_encryption_config,PASS,PASS,FAIL,Missing required provider
+aws_xray_group,PASS,PASS,FAIL,Unsupported argument
+aws_xray_resource_policy,PASS,PASS,FAIL,Unsupported argument
+aws_xray_sampling_rule,PASS,PASS,FAIL,Unsupported argument

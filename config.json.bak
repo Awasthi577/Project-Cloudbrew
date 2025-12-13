@@ -1,0 +1,10 @@
+{
+  "default_provider": "gcp",
+  "creds": {
+    "gcp": {
+      "service_account_path": "C:\\Users\\alakh\\Downloads\\exemplary-datum-465405-u3-1eb8ba67972c.json",
+      "project": "exemplary-datum-465405-u3",
+      "region": "us-central1"
+    }
+  }
+}

@@ -1,0 +1,78 @@
+# --------------------
+# Python
+# --------------------
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+*.egg
+*.manifest
+*.spec
+
+# Virtual env
+.venv/
+env/
+venv/
+
+# --------------------
+# IDE / Editor
+# --------------------
+.vscode/
+.idea/
+*.swp
+
+# --------------------
+# Build / Packaging
+# --------------------
+build/
+dist/
+.eggs/
+
+# --------------------
+# Test / Coverage
+# --------------------
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# --------------------
+# CloudBrew state
+# --------------------
+.cloudbrew_state.json
+cloudbrew-backup.bundle
+
+# --------------------
+# OpenTofu / Terraform (ALL levels)
+# --------------------
+.terraform/
+**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+
+# --------------------
+# CloudBrew runtime caches (CRITICAL)
+# --------------------
+.cloudbrew_cache/
+.cloudbrew_tofu/
+.cloudbrew/
+.cloudbrew_providers/
+
+# --------------------
+# Provider binaries (ABSOLUTE BLOCK)
+# --------------------
+**/terraform-provider-*
+**/*.exe
+
+# --------------------
+# OS
+# --------------------
+.DS_Store
+Thumbs.db
+
+# --------------------
+# Env files
+# --------------------
+.env

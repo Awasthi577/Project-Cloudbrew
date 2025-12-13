@@ -1,0 +1,80 @@
+  {
+    "vpc": {
+      "provider": "aws",
+      "type": "aws_vpc",
+      "required": ["cidr_block"],
+      "defaults": {
+        "cidr_block": "10.0.0.0/16",
+        "enable_dns_support": true,
+        "enable_dns_hostnames": true,
+        "tags": { "Name": "cloudbrew-vpc" }
+      }
+    },
+
+    "subnet": {
+      "provider": "aws",
+      "type": "aws_subnet",
+      "required": ["vpc_id", "cidr_block"],
+      "defaults": {
+        "map_public_ip_on_launch": true,
+        "cidr_block": "10.0.1.0/24",
+        "availability_zone": "us-east-1a"
+      }
+    },
+
+    "security_group": {
+      "provider": "aws",
+      "type": "aws_security_group",
+      "required": ["vpc_id"],
+      "defaults": {
+        "name": "allow_ssh_http",
+        "description": "Allow SSH and HTTP",
+        "ingress": [
+          {
+            "from_port": 22,
+            "to_port": 22,
+            "protocol": "tcp",
+            "cidr_blocks": ["0.0.0.0/0"]
+          },
+          {
+            "from_port": 80,
+            "to_port": 80,
+            "protocol": "tcp",
+            "cidr_blocks": ["0.0.0.0/0"]
+          }
+        ],
+        "egress": [
+          {
+            "from_port": 0,
+            "to_port": 0,
+            "protocol": "-1",
+            "cidr_blocks": ["0.0.0.0/0"]
+          }
+        ]
+      }
+    },
+
+    "vm": {
+      "provider": "aws",
+      "type": "aws_instance",
+      "required": ["ami", "instance_type"],
+      "defaults": {
+        "ami": "ami-0c7217cdde317cfec",
+        "instance_type": "t2.micro",
+        "associate_public_ip_address": true,
+        "tags": {
+          "ManagedBy": "CloudBrew",
+          "Environment": "Dev"
+        }
+      }
+    },
+
+    "bucket": {
+      "provider": "aws",
+      "type": "aws_s3_bucket",
+      "defaults": {
+        "force_destroy": true,
+        "tags": { "Purpose": "Testing" }
+      }
+    }
+  }

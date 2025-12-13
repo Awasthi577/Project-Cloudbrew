@@ -1,0 +1,100 @@
+{# ============================================================
+   SCHEMA-DRIVEN GENERIC RESOURCE RENDERER
+   Guarantees correctness for AWS/GCP/Azure/OpenTofu providers.
+   ============================================================ #}
+
+resource "{{ resource_type }}" "{{ name }}" {
+    {% for key, value in spec.items() if key not in ["type","provider"] %}
+        {{ self.render_field(key, value, schema.blocks, schema.attributes) }}
+    {% endfor %}
+}
+
+
+
+{# ============================================================
+   ENTRY DISPATCHER: field → block | attribute
+   ============================================================ #}
+{% macro render_field(key, value, blocks, attrs) %}
+
+    {% if key in blocks %}
+        {{ self.render_block(key, value, blocks[key]) }}
+
+    {% elif key in attrs %}
+        {{ self.render_attribute(key, value, attrs[key]) }}
+
+    {% else %}
+        # WARNING: Unknown field {{ key }} — falling back to JSON
+        {{ key }} = {{ value | tojson }}
+    {% endif %}
+
+{% endmacro %}
+
+
+
+{# ============================================================
+   BLOCK RENDERER — respects nesting_mode: list, set, single
+   ============================================================ #}
+{% macro render_block(key, value, block_info) %}
+    {% set mode = block_info.nesting_mode %}
+    {% set subschema = block_info.schema %}
+
+    {% if mode == "single" %}
+        {{ key }} {
+            {% for k, v in value.items() %}
+                {{ self.render_field(k, v, subschema.blocks, subschema.attributes) }}
+            {% endfor %}
+        }
+
+    {% elif mode in ["list","set"] %}
+        {% for item in value %}
+            {{ key }} {
+                {% for k, v in item.items() %}
+                    {{ self.render_field(k, v, subschema.blocks, subschema.attributes) }}
+                {% endfor %}
+            }
+        {% endfor %}
+    {% endif %}
+{% endmacro %}
+
+
+
+{# ============================================================
+   ATTRIBUTE RENDERER — uses type tree
+   ============================================================ #}
+{% macro render_attribute(key, value, typeinfo) %}
+
+    {# ---------------- SCALAR ---------------- #}
+    {% if typeinfo == "string" or typeinfo == "number" or typeinfo == "bool" %}
+        {{ key }} = {{ value | tojson }}
+
+    {# ---------------- MAP ------------------- #}
+    {% elif typeinfo.kind == "map" %}
+        {{ key }} = {
+            {% for k, v in value.items() %}
+                {{ k | tojson }} = {{ v | tojson }} 
+            {% endfor %}
+        }
+
+    {# ---------------- LIST / SET ----------- #}
+    {% elif typeinfo.kind in ["list","set"] %}
+        {# LIST OF OBJECTS → repeated blocks? No.
+           Attributes never render blocks — we JSON-encode objects. #}
+
+        {% if typeinfo.element.kind == "object" %}
+            {{ key }} = {{ value | tojson }}
+
+        {% else %}
+            {{ key }} = {{ value | tojson }}
+        {% endif %}
+
+    {# ---------------- OBJECT ---------------- #}
+    {% elif typeinfo.kind == "object" %}
+        {{ key }} = {{ value | tojson }}
+
+    {% else %}
+        {# Fallback #}
+        {{ key }} = {{ value | tojson }}
+
+    {% endif %}
+
+{% endmacro %}

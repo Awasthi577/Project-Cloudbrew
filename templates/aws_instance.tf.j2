@@ -1,0 +1,54 @@
+{# ------------------------------------------------------------------
+   Safety Check: Fail immediately if image is missing.
+------------------------------------------------------------------ #}
+{% if not spec.image and not spec.ami %}
+  {% set _ = 1 / 0 %}  {# Guaranteed crash: clean, predictable #}
+{% endif %}
+
+resource "aws_instance" "{{ name }}" {
+  # ------------------------------------------------------------------
+  # Mandatory fields
+  # ------------------------------------------------------------------
+  ami           = "{{ spec.image | default(spec.ami) }}"
+  instance_type = "{{ spec.size | default(spec.instance_type) }}"
+
+  # ------------------------------------------------------------------
+  # Optional fields
+  # ------------------------------------------------------------------
+  {% if spec.key_name %}
+  key_name = "{{ spec.key_name }}"
+  {% endif %}
+
+  {% if spec.subnet_id %}
+  subnet_id = "{{ spec.subnet_id }}"
+  {% endif %}
+
+  # ------------------------------------------------------------------
+  # Security Groups
+  # ------------------------------------------------------------------
+  {% if spec.security_groups %}
+  vpc_security_group_ids = {{ spec.security_groups | tojson }}
+  {% endif %}
+
+  # ------------------------------------------------------------------
+  # Tags
+  # ------------------------------------------------------------------
+  tags = {{ spec.tags | default({}) | tojson }}
+
+  # ------------------------------------------------------------------
+  # Root Block Device
+  # ------------------------------------------------------------------
+  {% if spec.root_block_device %}
+  root_block_device {
+    volume_size           = {{ spec.root_block_device.volume_size | default(10) }}
+    volume_type           = "{{ spec.root_block_device.volume_type | default('gp3') }}"
+    
+    # FIX: Added | tojson so 'True' becomes 'true'
+    delete_on_termination = {{ spec.root_block_device.delete_on_termination | default(true) | tojson }}
+  }
+  {% endif %}
+  
+  lifecycle {
+    create_before_destroy = true
+  }
+}

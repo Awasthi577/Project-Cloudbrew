@@ -1,0 +1,91 @@
+{# ==================================================================
+   CLOUDBREW "MAGIC" AZURE TEMPLATE
+   Automatically creates RG, VNet, Subnet, NIC, and IP for a simple VM.
+   ================================================================== #}
+
+{# 1. AUTO-CREATE RESOURCE GROUP (If user didn't provide one) #}
+{% set rg_name = spec.resource_group_name | default(name ~ "-rg") %}
+
+resource "azurerm_resource_group" "{{ name }}_rg" {
+  name     = "{{ rg_name }}"
+  location = "{{ spec.location }}"
+  tags     = {{ spec.tags | default({}) | tojson }}
+}
+
+{# 2. AUTO-CREATE VIRTUAL NETWORK #}
+resource "azurerm_virtual_network" "{{ name }}_vnet" {
+  name                = "{{ name }}-vnet"
+  address_space       = ["10.0.0.0/16"]
+  location            = azurerm_resource_group.{{ name }}_rg.location
+  resource_group_name = azurerm_resource_group.{{ name }}_rg.name
+}
+
+{# 3. AUTO-CREATE SUBNET #}
+resource "azurerm_subnet" "{{ name }}_subnet" {
+  name                 = "internal"
+  resource_group_name  = azurerm_resource_group.{{ name }}_rg.name
+  virtual_network_name = azurerm_virtual_network.{{ name }}_vnet.name
+  address_prefixes     = ["10.0.2.0/24"]
+}
+
+{# 4. AUTO-CREATE PUBLIC IP #}
+resource "azurerm_public_ip" "{{ name }}_pip" {
+  name                = "{{ name }}-pip"
+  resource_group_name = azurerm_resource_group.{{ name }}_rg.name
+  location            = azurerm_resource_group.{{ name }}_rg.location
+  allocation_method   = "Dynamic"
+}
+
+{# 5. AUTO-CREATE NETWORK INTERFACE (Linking Subnet + Public IP) #}
+resource "azurerm_network_interface" "{{ name }}_nic" {
+  name                = "{{ name }}-nic"
+  location            = azurerm_resource_group.{{ name }}_rg.location
+  resource_group_name = azurerm_resource_group.{{ name }}_rg.name
+
+  ip_configuration {
+    name                          = "internal"
+    subnet_id                     = azurerm_subnet.{{ name }}_subnet.id
+    private_ip_address_allocation = "Dynamic"
+    public_ip_address_id          = azurerm_public_ip.{{ name }}_pip.id
+  }
+}
+
+{# 6. THE VIRTUAL MACHINE (Finally!) #}
+resource "azurerm_linux_virtual_machine" "{{ name }}" {
+  name                = "{{ name }}"
+  resource_group_name = azurerm_resource_group.{{ name }}_rg.name
+  location            = azurerm_resource_group.{{ name }}_rg.location
+  size                = "{{ spec.size | default('Standard_B1s') }}"
+  admin_username      = "{{ spec.admin_username | default('adminuser') }}"
+
+  # Link to the NIC created above
+  network_interface_ids = [
+    azurerm_network_interface.{{ name }}_nic.id,
+  ]
+
+  admin_ssh_key {
+    username   = "{{ spec.admin_username | default('adminuser') }}"
+    public_key = "{{ spec.ssh_public_key }}"
+  }
+
+  os_disk {
+    caching              = "ReadWrite"
+    storage_account_type = "Standard_LRS"
+  }
+
+  source_image_reference {
+    {% if spec.source_image_reference %}
+    publisher = "{{ spec.source_image_reference.publisher }}"
+    offer     = "{{ spec.source_image_reference.offer }}"
+    sku       = "{{ spec.source_image_reference.sku }}"
+    version   = "{{ spec.source_image_reference.version }}"
+    {% else %}
+    publisher = "Canonical"
+    offer     = "0001-com-ubuntu-server-jammy"
+    sku       = "22_04-lts"
+    version   = "latest"
+    {% endif %}
+  }
+
+  tags = {{ spec.tags | default({}) | tojson }}
+}
