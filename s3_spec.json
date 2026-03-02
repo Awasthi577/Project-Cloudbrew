@@ -1,5 +1,0 @@
-{
-  "bucket": "my-bucket-name",
-  "region": "us-west-2",
-  "acl": "private"
-}

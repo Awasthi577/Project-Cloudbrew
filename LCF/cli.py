@@ -1492,6 +1492,7 @@ def cli_tofu_apply(
     else:
         typer.secho(" Failed:", fg=typer.colors.RED)
         typer.echo(json.dumps(res, indent=2))
+        raise typer.Exit(code=1)
 
 
 @app.command("tofu-destroy")

@@ -26,7 +26,11 @@ class OpenTofuAdapter:
     def __init__(self, db_path: Optional[str] = None):
         self.store = store.SQLiteStore(db_path)
         self.tofu_path = self._find_binary()
-        self.schema_mgr = SchemaManager(work_dir=TOFU_ROOT)
+        try:
+            self.schema_mgr = SchemaManager(work_dir=TOFU_ROOT, tofu_bin=self.tofu_path)
+        except Exception as e:
+            logger.warning("Schema manager init failed; continuing without schema cache: %s", e)
+            self.schema_mgr = type("FallbackSchemaMgr", (), {"get": lambda self, *_args, **_kwargs: {}})()
 
         # Run a quick GC at init to avoid accumulation of very old workdirs
         try:
