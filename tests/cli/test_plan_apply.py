@@ -75,3 +75,19 @@ def test_apply_plan_async_enqueues(monkeypatch, tmp_path):
     assert captured["adapter"] == "opentofu"
     assert captured["task_type"] == "apply_plan"
     assert captured["payload"]["plan_id"] == fake_plan
+def test_tofu_apply_returns_nonzero_on_failure(monkeypatch, tmp_path):
+    class FakeTofuAdapter:
+        def __init__(self, db_path=None):
+            pass
+        def create_instance(self, logical_id, spec, plan_only=False):
+            return {"success": False, "error": "boom"}
+
+    monkeypatch.setattr("LCF.cli.OpenTofuAdapter", FakeTofuAdapter)
+
+    spec_file = tmp_path / "spec.json"
+    spec_file.write_text(json.dumps({"name": "demo", "provider": "aws"}), encoding="utf-8")
+
+    result = runner.invoke(app, ["tofu-apply", "--spec", str(spec_file), "--yes"])
+
+    assert result.exit_code == 1
+    assert '"success": false' in result.output.lower()
