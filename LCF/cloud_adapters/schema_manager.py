@@ -1,14 +1,17 @@
 import json
 import os
+import shutil
 import subprocess
 from typing import Dict, Any
 
 CACHE_FILE = "schema_cache.json"
 
 class SchemaManager:
-    def __init__(self, work_dir="."):
+    def __init__(self, work_dir=".", tofu_bin: str | None = None):
         self.work_dir = work_dir
+        self.tofu_bin = tofu_bin or os.environ.get("CLOUDBREW_OPENTOFU_BIN") or shutil.which("tofu") or shutil.which("opentofu")
         self.cache_path = os.path.join(work_dir, CACHE_FILE)
+        os.makedirs(self.work_dir, exist_ok=True)
         self.schema_cache = self._load_or_build_schema()
 
     # ------------------------------
@@ -36,14 +39,18 @@ class SchemaManager:
     def _fetch_and_parse_schema(self):
         print("[INFO] Fetching OpenTofu schema (Deep Parse)...")
 
+        if not self.tofu_bin:
+            print("[WARN] OpenTofu binary not found; schema introspection skipped.")
+            return {}
+
         # Ensure providers are downloaded
         if not os.path.exists(os.path.join(self.work_dir, ".terraform")):
-            subprocess.run(["tofu", "init"], cwd=self.work_dir, check=True, capture_output=True)
+            subprocess.run([self.tofu_bin, "init"], cwd=self.work_dir, check=True, capture_output=True)
 
         # Fetch the schema
         try:
             result = subprocess.run(
-                ["tofu", "providers", "schema", "-json"],
+                [self.tofu_bin, "providers", "schema", "-json"],
                 cwd=self.work_dir,
                 capture_output=True,
                 check=True,
