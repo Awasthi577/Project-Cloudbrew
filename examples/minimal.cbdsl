@@ -1,4 +1,0 @@
-resource create stub {
-type = "bucket"
-name = "test-bucket"
-}
