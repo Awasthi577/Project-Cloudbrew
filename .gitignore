@@ -55,10 +55,15 @@ cloudbrew-backup.bundle
 # --------------------
 # CloudBrew runtime caches (CRITICAL)
 # --------------------
-.cloudbrew_cache/
+\.cloudbrew_cache/
 .cloudbrew_tofu/
 .cloudbrew/
 .cloudbrew_providers/
+.cloudbrew_keys/
+.cloudbrew_tf/
+.cloudbrew_tofu_env/
+.verification_workspace/
+.verification_workspace_fast/
 
 # --------------------
 # Provider binaries (ABSOLUTE BLOCK)

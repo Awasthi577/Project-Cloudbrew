@@ -1,6 +1,0 @@
-resources:
-  - type: vm
-    name: demo-vm
-    image: ubuntu
-    size: micro
-    region: us-east-1
