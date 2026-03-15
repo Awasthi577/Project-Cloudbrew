@@ -171,6 +171,13 @@ class OpenTofuAdapter:
             # AWS S3 bucket versioning should be rendered as a block, not an attribute
             return self._render_block_body("versioning", value, depth)
 
+        # Special handling for GCP nested blocks when schema is unavailable
+        if key in ("boot_disk", "network_interface"):
+            if isinstance(value, list):
+                return "\n".join([self._render_block_body(key, item, depth) for item in value])
+            if isinstance(value, dict):
+                return self._render_block_body(key, value, depth)
+
         if key in blocks:
             # nested block type
             if isinstance(value, list):
@@ -215,6 +222,8 @@ class OpenTofuAdapter:
         s = dict(spec)  # shallow copy
         # Remove meta fields that shouldn't appear in HCL
         for forbidden in ("name", "_resolver_meta", "_provider_hint"):
+            if forbidden == "name" and resource_type == "google_compute_instance":
+                continue
             s.pop(forbidden, None)
 
         p = (provider or "").lower()
@@ -406,6 +415,8 @@ class OpenTofuAdapter:
         for k in sorted(spec_local.keys()):
             if k in schema_attrs or k in block_types:
                 continue
+            if k == "provider":
+                continue
             if k.startswith("_"):
                 continue
             try:
@@ -497,6 +508,14 @@ provider "google" {{
                 clean_spec["billing_mode"] = "PAY_PER_REQUEST"
             if "hash_key" in clean_spec and "attribute" not in clean_spec:
                 clean_spec["attribute"] = [{"name": clean_spec["hash_key"], "type": "S"}]
+
+        if resource_type == "google_compute_instance":
+            if "name" not in clean_spec:
+                clean_spec["name"] = logical_id
+            if "boot_disk" not in clean_spec:
+                clean_spec["boot_disk"] = {"initialize_params": {"image": "debian-cloud/debian-11"}}
+            if "network_interface" not in clean_spec:
+                clean_spec["network_interface"] = {"network": "default"}
 
         # If template exists for this resource type, use it (templates live in templates/ directory)
         template_file = self._find_template_file(resource_type)
