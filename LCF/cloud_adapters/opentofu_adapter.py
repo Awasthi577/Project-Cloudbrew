@@ -631,15 +631,6 @@ provider "google" {{
                     if os.environ.get("CLOUDBREW_KEEP_WORKDIR"):
                         logger.info("Keeping workspace for debugging (CLOUDBREW_KEEP_WORKDIR set): %s", wd)
 
-                    adapter_id = f"opentofu-{logical_id}"
-                    self.store.upsert_instance({
-                        "logical_id": logical_id,
-                        "adapter": "opentofu",
-                        "adapter_id": adapter_id,
-                        "spec": spec,
-                        "state": "running",
-                    })
-
                     return {
                         "success": True,
                         "adapter_id": adapter_id,
@@ -678,8 +669,7 @@ provider "google" {{
             logger.error("OpenTofu binary not found. Cannot destroy.")
             return False
 
-        logical_id = adapter_id.replace("opentofu-", "", 1)
-        wd = self._workdir_for(logical_id)
+        wd = self._workdir_for(adapter_id)
 
         # Check if a state file exists before trying to destroy
         if not os.path.exists(os.path.join(wd, "terraform.tfstate")):
