@@ -281,6 +281,38 @@ cloudbrew create aws_instance complex-vm --spec complex_instance.json --apply --
 pip install cloudbrew
 ```
 
+### Local Development Setup (from source)
+
+If you cloned the repository and want to run CloudBrew locally:
+
+```bash
+python -m venv .venv
+```
+
+Activate the virtual environment based on your shell:
+
+**PowerShell (Windows):**
+```powershell
+.\.venv\Scripts\Activate.ps1
+```
+
+**Command Prompt (Windows):**
+```cmd
+.venv\Scripts\activate.bat
+```
+
+**Git Bash / WSL / macOS / Linux (bash/zsh):**
+```bash
+source .venv/bin/activate
+```
+
+Then install dependencies:
+
+```bash
+pip install -r requirements.txt
+pip install -e .
+```
+
 ### Initialize
 ```bash
 cloudbrew init
