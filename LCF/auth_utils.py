@@ -37,6 +37,21 @@ def is_authenticated_for_provider(provider: str) -> bool:
     Returns:
         True if authenticated, False otherwise
     """
+    if provider == "opentofu":
+        config = _load_config()
+        if config:
+            default_provider = config.get("default_provider")
+            if default_provider in ("aws", "gcp", "azure"):
+                provider = default_provider
+            else:
+                creds = config.get("creds", {})
+                if creds.get("aws"):
+                    provider = "aws"
+                elif creds.get("gcp"):
+                    provider = "gcp"
+                elif creds.get("azure"):
+                    provider = "azure"
+
     config = _load_config()
     if not config:
         return False
