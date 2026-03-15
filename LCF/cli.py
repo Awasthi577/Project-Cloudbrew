@@ -1340,7 +1340,23 @@ def destroy_vm(
             typer.echo(line)
     else:
         ta = OpenTofuAdapter(db_path)
-        ok = ta.destroy_instance(f"opentofu-{name}")
+        st = store.SQLiteStore(db_path)
+        inst = st.get_instance(name)
+        target_adapter_id = None
+
+        if inst:
+            target_adapter_id = inst.get("adapter_id") or f"opentofu-{inst.get('logical_id', name)}"
+        else:
+            for row in st.list_instances(adapter="opentofu"):
+                spec = row.get("spec", {}) or {}
+                if spec.get("bucket") == name or spec.get("name") == name:
+                    target_adapter_id = row.get("adapter_id") or f"opentofu-{row.get('logical_id', name)}"
+                    break
+
+        if not target_adapter_id:
+            target_adapter_id = f"opentofu-{name}"
+
+        ok = ta.destroy_instance(target_adapter_id)
         typer.echo(json.dumps({"destroyed": ok, "name": name}))
 
 

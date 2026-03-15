@@ -633,6 +633,7 @@ provider "google" {{
 
                     return {
                         "success": True,
+                        "adapter_id": adapter_id,
                         "output": proc.stdout,
                         "path": wd,
                     }
@@ -687,6 +688,7 @@ provider "google" {{
 
             if proc.returncode == 0:
                 logger.info(f"Destroy successful for {adapter_id}")
+                self.store.delete_instance_by_adapter_id(adapter_id)
                 shutil.rmtree(wd, ignore_errors=True)
                 return True
             else:
