@@ -199,6 +199,12 @@ class OpenTofuAdapter:
         if isinstance(value, dict):
             for k, v in value.items():
                 if isinstance(v, dict):
+                    if key == "boot_disk" and k == "initialize_params":
+                        lines.append(f'{indent}  {k} {{')
+                        for sk, sv in v.items():
+                            lines.append(f'{indent}    {sk} = {json.dumps(sv)}')
+                        lines.append(f'{indent}  }}')
+                        continue
                     lines.append(f'{indent}  {k} = {{')
                     for sk, sv in v.items():
                         lines.append(f'{indent}    "{sk}" = {json.dumps(sv)}')
