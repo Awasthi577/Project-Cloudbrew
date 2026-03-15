@@ -585,15 +585,6 @@ provider "google" {{
             # 1. Generate HCL & Prepare Workspace
             wd = self._workdir_for(logical_id)
             
-            # Clean up any existing workspace to avoid stale HCL files
-            if os.path.exists(wd):
-                try:
-                    shutil.rmtree(wd)
-                    logger.info(f"Cleaned up existing workspace: {wd}")
-                except Exception as e:
-                    logger.warning(f"Failed to clean workspace {wd}: {e}")
-                    # Continue anyway - we'll overwrite the files
-            
             # Generate fresh HCL
             hcl = self._generate_hcl(logical_id, spec)
             
@@ -637,17 +628,21 @@ provider "google" {{
                 logger.info(f"OpenTofu return code: {proc.returncode}")
 
                 if proc.returncode == 0:
-                    # Optionally cleanup workspace after successful apply to avoid disk litter:
-                    try:
-                        if not os.environ.get("CLOUDBREW_KEEP_WORKDIR"):
-                            shutil.rmtree(wd, ignore_errors=True)
-                        else:
-                            logger.info("Keeping workspace for debugging (CLOUDBREW_KEEP_WORKDIR set): %s", wd)
-                    except Exception:
-                        logger.exception("Failed to remove workspace %s", wd)
+                    if os.environ.get("CLOUDBREW_KEEP_WORKDIR"):
+                        logger.info("Keeping workspace for debugging (CLOUDBREW_KEEP_WORKDIR set): %s", wd)
+
+                    adapter_id = f"opentofu-{logical_id}"
+                    self.store.upsert_instance({
+                        "logical_id": logical_id,
+                        "adapter": "opentofu",
+                        "adapter_id": adapter_id,
+                        "spec": spec,
+                        "state": "running",
+                    })
 
                     return {
                         "success": True,
+                        "adapter_id": adapter_id,
                         "output": proc.stdout,
                         "path": wd,
                     }
@@ -683,17 +678,13 @@ provider "google" {{
             logger.error("OpenTofu binary not found. Cannot destroy.")
             return False
 
-        logical_id = adapter_id.split("-", 1)[-1]
+        logical_id = adapter_id.replace("opentofu-", "", 1)
         wd = self._workdir_for(logical_id)
 
         # Check if a state file exists before trying to destroy
         if not os.path.exists(os.path.join(wd, "terraform.tfstate")):
-            logger.warning(f"No state file found for {adapter_id} at {wd}. Assuming success for cleanup.")
-            try:
-                shutil.rmtree(wd, ignore_errors=True)
-            except Exception:
-                pass
-            return True
+            logger.error(f"No state file found for {adapter_id} at {wd}. Resource may still exist in cloud; refusing to report success.")
+            return False
 
         # Check for lock before destroy
         if os.path.exists(os.path.join(wd, ".terraform.tfstate.lock.info")):
@@ -707,6 +698,7 @@ provider "google" {{
 
             if proc.returncode == 0:
                 logger.info(f"Destroy successful for {adapter_id}")
+                self.store.delete_instance_by_adapter_id(adapter_id)
                 shutil.rmtree(wd, ignore_errors=True)
                 return True
             else:
