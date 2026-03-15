@@ -668,9 +668,7 @@ provider "google" {{
             logger.error("OpenTofu binary not found. Cannot destroy.")
             return False
 
-        logical_id = adapter_id.split("-", 1)[-1]
-        safe_name = re.sub(r"[^a-zA-Z0-9_-]", "-", logical_id)
-        wd = os.path.join(TOFU_ROOT, safe_name)
+        wd = self._workdir_for(adapter_id)
 
         # Check if a state file exists before trying to destroy
         if not os.path.exists(os.path.join(wd, "terraform.tfstate")):
