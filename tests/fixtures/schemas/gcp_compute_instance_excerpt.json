@@ -1,0 +1,45 @@
+{
+  "block": {
+    "attributes": {
+      "name": {"type": "string", "required": true},
+      "machine_type": {"type": "string", "required": true}
+    },
+    "block_types": {
+      "boot_disk": {
+        "nesting_mode": "single",
+        "block": {
+          "block_types": {
+            "initialize_params": {
+              "nesting_mode": "single",
+              "block": {
+                "attributes": {
+                  "image": {"type": "string", "required": true},
+                  "size": {"type": "number", "optional": true}
+                }
+              }
+            }
+          }
+        }
+      },
+      "network_interface": {
+        "nesting_mode": "list",
+        "min_items": 1,
+        "block": {
+          "attributes": {
+            "subnetwork": {"type": "string", "required": true}
+          },
+          "block_types": {
+            "access_config": {
+              "nesting_mode": "list",
+              "block": {
+                "attributes": {
+                  "nat_ip": {"type": "string", "optional": true}
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

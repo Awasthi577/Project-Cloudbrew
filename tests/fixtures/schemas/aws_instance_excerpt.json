@@ -1,0 +1,9 @@
+{
+  "block": {
+    "attributes": {
+      "ami": {"type": "string", "required": true},
+      "instance_type": {"type": "string", "required": true},
+      "tags": {"type": ["map", "string"], "optional": true}
+    }
+  }
+}
