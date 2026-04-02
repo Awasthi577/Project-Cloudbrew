@@ -1,8 +1,13 @@
-# LCF/cloud_adapters/dynamic_resource_creator.py
+"""Schema-driven dynamic resource creation with interactive gap filling."""
+
+import logging
+import tempfile
 from pathlib import Path
-import inspect
 from LCF.cloud_adapters.opentofu_adapter import OpenTofuAdapter
 from LCF.provisioning.validator import ProvisioningValidator
+
+logger = logging.getLogger("cloudbrew.dynamic_resource_creator")
+
 
 def _call_flexibly(fn, *args, **kwargs):
     try:
@@ -63,21 +68,19 @@ def create_resource_with_validation(provider, resource, schema, args):
     validator = ProvisioningValidator(tofu_bin=adapter.tofu_path or "tofu")
     user_inputs = {}
 
-    print("[DBG] enter create_resource_with_validation", flush=True)
     loop = 0
     while True:
         loop += 1
-        print(f"[DBG] loop #{loop} building HCL (provider={provider} resource={resource})", flush=True)
+        logger.debug("create_resource_with_validation loop=%s provider=%s resource=%s", loop, provider, resource)
         hcl = _render_hcl_with_adapter(adapter, provider, resource, schema, user_inputs)
-        snippet = hcl[:800].replace("\n", "\\n")
-        print(f"[DBG] generated HCL snippet: {snippet}", flush=True)
+        logger.debug("generated_hcl_snippet=%s", hcl[:500].replace("\n", "\\n"))
 
-        tmp = Path(f".cloudbrew_providers/{provider}/_cb_tmp")
-        tmp.mkdir(parents=True, exist_ok=True)
+        provider_root = Path(f".cloudbrew_providers/{provider}")
+        provider_root.mkdir(parents=True, exist_ok=True)
+        tmp = Path(tempfile.mkdtemp(prefix="cb_run_", dir=str(provider_root)))
         (tmp / "main.tf").write_text(hcl, encoding="utf-8")
-        print(f"[DBG] wrote main.tf to {tmp}\\main.tf", flush=True)
+        logger.debug("wrote main.tf to %s", (tmp / "main.tf"))
 
-        print("[DBG] running two-tier validation (schema + tofu validate/plan)...", flush=True)
         report = validator.validate(schema=schema, values=user_inputs, rendered_hcl=hcl, workdir=tmp)
         retryable = [
             d
@@ -90,13 +93,13 @@ def create_resource_with_validation(provider, resource, schema, args):
                 "TOFU_REQUIRED_BLOCK_MISSING",
             }
         ]
-        print(
-            f"[DBG] validation report success={report.success} retryable={[d.rule_id + ':' + d.path for d in retryable]}",
-            flush=True,
+        logger.debug(
+            "validation success=%s retryable=%s",
+            report.success,
+            [d.rule_id + ":" + d.path for d in retryable],
         )
 
         if report.success:
-            print("[DBG] validation successful -> returning HCL", flush=True)
             return {"success": True, "hcl": hcl, "diagnostics": []}
 
         if not retryable:
@@ -120,15 +123,19 @@ def create_resource_with_validation(provider, resource, schema, args):
                     missing_blocks.append(diag.path)
 
         if getattr(args, "yes", False):
-            print("[DBG] auto-fill --yes: missing args ->", missing_args, flush=True)
-            for a in missing_args:
-                user_inputs[a] = '"AUTO_FILLED"'
-            for blk in missing_blocks:
-                user_inputs.setdefault(blk, {})
-                user_inputs[blk]["placeholder"] = '"AUTO_BLOCK"'
-            continue
+            return {
+                "success": False,
+                "hcl": hcl,
+                "diagnostics": [diag.__dict__ for diag in report.diagnostics],
+                "error": (
+                    "Missing required inputs in non-interactive mode (--yes). "
+                    "Please provide all required flags explicitly."
+                ),
+                "missing_args": missing_args,
+                "missing_blocks": missing_blocks,
+            }
 
-        print("[DBG] interactive mode: prompting from deterministic diagnostics", flush=True)
+        logger.debug("interactive mode prompting for missing inputs")
         for a in missing_args:
             user_inputs[a] = input(f"Enter value for {a}: ")
 
