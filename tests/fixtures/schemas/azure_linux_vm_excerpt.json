@@ -1,0 +1,31 @@
+{
+  "block": {
+    "attributes": {
+      "name": {"type": "string", "required": true},
+      "location": {"type": "string", "required": true},
+      "resource_group_name": {"type": "string", "required": true},
+      "size": {"type": "string", "required": true}
+    },
+    "block_types": {
+      "os_disk": {
+        "nesting_mode": "single",
+        "block": {
+          "attributes": {
+            "caching": {"type": "string", "required": true},
+            "storage_account_type": {"type": "string", "required": true}
+          }
+        }
+      },
+      "admin_ssh_key": {
+        "nesting_mode": "list",
+        "min_items": 1,
+        "block": {
+          "attributes": {
+            "username": {"type": "string", "required": true},
+            "public_key": {"type": "string", "required": true}
+          }
+        }
+      }
+    }
+  }
+}

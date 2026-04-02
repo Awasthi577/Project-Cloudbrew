@@ -1,0 +1,16 @@
+{
+  "name": "vm-linux",
+  "location": "eastus",
+  "resource_group_name": "rg-demo",
+  "size": "Standard_B2s",
+  "os_disk": {
+    "caching": "ReadWrite",
+    "storage_account_type": "Standard_LRS"
+  },
+  "admin_ssh_key": [
+    {
+      "username": "azureuser",
+      "public_key": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDemo"
+    }
+  ]
+}
