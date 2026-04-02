@@ -169,7 +169,13 @@ class ProvisioningPipeline:
         return value
 
     def _render_from_typed_object(self, logical_name: str, resource_type: str, provider: str, typed: Dict[str, Any], schema: Dict[str, Any]) -> Dict[str, Any]:
-        hcl = self.adapter._render_hcl_from_schema(resource_type, logical_name, {"provider": provider, **typed}, schema)
+        ir = {"provider": provider, **typed}
+        hcl = self.adapter.ir_renderer.render_resource(
+            resource_type=resource_type,
+            logical_name=logical_name,
+            ir=self.adapter._alias_and_defaults(ir, resource_type, provider),
+            schema=schema,
+        )
         return {"hcl": hcl, "json": typed}
 
     def _run_tofu_stages(self, logical_name: str, hcl: str, run_apply: bool) -> Dict[str, Any]:
