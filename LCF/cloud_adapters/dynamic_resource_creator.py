@@ -1,8 +1,8 @@
 # LCF/cloud_adapters/dynamic_resource_creator.py
 from pathlib import Path
 import inspect
-from LCF.cloud_adapters.tofu_validator import run_tofu_validate
 from LCF.cloud_adapters.opentofu_adapter import OpenTofuAdapter
+from LCF.provisioning.validator import ProvisioningValidator
 
 def _call_flexibly(fn, *args, **kwargs):
     try:
@@ -60,6 +60,7 @@ def _render_hcl_with_adapter(adapter, provider, resource, schema, user_inputs):
 
 def create_resource_with_validation(provider, resource, schema, args):
     adapter = OpenTofuAdapter()
+    validator = ProvisioningValidator(tofu_bin=adapter.tofu_path or "tofu")
     user_inputs = {}
 
     print("[DBG] enter create_resource_with_validation", flush=True)
@@ -76,37 +77,64 @@ def create_resource_with_validation(provider, resource, schema, args):
         (tmp / "main.tf").write_text(hcl, encoding="utf-8")
         print(f"[DBG] wrote main.tf to {tmp}\\main.tf", flush=True)
 
-        print("[DBG] running tofu validate...", flush=True)
-        result = run_tofu_validate(tmp)
-        print(f"[DBG] validate result success={result.success} missing_args={result.missing_args} missing_blocks={result.missing_blocks}", flush=True)
+        print("[DBG] running two-tier validation (schema + tofu validate/plan)...", flush=True)
+        report = validator.validate(schema=schema, values=user_inputs, rendered_hcl=hcl, workdir=tmp)
+        retryable = [
+            d
+            for d in report.diagnostics
+            if d.rule_id in {
+                "SCHEMA_REQUIRED_ATTRIBUTE_MISSING",
+                "SCHEMA_REQUIRED_BLOCK_MISSING",
+                "SCHEMA_MIN_ITEMS_VIOLATION",
+                "TOFU_REQUIRED_ARGUMENT_MISSING",
+                "TOFU_REQUIRED_BLOCK_MISSING",
+            }
+        ]
+        print(
+            f"[DBG] validation report success={report.success} retryable={[d.rule_id + ':' + d.path for d in retryable]}",
+            flush=True,
+        )
 
-        if not result.success and not getattr(result, "missing_args", []) and not getattr(result, "missing_blocks", []):
+        if report.success:
+            print("[DBG] validation successful -> returning HCL", flush=True)
+            return {"success": True, "hcl": hcl, "diagnostics": []}
+
+        if not retryable:
             return {
                 "success": False,
                 "hcl": hcl,
-                "validation_raw": getattr(result, "raw_output", None) or getattr(result, "stderr", None) or "Validation failed with no missing args/blocks."
+                "diagnostics": [diag.__dict__ for diag in report.diagnostics],
+                "validation_raw": "\n".join(
+                    f"[{step['command']}]\n{step.get('stdout', '')}\n{step.get('stderr', '')}" for step in report.command_results
+                ).strip(),
             }
 
-        if result.success:
-            print("[DBG] validation successful -> returning HCL", flush=True)
-            return {"success": True, "hcl": hcl}
+        missing_args = []
+        missing_blocks = []
+        for diag in retryable:
+            if diag.rule_id in {"SCHEMA_REQUIRED_ATTRIBUTE_MISSING", "TOFU_REQUIRED_ARGUMENT_MISSING"}:
+                if diag.path not in missing_args:
+                    missing_args.append(diag.path)
+            elif diag.rule_id in {"SCHEMA_REQUIRED_BLOCK_MISSING", "SCHEMA_MIN_ITEMS_VIOLATION", "TOFU_REQUIRED_BLOCK_MISSING"}:
+                if diag.path not in missing_blocks:
+                    missing_blocks.append(diag.path)
 
         if getattr(args, "yes", False):
-            print("[DBG] auto-fill --yes: missing args ->", result.missing_args, flush=True)
-            for a in result.missing_args:
+            print("[DBG] auto-fill --yes: missing args ->", missing_args, flush=True)
+            for a in missing_args:
                 user_inputs[a] = '"AUTO_FILLED"'
-            for blk in result.missing_blocks:
+            for blk in missing_blocks:
                 user_inputs.setdefault(blk, {})
                 user_inputs[blk]["placeholder"] = '"AUTO_BLOCK"'
             continue
 
-        print("[DBG] interactive mode: will prompt for missing fields", flush=True)
-        for a in result.missing_args:
+        print("[DBG] interactive mode: prompting from deterministic diagnostics", flush=True)
+        for a in missing_args:
             user_inputs[a] = input(f"Enter value for {a}: ")
 
-        for blk in result.missing_blocks:
+        for blk in missing_blocks:
             user_inputs.setdefault(blk, {})
             nested = schema.get("block", {}).get("block_types", {}).get(blk, {}).get("block", {}).get("attributes", {})
             for aname, aspec in nested.items():
-                if aspec.get("required"):
+                if aspec.get("required") and aname not in user_inputs[blk]:
                     user_inputs[blk][aname] = input(f"{blk}.{aname}: ")
