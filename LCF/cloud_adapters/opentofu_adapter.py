@@ -13,6 +13,7 @@ from LCF import store, utils
 from .schema_manager import SchemaManager
 from LCF.auth_utils import _load_config
 from LCF.secret_store import SecretStore
+from LCF.provisioning.renderers import HCLIRRenderer
 
 logger = logging.getLogger("cloudbrew.adapters.opentofu")
 
@@ -57,6 +58,7 @@ class OpenTofuAdapter:
 
         # Load CloudBrew credentials for provider authentication
         self._setup_cloudbrew_credentials()
+        self.ir_renderer = HCLIRRenderer()
 
     def _setup_cloudbrew_credentials(self):
         """Set up environment variables with CloudBrew credentials for provider authentication."""
@@ -386,52 +388,9 @@ class OpenTofuAdapter:
         """
         Render HCL for a single resource using provider schema information.
         """
-        safe_name = re.sub(r"[^A-Za-z0-9_]", "_", logical_name.replace(" ", "_"))
-        if safe_name and safe_name[0].isdigit():
-            safe_name = f"res_{safe_name}"
-
         provider = spec.get("provider", "")
         spec_local = self._alias_and_defaults(spec, resource_type, provider)
-
-        block = (schema or {}).get("block", {}) if schema else {}
-        schema_attrs = block.get("attributes", {}) if block else {}
-        block_types = block.get("block_types", {}) if block else {}
-
-        lines: List[str] = [f'resource "{resource_type}" "{safe_name}" {{']
-
-        # Render attributes present in spec that are also in schema (deterministic order)
-        for attr in sorted(schema_attrs.keys()):
-            if attr in spec_local:
-                try:
-                    lines.append(self._render_hcl_field_python(attr, spec_local[attr], schema))
-                except Exception as e:
-                    logger.debug("Failed to render attr %s: %s", attr, e)
-                    lines.append(f'  # Could not render {attr}: {e}')
-
-        # Render block_types if present in spec
-        for block_name in sorted(block_types.keys()):
-            if block_name in spec_local:
-                try:
-                    lines.append(self._render_hcl_field_python(block_name, spec_local[block_name], schema))
-                except Exception as e:
-                    logger.debug("Failed to render block %s: %s", block_name, e)
-                    lines.append(f'  # Could not render block {block_name}: {e}')
-
-        # Render any remaining user-provided keys (best-effort)
-        for k in sorted(spec_local.keys()):
-            if k in schema_attrs or k in block_types:
-                continue
-            if k == "provider":
-                continue
-            if k.startswith("_"):
-                continue
-            try:
-                lines.append(self._render_hcl_field_python(k, spec_local[k], schema=None))
-            except Exception:
-                lines.append(f'  # Skipped rendering of {k}')
-
-        lines.append("}")
-        return "\n".join(lines)
+        return self.ir_renderer.render_resource(resource_type=resource_type, logical_name=logical_name, ir=spec_local, schema=schema)
 
     # -------------------------
     # HCL Generator
@@ -536,6 +495,12 @@ provider "google" {{
                 logger.exception("Schema-driven rendering failed, falling back: %s", e)
 
         # Otherwise, fallback to generic template
+        logger.warning(
+            "Using legacy generic Jinja template fallback for %s (%s). "
+            "This path is retained for compatibility only; IR renderer should be preferred.",
+            logical_id,
+            resource_type,
+        )
         return header + "\n" + self._render_jinja_template("generic_resource_safe.tf.j2", logical_id, clean_spec, resource_type, schema=schema)
 
     def _find_template_file(self, resource_type: str) -> Optional[str]:
@@ -550,6 +515,13 @@ provider "google" {{
     def _render_jinja_template(self, template_name: str, logical_id: str, spec: Dict[str, Any], resource_type: str, schema: Any = None) -> str:
         if not self.jinja_env:
             return "# ERROR: Jinja2 not initialized."
+        if template_name == "generic_resource_safe.tf.j2":
+            logger.warning(
+                "Legacy template '%s' invoked for %s (%s). Prefer IR renderer path.",
+                template_name,
+                logical_id,
+                resource_type,
+            )
 
         clean_name = re.sub(r"[^A-Za-z0-9_]", "_", logical_id.replace(" ", "_"))
         if clean_name and clean_name[0].isdigit():
