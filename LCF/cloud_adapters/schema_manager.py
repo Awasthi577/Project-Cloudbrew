@@ -41,6 +41,13 @@ class SchemaManager:
             },
         )
 
+    def get_resource_schema_for_identity(self, identity: Dict[str, Any]) -> Dict[str, Any]:
+        resource_type = (identity or {}).get("resource_type") or ""
+        return self.get_resource_schema(str(resource_type))
+
+    def get_for_identity(self, identity: Dict[str, Any]) -> Dict[str, Any]:
+        return self.get_resource_schema_for_identity(identity)
+
     def list_required_paths(self, resource_type: str) -> List[str]:
         schema = self.get_resource_schema(resource_type)
         required_paths: List[str] = []

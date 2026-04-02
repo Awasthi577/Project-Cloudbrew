@@ -81,7 +81,13 @@ class ProvisioningPipeline:
         )
 
     def _resolve_provider_and_type(self, req: CanonicalCreateRequest) -> Dict[str, Any]:
-        resolved = self.resolver.resolve(req.resource_type, req.provider_hint)
+        resolved = self.resolver.canonicalize_identity(
+            resource=req.resource_type,
+            provider_hint=req.provider_hint,
+            logical_name=req.name,
+        )
+        if isinstance(resolved, dict) and resolved.get("mode") == "provider_native_type_unmapped":
+            raise typer.BadParameter(resolved.get("message", "Unable to resolve resource type"))
         if isinstance(resolved, dict) and resolved.get("_resolved"):
             resource_type = resolved["_resolved"]
             provider = resolved.get("_provider") or req.provider_hint
@@ -101,6 +107,7 @@ class ProvisioningPipeline:
             "provider": provider,
             "provider_version": req.provider_version,
             "attributes": merged_attributes,
+            "identity": resolved.get("_identity", {"provider": provider, "resource_type": resource_type, "logical_name": req.name}),
         }
 
     def _load_provider_schema(self, resolved: Dict[str, Any]) -> Dict[str, Any]:
@@ -117,7 +124,7 @@ class ProvisioningPipeline:
                 break
 
         if not resource_schema:
-            resource_schema = self.adapter.schema_mgr.get(resolved["resource_type"]) or {}
+            resource_schema = self.adapter.schema_mgr.get_for_identity(resolved.get("identity", {})) or {}
 
         return {
             "provider_schema_key": provider_schema_key or provider,
@@ -170,11 +177,13 @@ class ProvisioningPipeline:
 
     def _render_from_typed_object(self, logical_name: str, resource_type: str, provider: str, typed: Dict[str, Any], schema: Dict[str, Any]) -> Dict[str, Any]:
         ir = {"provider": provider, **typed}
+        identity = {"provider": provider, "resource_type": resource_type, "logical_name": logical_name}
         hcl = self.adapter.ir_renderer.render_resource(
             resource_type=resource_type,
             logical_name=logical_name,
-            ir=self.adapter._alias_and_defaults(ir, resource_type, provider),
+            ir=self.adapter._alias_and_defaults({**ir, "_identity": identity}, resource_type, provider),
             schema=schema,
+            identity=identity,
         )
         return {"hcl": hcl, "json": typed}
 

@@ -24,6 +24,7 @@ class HCLIRRenderer:
         logical_name: str,
         ir: Dict[str, Any],
         schema: Optional[Dict[str, Any]] = None,
+        identity: Optional[Dict[str, Any]] = None,
     ) -> str:
         safe_name = self._sanitize_name(logical_name)
         block_schema = (schema or {}).get("block", {}) if schema else {}
