@@ -245,71 +245,21 @@ class CloudbrewGroup(TyperGroup):
             # prepare resolver
             rr = ResourceResolver()
 
-            def normalize_resolve_result(res) -> tuple[str, str, Dict[str, Any]]:
-
-                if isinstance(res, dict):
-                    provider = res.get("_provider") or provider_hint
-                    resolved = res.get("_resolved") or res.get("resource") or res.get("name") or cmd_name
-                    return str(provider), str(resolved), res
-                if isinstance(res, str):
-                    return provider_hint, res, {"_resolved": res, "_provider": provider_hint}
-                # fallback
-                return provider_hint, cmd_name, {"_resolved": cmd_name, "_provider": provider_hint}
-
-            
-            try_providers = (
-                [provider_hint] if provider_hint != "auto" else ["opentofu", "tofu", "pulumi", "aws", "gcp", "azure", "noop"]
+            resolved_meta = rr.canonicalize_identity(
+                resource=cmd_name,
+                provider_hint=provider_hint,
+                logical_name=name,
             )
-
-            resolved_provider = None
-            resolved_name = None
-            resolved_meta = None
-            last_err = None
-
-            # try resolving across providers (stop on first success)
-            for p in try_providers:
-                try:
-                    # try keyword call first
-                    r = rr.resolve(resource=cmd_name, provider=p)
-
-                    # --- CHANGE 1: If lookup failed, record error and skip to next provider ---
-                    if isinstance(r, dict) and r.get("mode") == "dynamic_lookup_failed":
-                        last_err = r.get("message")
-                        continue
-                    # --------------------------------------------------------------------------
-
-                    resolved_provider, resolved_name, resolved_meta = normalize_resolve_result(r)
-                    break
-                except TypeError:
-                    # older resolver signature - try positional
-                    try:
-                        r = rr.resolve(cmd_name, p)
-
-                        # --- CHANGE 2: Same check for positional fallback ---
-                        if isinstance(r, dict) and r.get("mode") == "dynamic_lookup_failed":
-                            last_err = r.get("message")
-                            continue
-                        # ----------------------------------------------------
-
-                        resolved_provider, resolved_name, resolved_meta = normalize_resolve_result(r)
-                        break
-                    except Exception as epos:
-                        last_err = epos
-                except ValueError as ve:
-                    # ambiguous mapping/resolver returns ValueError with candidate info
-                    last_err = ve
-                    # continue trying other providers
-                except Exception as e:
-                    last_err = e
-            
-            # Default to opentofu if auto resolution failed or returned auto
-            if not resolved_provider or resolved_provider == "auto":
-                resolved_provider = "opentofu"
+            if not isinstance(resolved_meta, dict):
+                resolved_meta = {}
+            resolved_provider = resolved_meta.get("_provider") or "opentofu"
+            resolved_name = resolved_meta.get("_resolved") or cmd_name
 
             # Build a resolved dict that will be included in every output
             resolved_block = {
                 "_provider": resolved_provider,
                 "_resolved": resolved_name,
+                "_identity": resolved_meta.get("_identity"),
             }
             if isinstance(resolved_meta, dict):
                 # merge meta but keep core keys
@@ -319,7 +269,7 @@ class CloudbrewGroup(TyperGroup):
                         resolved_block[k] = v
 
             # If not resolved, return helpful diagnostic JSON
-            if not resolved_meta:
+            if not resolved_meta or not resolved_meta.get("_resolved"):
                 out = {
                     "mode": "dynamic-fallback",
                     "resource": cmd_name,
@@ -327,7 +277,7 @@ class CloudbrewGroup(TyperGroup):
                     "params": params,
                     "resolved": resolved_block,
                     "error": f"could not resolve resource '{cmd_name}'",
-                    "last_err": str(last_err) if last_err else None,
+                    "failure": resolved_meta,
                 }
                 typer.echo(json.dumps(out, indent=2))
                 return
@@ -699,7 +649,15 @@ def create_vm(
     # RESOLVE & MERGE DEFAULTS 
     # --------------------------------------------
     rr = ResourceResolver()
-    res = rr.resolve(s["type"], s.get("provider", "auto"))
+    res = rr.canonicalize_identity(
+        resource=s["type"],
+        provider_hint=s.get("provider", "auto"),
+        logical_name=s.get("name"),
+    )
+
+    if isinstance(res, dict) and res.get("mode") == "provider_native_type_unmapped":
+        typer.echo(json.dumps({"error": res.get("message"), "details": res}, indent=2))
+        raise typer.Exit(code=2)
 
     if res and "_resolved" in res:
         # Update type (e.g. 'vm' -> 'aws_instance')

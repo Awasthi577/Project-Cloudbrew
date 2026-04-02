@@ -9,6 +9,7 @@ import difflib
 import re
 from functools import lru_cache
 from typing import Optional, Dict, Any, List, Tuple
+from LCF.canonical_identity import CanonicalIdentity, normalize_provider
 
 # Try importing SchemaManager; handle case if LCF module is missing to avoid immediate crash
 try:
@@ -127,7 +128,12 @@ class ResourceResolver:
             "_resolved": spec.get("type"),
             "_provider": spec.get("provider"),
             "_defaults": spec.get("defaults", {}),
-            "_required": spec.get("required", [])
+            "_required": spec.get("required", []),
+            "_identity": {
+                "provider": self._normalize_provider(spec.get("provider", "auto")),
+                "resource_type": spec.get("type"),
+                "logical_name": alias,
+            },
         }
 
     # ======================================================================
@@ -600,10 +606,69 @@ provider "azurerm" {
     # NORMALIZE RESULT STRUCTURE
     # ======================================================================
     def _normalize_result(self, chosen: str, provider: str, payload: Optional[Dict[str, Any]]):
-        base = {"_resolved": chosen, "_provider": provider}
+        base = {
+            "_resolved": chosen,
+            "_provider": provider,
+            "_identity": {
+                "provider": self._normalize_provider(provider),
+                "resource_type": chosen,
+                "logical_name": chosen,
+            },
+        }
         if isinstance(payload, dict):
             base.update(payload)
         return base
+
+    def _build_unmapped_failure(self, resource: str, provider_hint: str, providers_to_try: List[str], best_list: List[Tuple[str, float]], best_score: float) -> Dict[str, Any]:
+        aliases = sorted(
+            difflib.get_close_matches(resource, list(self.static_registry.keys()), n=5, cutoff=0.5)
+        )
+        suggestions = [{"name": n, "score": s} for n, s in best_list[:5]]
+        alternatives = []
+        for alias in aliases:
+            specs = self.static_registry.get(alias, [])
+            if not isinstance(specs, list):
+                specs = [specs]
+            for spec in specs:
+                alternatives.append(
+                    {
+                        "alias": alias,
+                        "provider": self._normalize_provider(spec.get("provider", "auto")),
+                        "resource_type": spec.get("type"),
+                    }
+                )
+        return {
+            "mode": "provider_native_type_unmapped",
+            "message": f"Could not map '{resource}' to a provider-native resource type.",
+            "resource": resource,
+            "provider_hint": provider_hint,
+            "tried_providers": providers_to_try,
+            "top_candidates": suggestions,
+            "alias_alternatives": alternatives[:5],
+            "best_score": best_score,
+            "resolution_hint": "Try --provider aws|google|azure and a known alias (for example: vm, bucket, vpc).",
+        }
+
+    def canonicalize_identity(self, resource: str, provider_hint: str = "auto", logical_name: Optional[str] = None) -> Dict[str, Any]:
+        resource_in = (resource or "").strip()
+        resolved = self.resolve(resource=resource_in, provider=provider_hint)
+        if not isinstance(resolved, dict) or not resolved.get("_resolved"):
+            failure = resolved if isinstance(resolved, dict) else {}
+            failure.setdefault("mode", "provider_native_type_unmapped")
+            failure.setdefault(
+                "message",
+                f"Could not map '{resource_in}' to a provider-native resource type.",
+            )
+            return failure
+
+        identity = CanonicalIdentity(
+            provider=self._normalize_provider(resolved.get("_provider", provider_hint)),
+            resource_type=str(resolved["_resolved"]),
+            logical_name=(logical_name or resource_in or resolved["_resolved"]),
+        )
+        out = dict(resolved)
+        out["_identity"] = identity.to_dict()
+        return out
 
     # ======================================================================
     # PUBLIC RESOLVE() API — CLEAN + FIXED
@@ -646,6 +711,8 @@ provider "azurerm" {
     # 2. DYNAMIC LOOKUP
     # ----------------------------------------------
         providers_to_try = [provider]
+        if provider in ("", "auto", "any"):
+            providers_to_try = ["aws", "google", "azurerm", "opentofu", "pulumi"]
 
     # Azure normalization
         if provider in ("azure", "azurerm"):
@@ -700,28 +767,16 @@ provider "azurerm" {
     # ----------------------------------------------
     # 4. No match (return suggestions)
     # ----------------------------------------------
-        return {
-            "message": f"No clear mapping for '{resource}'",
-            "resource": resource,
-            "top_candidates": [{"name": n, "score": s} for n, s in best_list],
-            "best_score": best_score,
-            "tried_providers": providers_to_try,
-            "mode": "dynamic_lookup_failed"
-        }
+        return self._build_unmapped_failure(
+            resource=resource,
+            provider_hint=provider,
+            providers_to_try=providers_to_try,
+            best_list=best_list,
+            best_score=best_score,
+        )
 
     # ======================================================================
     # NORMALIZE PROVIDER NAMES
     # ======================================================================
     def _normalize_provider(self, provider: str) -> str:
-        p = provider.lower()
-
-        if p in ("azure", "azurerm", "az"):
-            return "azurerm"
-
-        if p in ("aws", "amazon"):
-            return "aws"
-
-        if p in ("gcp", "google", "google_cloud"):
-            return "google"
-
-        return p
+        return normalize_provider(provider)

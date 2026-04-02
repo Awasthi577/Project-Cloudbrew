@@ -390,7 +390,13 @@ class OpenTofuAdapter:
         """
         provider = spec.get("provider", "")
         spec_local = self._alias_and_defaults(spec, resource_type, provider)
-        return self.ir_renderer.render_resource(resource_type=resource_type, logical_name=logical_name, ir=spec_local, schema=schema)
+        return self.ir_renderer.render_resource(
+            resource_type=resource_type,
+            logical_name=logical_name,
+            ir=spec_local,
+            schema=schema,
+            identity=spec.get("_identity"),
+        )
 
     # -------------------------
     # HCL Generator

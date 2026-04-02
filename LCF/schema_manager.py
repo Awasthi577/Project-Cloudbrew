@@ -20,6 +20,10 @@ class SchemaManager:
             "attributes": {}
         })
 
+    def get_for_identity(self, identity: Dict[str, Any]) -> Dict[str, Any]:
+        resource_type = (identity or {}).get("resource_type", "")
+        return self.get(str(resource_type))
+
     # ------------------------------
     # INTERNALS
     # ------------------------------
