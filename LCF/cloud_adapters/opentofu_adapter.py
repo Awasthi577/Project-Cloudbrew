@@ -573,128 +573,234 @@ provider "google" {{
     # -------------------------
     # Public API
     # -------------------------
-    def create_instance(self, logical_id: str, spec: Dict[str, Any], plan_only: bool = False) -> Dict[str, Any]:
-        """
-        Synchronous implementation of create_instance to satisfy CLI requirements.
-        Generates HCL, initializes OpenTofu, and runs Plan/Apply.
-        """
+    def _normalized_adapter_id(self, logical_id: str) -> str:
+        return logical_id if logical_id.startswith("opentofu-") else f"opentofu-{logical_id}"
+
+    def _build_error_response(
+        self,
+        *,
+        adapter_id: str,
+        workspace_path: str,
+        error_category: str,
+        error: str,
+        command_outputs: Dict[str, Dict[str, Any]],
+    ) -> Dict[str, Any]:
+        return {
+            "success": False,
+            "adapter_id": adapter_id,
+            "workspace_path": workspace_path,
+            "command_outputs": command_outputs,
+            "error_category": error_category,
+            "error": error,
+            # backward-compatible aliases
+            "path": workspace_path,
+            "output": (command_outputs.get("apply") or command_outputs.get("plan") or {}).get("stdout", ""),
+        }
+
+    def _run_tofu_command(self, wd: str, args: List[str], timeout: int = 300) -> Dict[str, Any]:
+        cmd = [self.tofu_path, *args]
+        proc = subprocess.run(
+            cmd,
+            cwd=wd,
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+            env=self._get_env(),
+        )
+        return {
+            "command": " ".join(cmd),
+            "returncode": proc.returncode,
+            "stdout": proc.stdout,
+            "stderr": proc.stderr,
+        }
+
+    def _prepare_workspace(self, logical_id: str, spec: Dict[str, Any]) -> tuple[str, str]:
+        wd = self._workdir_for(logical_id)
+        hcl = self._generate_hcl(logical_id, spec)
+        os.makedirs(wd, exist_ok=True)
+        with open(os.path.join(wd, "main.tf"), "w", encoding="utf-8") as f:
+            f.write(hcl)
+        return wd, self._normalized_adapter_id(logical_id)
+
+    def plan_instance(self, logical_id: str, spec: Dict[str, Any]) -> Dict[str, Any]:
+        wd, adapter_id = self._prepare_workspace(logical_id, spec)
+        command_outputs: Dict[str, Dict[str, Any]] = {}
+        if not self.tofu_path:
+            return self._build_error_response(
+                adapter_id=adapter_id,
+                workspace_path=wd,
+                error_category="init_failed",
+                error="OpenTofu binary not found. Set CLOUDBREW_OPENTOFU_BIN or install 'tofu'.",
+                command_outputs=command_outputs,
+            )
         try:
-            # 1. Generate HCL & Prepare Workspace
-            wd = self._workdir_for(logical_id)
-            
-            # Generate fresh HCL
-            hcl = self._generate_hcl(logical_id, spec)
-            
-            # Ensure workspace directory exists
-            os.makedirs(wd, exist_ok=True)
+            command_outputs["init"] = self._run_tofu_command(wd, ["init", "-no-color"])
+            if command_outputs["init"]["returncode"] != 0:
+                return self._build_error_response(
+                    adapter_id=adapter_id,
+                    workspace_path=wd,
+                    error_category="init_failed",
+                    error=command_outputs["init"]["stderr"] or command_outputs["init"]["stdout"] or "OpenTofu init failed.",
+                    command_outputs=command_outputs,
+                )
+            command_outputs["validate"] = self._run_tofu_command(wd, ["validate", "-no-color"])
+            if command_outputs["validate"]["returncode"] != 0:
+                return self._build_error_response(
+                    adapter_id=adapter_id,
+                    workspace_path=wd,
+                    error_category="validate_failed",
+                    error=command_outputs["validate"]["stderr"] or command_outputs["validate"]["stdout"] or "OpenTofu validate failed.",
+                    command_outputs=command_outputs,
+                )
+            command_outputs["plan"] = self._run_tofu_command(wd, ["plan", "-no-color"])
+            if command_outputs["plan"]["returncode"] != 0:
+                return self._build_error_response(
+                    adapter_id=adapter_id,
+                    workspace_path=wd,
+                    error_category="plan_failed",
+                    error=command_outputs["plan"]["stderr"] or command_outputs["plan"]["stdout"] or "OpenTofu plan failed.",
+                    command_outputs=command_outputs,
+                )
+            return {
+                "success": True,
+                "adapter_id": adapter_id,
+                "workspace_path": wd,
+                "command_outputs": command_outputs,
+                # backward-compatible aliases
+                "path": wd,
+                "output": command_outputs["plan"]["stdout"],
+                "diff": command_outputs["plan"]["stdout"],
+            }
+        except subprocess.TimeoutExpired:
+            return self._build_error_response(
+                adapter_id=adapter_id,
+                workspace_path=wd,
+                error_category="plan_failed",
+                error=f"OpenTofu plan timed out after 300 seconds. Workspace preserved at: {wd}",
+                command_outputs=command_outputs,
+            )
+        except Exception as e:
+            logger.exception("Exception in plan_instance")
+            return self._build_error_response(
+                adapter_id=adapter_id,
+                workspace_path=wd,
+                error_category="plan_failed",
+                error=str(e),
+                command_outputs=command_outputs,
+            )
 
-            # Write configuration
-            with open(os.path.join(wd, "main.tf"), "w", encoding="utf-8") as f:
-                f.write(hcl)
+    def apply_instance(self, logical_id: str, spec: Dict[str, Any]) -> Dict[str, Any]:
+        plan_res = self.plan_instance(logical_id, spec)
+        if not plan_res.get("success"):
+            return plan_res
+        wd = plan_res["workspace_path"]
+        adapter_id = plan_res["adapter_id"]
+        command_outputs: Dict[str, Dict[str, Any]] = dict(plan_res.get("command_outputs", {}))
+        try:
+            command_outputs["apply"] = self._run_tofu_command(wd, ["apply", "-auto-approve", "-no-color"])
+            if command_outputs["apply"]["returncode"] != 0:
+                return self._build_error_response(
+                    adapter_id=adapter_id,
+                    workspace_path=wd,
+                    error_category="apply_failed",
+                    error=command_outputs["apply"]["stderr"] or command_outputs["apply"]["stdout"] or "OpenTofu apply failed.",
+                    command_outputs=command_outputs,
+                )
+            return {
+                "success": True,
+                "adapter_id": adapter_id,
+                "workspace_path": wd,
+                "command_outputs": command_outputs,
+                # backward-compatible aliases
+                "path": wd,
+                "output": command_outputs["apply"]["stdout"],
+            }
+        except subprocess.TimeoutExpired:
+            return self._build_error_response(
+                adapter_id=adapter_id,
+                workspace_path=wd,
+                error_category="apply_failed",
+                error=f"OpenTofu apply timed out after 300 seconds. Workspace preserved at: {wd}",
+                command_outputs=command_outputs,
+            )
+        except Exception as e:
+            logger.exception("Exception in apply_instance")
+            return self._build_error_response(
+                adapter_id=adapter_id,
+                workspace_path=wd,
+                error_category="apply_failed",
+                error=str(e),
+                command_outputs=command_outputs,
+            )
 
-            # 2. Run 'tofu init' (if needed)
-            if not os.path.exists(os.path.join(wd, ".terraform")):
-                if not self.tofu_path:
-                    return {"success": False, "error": "OpenTofu binary not found. Set CLOUDBREW_OPENTOFU_BIN or install 'tofu'."}
-                init_res = subprocess.run([self.tofu_path, "init", "-no-color"], cwd=wd, capture_output=True, text=True)
-                if init_res.returncode != 0:
-                    return {"success": False, "error": f"Init failed: {init_res.stderr or init_res.stdout}"}
+    def create_instance(self, logical_id: str, spec: Dict[str, Any], plan_only: bool = False) -> Dict[str, Any]:
+        return self.plan_instance(logical_id, spec) if plan_only else self.apply_instance(logical_id, spec)
 
-            # 3. Construct Command (Plan vs Apply)
-            cmd = [self.tofu_path]
-            if plan_only:
-                cmd.extend(["plan", "-no-color"])
-            else:
-                cmd.extend(["apply", "-auto-approve", "-no-color"])
+    def destroy_instance(self, adapter_id: str) -> Dict[str, Any]:
+        """Destroys an instance managed by OpenTofu."""
+        normalized_adapter_id = self._normalized_adapter_id(adapter_id)
+        logical_id = normalized_adapter_id.removeprefix("opentofu-")
+        wd = self._workdir_for(logical_id)
+        command_outputs: Dict[str, Dict[str, Any]] = {}
 
-            # 4. Execute with timeout and better error handling
-            try:
-                # Add timeout to prevent hanging
-                proc = subprocess.run(
-                    cmd, 
-                    cwd=wd, 
-                    capture_output=True, 
-                    text=True,
-                    timeout=300  # 5 minute timeout
+        if not self.tofu_path:
+            return self._build_error_response(
+                adapter_id=normalized_adapter_id,
+                workspace_path=wd,
+                error_category="apply_failed",
+                error="OpenTofu binary not found. Cannot destroy.",
+                command_outputs=command_outputs,
+            )
+
+        if not os.path.exists(os.path.join(wd, "terraform.tfstate")):
+            return self._build_error_response(
+                adapter_id=normalized_adapter_id,
+                workspace_path=wd,
+                error_category="apply_failed",
+                error=f"No state file found for {normalized_adapter_id} at {wd}.",
+                command_outputs=command_outputs,
+            )
+
+        if os.path.exists(os.path.join(wd, ".terraform.tfstate.lock.info")):
+            return self._build_error_response(
+                adapter_id=normalized_adapter_id,
+                workspace_path=wd,
+                error_category="apply_failed",
+                error=f"Cannot destroy {normalized_adapter_id}: State file is locked.",
+                command_outputs=command_outputs,
+            )
+
+        try:
+            command_outputs["destroy"] = self._run_tofu_command(wd, ["destroy", "-auto-approve", "-no-color"])
+            if command_outputs["destroy"]["returncode"] != 0:
+                return self._build_error_response(
+                    adapter_id=normalized_adapter_id,
+                    workspace_path=wd,
+                    error_category="apply_failed",
+                    error=command_outputs["destroy"]["stderr"] or command_outputs["destroy"]["stdout"] or "OpenTofu destroy failed.",
+                    command_outputs=command_outputs,
                 )
 
-                # Debug output
-                logger.info(f"OpenTofu command: {' '.join(cmd)}")
-                logger.info(f"OpenTofu stdout: {proc.stdout[:500]}...")  # First 500 chars
-                logger.info(f"OpenTofu stderr: {proc.stderr[:500]}...")  # First 500 chars
-                logger.info(f"OpenTofu return code: {proc.returncode}")
-
-                if proc.returncode == 0:
-                    if os.environ.get("CLOUDBREW_KEEP_WORKDIR"):
-                        logger.info("Keeping workspace for debugging (CLOUDBREW_KEEP_WORKDIR set): %s", wd)
-
-                    return {
-                        "success": True,
-                        "adapter_id": adapter_id,
-                        "output": proc.stdout,
-                        "path": wd,
-                    }
-                else:
-                    error_msg = proc.stderr or proc.stdout or "Unknown error"
-                    return {
-                        "success": False,
-                        "error": f"OpenTofu failed with return code {proc.returncode}: {error_msg}",
-                        "output": proc.stdout,
-                    }
-            except subprocess.TimeoutExpired:
-                logger.error(f"OpenTofu command timed out after 300 seconds: {' '.join(cmd)}")
-                return {
-                    "success": False,
-                    "error": f"OpenTofu command timed out after 300 seconds. Workspace preserved at: {wd}",
-                    "output": "Command timed out"
-                }
-            except Exception as e:
-                logger.exception(f"Exception running OpenTofu command: {' '.join(cmd)}")
-                return {
-                    "success": False,
-                    "error": f"Exception running OpenTofu: {str(e)}",
-                    "output": ""
-                }
-
+            self.store.delete_instance_by_adapter_id(normalized_adapter_id)
+            shutil.rmtree(wd, ignore_errors=True)
+            return {
+                "success": True,
+                "adapter_id": normalized_adapter_id,
+                "workspace_path": wd,
+                "command_outputs": command_outputs,
+                # backward-compatible aliases
+                "path": wd,
+                "output": command_outputs["destroy"]["stdout"],
+            }
         except Exception as e:
-            logger.exception("Exception in create_instance")
-            return {"success": False, "error": str(e)}
-
-    def destroy_instance(self, adapter_id: str) -> bool:
-        """Destroys an instance managed by OpenTofu."""
-        if not self.tofu_path:
-            logger.error("OpenTofu binary not found. Cannot destroy.")
-            return False
-
-        wd = self._workdir_for(adapter_id)
-
-        # Check if a state file exists before trying to destroy
-        if not os.path.exists(os.path.join(wd, "terraform.tfstate")):
-            logger.error(f"No state file found for {adapter_id} at {wd}. Resource may still exist in cloud; refusing to report success.")
-            return False
-
-        # Check for lock before destroy
-        if os.path.exists(os.path.join(wd, ".terraform.tfstate.lock.info")):
-            logger.error(f"Cannot destroy {adapter_id}: State file is locked.")
-            return False
-
-        cmd = [self.tofu_path, "destroy", "-auto-approve", "-no-color"]
-
-        try:
-            proc = subprocess.run(cmd, cwd=wd, capture_output=True, text=True, timeout=300)
-
-            if proc.returncode == 0:
-                logger.info(f"Destroy successful for {adapter_id}")
-                self.store.delete_instance_by_adapter_id(adapter_id)
-                shutil.rmtree(wd, ignore_errors=True)
-                return True
-            else:
-                logger.error(f"Destroy failed for {adapter_id}. Error: {proc.stderr or proc.stdout}")
-                return False
-
-        except Exception as e:
-            logger.exception(f"Error during destruction of {adapter_id}: {e}")
-            return False
+            logger.exception("Error during destruction of %s", normalized_adapter_id)
+            return self._build_error_response(
+                adapter_id=normalized_adapter_id,
+                workspace_path=wd,
+                error_category="apply_failed",
+                error=str(e),
+                command_outputs=command_outputs,
+            )
 
     def check_drift(self, logical_id: str) -> Dict[str, Any]:
         """

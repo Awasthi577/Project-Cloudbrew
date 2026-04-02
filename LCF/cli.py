@@ -238,6 +238,7 @@ class CloudbrewGroup(TyperGroup):
 
             # control flags
             yes = bool(params.pop("yes", False) or params.pop("y", False) or apply_flag)
+            should_apply = bool(apply_flag or yes)
             async_apply = bool(params.pop("async", False))
             provider_hint = params.pop("provider", "auto")
 
@@ -340,7 +341,7 @@ class CloudbrewGroup(TyperGroup):
                 "resource_type": resolved_name or cmd_name,
                 "provider": resolved_provider,
                 "attributes": params,
-                "plan_only": not yes,
+                "plan_only": not should_apply,
                 "non_interactive": yes,
             }
 
@@ -879,6 +880,8 @@ def create_resource(
     if resolved_provider != "noop":
         ensure_authenticated_for_resource(resolved_provider, resource_type)
 
+    should_apply = bool(apply and yes)
+
     if async_apply:
         off = OffloadManager(DEFAULT_OFFLOAD_DB)
         tid = off.enqueue(
@@ -889,7 +892,7 @@ def create_resource(
                 "resource_type": resource_type,
                 "provider": resolved_provider,
                 "attributes": attributes,
-                "plan_only": not apply,
+                "plan_only": not should_apply,
                 "non_interactive": yes,
             },
         )
@@ -902,7 +905,7 @@ def create_resource(
             "resource_type": resource_type,
             "provider": resolved_provider,
             "attributes": attributes,
-            "plan_only": not apply,
+            "plan_only": not should_apply,
             "non_interactive": yes,
         }
     )
@@ -957,8 +960,8 @@ def destroy_vm(
         if not target_adapter_id:
             target_adapter_id = f"opentofu-{name}"
 
-        ok = ta.destroy_instance(target_adapter_id)
-        typer.echo(json.dumps({"destroyed": ok, "name": name}))
+        destroy_res = ta.destroy_instance(target_adapter_id)
+        typer.echo(json.dumps({"destroyed": bool(destroy_res.get("success")), "name": name, "result": destroy_res}))
 
 
 # Destroy alias
@@ -1153,11 +1156,12 @@ def cli_tofu_destroy(
     
     ta = OpenTofuAdapter()
     try:
-        success = ta.destroy_instance(adapter_id)
-        if success:
+        destroy_res = ta.destroy_instance(adapter_id)
+        if destroy_res.get("success"):
             typer.secho(" Destroy complete.", fg=typer.colors.GREEN)
         else:
             typer.secho(" Destroy returned failure.", fg=typer.colors.RED)
+            typer.echo(json.dumps(destroy_res, indent=2))
     except Exception as e:
         typer.secho(f" Destroy failed: {e}", fg=typer.colors.RED)
 
