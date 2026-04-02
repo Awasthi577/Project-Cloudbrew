@@ -330,6 +330,7 @@ class OpenTofuAdapter:
 
         return s
 
+    @staticmethod
     def default_value_for_type(t):
         if isinstance(t, list) and t and t[0] == "list":
             return "[]"
@@ -343,32 +344,47 @@ class OpenTofuAdapter:
             return "false"
         return '"AUTO"'
 
+    @staticmethod
     def build_hcl_from_schema(provider: str, resource: str, schema: dict, user_inputs: dict=None):
         """
         Generate a minimal valid HCL resource using only required arguments.
         """
         user_inputs = user_inputs or {}
 
-        block = schema["block"]
-        attrs = block.get("attributes", {})
-        blocks = block.get("block_types", {})
+        # Accept both raw provider schema and normalized schema-manager format.
+        block = schema.get("block", {}) if isinstance(schema, dict) else {}
+        if block:
+            attrs = block.get("attributes", {})
+            blocks = block.get("block_types", {})
+            raw_shape = True
+        else:
+            attrs = schema.get("attributes", {}) if isinstance(schema, dict) else {}
+            blocks = schema.get("blocks", {}) if isinstance(schema, dict) else {}
+            raw_shape = False
 
         lines = [f'resource "{resource}" "{provider}" {{']
 
         # Required attributes
         for name, spec in attrs.items():
-            if spec.get("required"):
+            required = spec.get("required") if isinstance(spec, dict) else False
+            if required:
                 if name in user_inputs:
                     lines.append(f'  {name} = {user_inputs[name]}')
                 else:
-                    val = OpenTofuAdapter.default_value_for_type(spec.get("type"))
+                    attr_type = spec.get("type") if isinstance(spec, dict) else None
+                    val = OpenTofuAdapter.default_value_for_type(attr_type)
                     lines.append(f'  {name} = {val}')
 
         # Required nested blocks
         for blk, blk_spec in blocks.items():
-            if blk_spec.get("min_items", 0) > 0:
+            min_items = blk_spec.get("min_items", 0) if isinstance(blk_spec, dict) else 0
+            if (min_items or 0) > 0:
                 lines.append(f'  {blk} {{')
-                nested = blk_spec["block"].get("attributes", {})
+                nested = (
+                    blk_spec.get("block", {}).get("attributes", {})
+                    if raw_shape
+                    else blk_spec.get("schema", {}).get("attributes", {})
+                )
                 for aname, aspec in nested.items():
                     if aspec.get("required"):
                         if blk in user_inputs and aname in user_inputs[blk]:
@@ -488,17 +504,17 @@ provider "google" {{
             if "network_interface" not in clean_spec:
                 clean_spec["network_interface"] = {"network": "default"}
 
-        # If template exists for this resource type, use it (templates live in templates/ directory)
-        template_file = self._find_template_file(resource_type)
-        if template_file:
-            return header + "\n" + self._render_jinja_template(template_file, logical_id, clean_spec, resource_type, schema=schema)
-
-        # If schema exists, use schema-driven renderer
+        # If schema exists, use schema-driven renderer first.
         if schema:
             try:
                 return header + "\n" + self._render_hcl_from_schema(resource_type, logical_id, {"provider": provider, **clean_spec}, schema)
             except Exception as e:
                 logger.exception("Schema-driven rendering failed, falling back: %s", e)
+
+        # If template exists for this resource type, use it (templates live in templates/ directory)
+        template_file = self._find_template_file(resource_type)
+        if template_file:
+            return header + "\n" + self._render_jinja_template(template_file, logical_id, clean_spec, resource_type, schema=schema)
 
         # Otherwise, fallback to generic template
         logger.warning(
