@@ -30,6 +30,7 @@ from LCF.offload.manager import OffloadManager
 from LCF.cloud_adapters import pulumi_adapter
 from LCF.cloud_adapters.opentofu_adapter import OpenTofuAdapter
 from LCF.intelligent_builder import IntelligentBuilder  # NEW
+from LCF.provisioning.pipeline import ProvisioningPipeline
 
 # Feature Imports
 from LCF.policy_engine import PolicyEngine
@@ -47,6 +48,7 @@ DEFAULT_OFFLOAD_DB = "cloudbrew_offload.db"
 
 # Initialize Intelligent Builder
 intelligent_builder = IntelligentBuilder()
+provisioning_pipeline = ProvisioningPipeline()
 
 
 # -------------------------------------------------------------
@@ -391,227 +393,37 @@ class CloudbrewGroup(TyperGroup):
                 return
 
             # --- AUTHENTICATION CHECK ---
-            # Check if user is authenticated for this provider before proceeding
-            # Skip check for 'noop' provider
             if resolved_provider != "noop":
                 ensure_authenticated_for_resource(resolved_provider, cmd_name)
 
-            # Build canonical spec from resolver + CLI params
-            spec: Dict[str, Any] = {
-                "type": resolved_name.split(".")[-1] if isinstance(resolved_name, str) and "." in resolved_name else (resolved_name or cmd_name),
+            pipeline_request = {
                 "name": name,
+                "resource_type": resolved_name or cmd_name,
                 "provider": resolved_provider,
+                "attributes": params,
+                "plan_only": not yes,
+                "non_interactive": yes,
             }
 
-            if isinstance(resolved_meta, dict):
-                defaults = resolved_meta.get("_defaults", {})
-                for k, v in defaults.items():
-                    # Use deepcopy to prevent polluting the cached static registry
-                    spec[k] = copy.deepcopy(v)
-                
-                # Capture mapped provider if 'auto' was used
-                if resolved_meta.get("_provider") and resolved_provider == "auto":
-                    spec["provider"] = resolved_meta["_provider"]
-
-            # merge CLI params, with simple casts
-            for k, v in params.items():
-                if isinstance(v, str) and v.isdigit():
-                    spec[k] = int(v)
-                elif isinstance(v, str) and v.lower() in ("true", "false"):
-                    spec[k] = (v.lower() == "true")
-                else:
-                    spec[k] = v
-
-            # attach resolver metadata for debugging / learning
-            spec["_resolver_meta"] = resolved_meta
-
-            # heuristics: whether resource is VM-like (use AutoscalerManager/Workflow)
-            vm_like = any(t in str(spec["type"]).lower() for t in ("vm", "instance", "cluster", "node", "k8s", "eks", "gke", "aks"))
-
-            # Async apply -> produce plan then enqueue an apply task
-            if async_apply:
-                mgr = AutoscalerManager(db_path=DEFAULT_DB, provider=resolved_provider)
-                plan_res = mgr.run_once(name, spec, {"min": 1, "max": 1, "policy": [], "cooldown": 60}, observed_metrics={"cpu": 0}, plan_only=True)
-                plan_id = None
-                for a in plan_res.get("actions", []):
-                    plan_id = a.get("res", {}).get("plan_id") or plan_id
-                off = OffloadManager(DEFAULT_OFFLOAD_DB)
-                
-                # adapter name in offload queue should match provider (e.g. opentofu/pulumi)
-                tid = off.enqueue(adapter=resolved_provider, task_type="apply_plan", payload={"plan_path": plan_id})
-                if res.get("success") and res.get("output"):
-                            typer.echo(res["output"])
-                else:
-                    out = {
-                         "mode": "dynamic-fallback",
-                        "resource": cmd_name,
-                        "name": name,
-                        "params": params,
-                        "resolved": resolved_block,
-                        "result": res,
-                        }
-                    typer.echo(json.dumps(out, indent=2))
-                return
-
-            # Synchronous apply requested
-            if yes:
-                if vm_like:
-                    mgr = AutoscalerManager(db_path=DEFAULT_DB, provider=resolved_provider)
-                    res = mgr.run_once(name, spec, {"min": 1, "max": 1, "policy": [], "cooldown": 60}, observed_metrics={"cpu": 0}, plan_only=False)
-                    out = {
-                        "mode": "dynamic-fallback",
-                        "resource": cmd_name,
-                        "name": name,
-                        "params": params,
-                        "resolved": resolved_block,
-                        "result": res,
-                    }
-                    typer.echo(json.dumps(out, indent=2))
-                    return
-                else:
-                    # non-vm: route to Pulumi or OpenTofu adapters
-                    if resolved_provider == "pulumi":
-                        lines = list(pulumi_adapter.apply(spec, "dev"))
-                        out = {
-                            "mode": "dynamic-fallback",
-                            "resource": cmd_name,
-                            "name": name,
-                            "params": params,
-                            "resolved": resolved_block,
-                            "result": {"apply_output": lines},
-                        }
-                        typer.echo(json.dumps(out, indent=2))
-                        return
-                    else:
-                        # Default to OpenTofu
-                        ta = OpenTofuAdapter()
-                        schema = ta.schema_mgr.get(resolved_name)
-                        validation = create_resource_with_validation(
-                            provider=resolved_provider,
-                            resource=resolved_name,
-                            schema=schema,
-                            args=type("Args", (), {"yes": yes})()
-                        )
-
-                        final_hcl = validation["hcl"]
-
-                        spec["_hcl_override"] = final_hcl
-
-                        res = ta.create_instance(name, spec, plan_only=True)
-
-                        out = {
-                            "mode": "schema-driven",
-                            "resource": cmd_name,
-                            "name": name,
-                            "params": params,
-                            "resolved": resolved_block,
-                            "result": res,
-                            "generated_hcl": validation["hcl"],
-                        }
-                        typer.echo(json.dumps(out, indent=2))
-                        return
-
-            # Default: plan-only behavior
-            if vm_like:
-                mgr = AutoscalerManager(db_path=DEFAULT_DB, provider=resolved_provider)
-                res = mgr.run_once(name, spec, {"min": 1, "max": 1, "policy": [], "cooldown": 60}, observed_metrics={"cpu": 0}, plan_only=True)
-                out = {
-                    "mode": "dynamic-fallback",
-                    "resource": cmd_name,
-                    "name": name,
-                    "params": params,
-                    "resolved": resolved_block,
-                    "result": res,
-                }
-                typer.echo(json.dumps(out, indent=2))
-                return
-
-            if resolved_provider == "pulumi":
-                lines = list(pulumi_adapter.plan(spec, "dev"))
-                out = {
-                    "mode": "dynamic-fallback",
-                    "resource": cmd_name,
-                    "name": name,
-                    "params": params,
-                    "resolved": resolved_block,
-                    "result": {"plan_output": lines},
-                }
-                typer.echo(json.dumps(out, indent=2))
-                return
-
-            # ------------------------------
-            # Schema-driven final fallback
-            # ------------------------------
-            # At this point we haven't returned earlier; use schema-driven flow for non-VM plan-only calls.
-            ta = OpenTofuAdapter()
-
-            # Safely load schema for the resolved resource
             try:
-                schema = ta.schema_mgr.get(resolved_name)
+                result = provisioning_pipeline.execute(pipeline_request)
             except Exception as e:
-                out = {
-                    "mode": "dynamic-fallback",
+                typer.echo(json.dumps({
+                    "mode": "create-pipeline",
                     "resource": cmd_name,
                     "name": name,
-                    "params": params,
                     "resolved": resolved_block,
-                    "error": "schema_load_failed",
-                    "error_msg": str(e),
-                }
-                typer.echo(json.dumps(out, indent=2))
+                    "error": str(e),
+                }, indent=2))
                 return
 
-            # Run the validator/auto-fill loop (honors --yes)
-            try:
-                validation = create_resource_with_validation(
-                    provider=resolved_provider,
-                    resource=resolved_name,
-                    schema=schema,
-                    args=type("Args", (), {"yes": yes})()
-                )
-            except Exception as e:
-                out = {
-                    "mode": "schema-driven",
-                    "resource": cmd_name,
-                    "name": name,
-                    "params": params,
-                    "resolved": resolved_block,
-                    "error": "validation_exception",
-                    "error_msg": str(e),
-                }
-                typer.echo(json.dumps(out, indent=2))
-                return
-
-            # If validation failed, return the diagnostic JSON (no adapter call)
-            if not validation or not validation.get("success", False):
-                out = {
-                    "mode": "schema-driven",
-                    "resource": cmd_name,
-                    "name": name,
-                    "params": params,
-                    "resolved": resolved_block,
-                    "error": "validation_failed",
-                    "validation_raw": validation,
-                }
-                typer.echo(json.dumps(out, indent=2))
-                return
-
-            # Inject the validated HCL and call the adapter (plan-only)
-            final_hcl = validation["hcl"]
-            spec["_hcl_override"] = final_hcl
-
-            res = ta.create_instance(name, spec, plan_only=True)
-
-            out = {
-                "mode": "schema-driven",
+            typer.echo(json.dumps({
+                "mode": "create-pipeline",
                 "resource": cmd_name,
                 "name": name,
-                "params": params,
                 "resolved": resolved_block,
-                "generated_hcl": final_hcl,
-                "result": res,
-            }
-            typer.echo(json.dumps(out, indent=2))
+                "result": result,
+            }, indent=2))
             return
 
         # return click.Command accepting varargs and ignoring unknown options
@@ -1098,215 +910,65 @@ def create_resource(
     resource_type: str = typer.Argument(..., help="Resource type (e.g., aws_instance)"),
     name: str = typer.Argument(..., help="Resource name"),
     autoscale: Optional[str] = typer.Option(None, "--autoscale", help="Autoscaling configuration (format: min:max@metric:threshold,cooldown)"),
-    spec: Optional[str] = typer.Option(None, "--spec", help="Path to JSON spec file"),
+    spec: Optional[str] = typer.Option(None, "--spec", help="Path to JSON/YAML/CBDSL spec file"),
     provider: Optional[str] = typer.Option(None, "--provider", help="Cloud provider (aws, google, azure)"),
     bucket: Optional[str] = typer.Option(None, "--bucket", help="S3 bucket name"),
     acl: Optional[str] = typer.Option(None, "--acl", help="S3 bucket ACL (private, public-read, etc.)"),
     versioning: Optional[bool] = typer.Option(False, "--versioning", help="Enable versioning"),
     apply: bool = typer.Option(False, "--apply", help="Apply the configuration (default: plan only)"),
-    yes: bool = typer.Option(False, "--yes", "-y", help="Skip confirmation"),
+    yes: bool = typer.Option(False, "--yes", "-y", help="Non-interactive mode"),
     async_apply: bool = typer.Option(False, "--async", help="Offload task to background worker"),
 ):
-    """
-    Create cloud resources with intelligent configuration.
-    Supports autoscaling and JSON spec files.
-    
-    Example:
-    cloudbrew create web-worker --autoscale "1:5@cpu:70,60" --spec examples/spec.json --apply --yes
-    """
-    
-    # Parse autoscaling if provided
-    autoscaling_config = None
-    if autoscale:
-        try:
-            autoscaling_config = parse_autoscale_config(autoscale)
-            typer.echo(f"Parsed autoscaling config: {autoscaling_config}")
-        except Exception as e:
-            raise typer.BadParameter(f"Invalid autoscale format: {str(e)}")
-    
-    # Load spec file if provided
-    spec_data = {}
-    if spec:
-        try:
-            with open(spec, 'r') as f:
-                spec_data = json.load(f)
-            typer.echo(f"Loaded spec from {spec}")
-        except Exception as e:
-            raise typer.BadParameter(f"Invalid spec file: {str(e)}")
-    
-    # Use the provided resource_type argument as the primary type
-    # Only override if spec file explicitly specifies a different type
-    final_resource_type = resource_type
-    if spec_data.get('type'):
-        final_resource_type = spec_data.get('type')
-    
-    typer.echo(f"Resource type: {final_resource_type}")
-    
-    # Build the complete specification
-    full_spec = {
-        "name": name,
-        "type": final_resource_type,
-        **spec_data
-    }
-    
+    """Create cloud resources through the canonical provisioning pipeline."""
 
-    
-    # Add provider if specified
+    attributes: Dict[str, Any] = {}
+    if spec:
+        attributes.update(_load_spec(spec) or {})
+
+    if autoscale:
+        attributes["autoscale"] = parse_autoscale_config(autoscale)
     if provider:
-        full_spec["provider"] = provider
-        typer.echo(f"Using provider: {provider}")
-    
-    # Add direct parameters for common resources (enhanced single-line syntax)
-    if final_resource_type == 'aws_s3_bucket':
-        if bucket:
-            full_spec["bucket"] = bucket
-        
-        if acl:
-            full_spec["acl"] = acl
-        else:
-            # Default ACL if not specified
-            full_spec["acl"] = "private"
-        
-        # For S3 buckets, versioning needs special handling as it's a Terraform block
-        if versioning is not None:
-            # We'll handle this in the HCL generation to ensure proper block syntax
-            full_spec["versioning"] = {"enabled": versioning}
-        
-        # Set provider to AWS for S3 buckets
-        full_spec["provider"] = "aws"
-        
-        # Always ask user for region when creating AWS resources (unless region is already specified)
-        if "region" not in full_spec:
-            # Always prompt for region if not specified, regardless of flags
-            full_spec["region"] = typer.prompt("AWS Region", default="us-east-1")
-        elif not yes and not apply:
-            # Region is specified, but ask for confirmation in interactive mode
-            confirm = typer.prompt(f"AWS Region (current: {full_spec['region']})", default=full_spec["region"])
-            full_spec["region"] = confirm
-    
-    elif final_resource_type == 'aws_instance':
-        # Set provider to AWS for EC2 instances
-        full_spec["provider"] = "aws"
-        
-        # Always ask user for region when creating AWS resources (unless region is already specified)
-        if "region" not in full_spec:
-            # Always prompt for region if not specified, regardless of flags
-            full_spec["region"] = typer.prompt("AWS Region", default="us-east-1")
-        elif not yes and not apply:
-            # Region is specified, but ask for confirmation in interactive mode
-            confirm = typer.prompt(f"AWS Region (current: {full_spec['region']})", default=full_spec["region"])
-            full_spec["region"] = confirm
-        
-        # Add instance type if not specified
-        if "instance_type" not in full_spec:
-            full_spec["instance_type"] = "t3.micro"
-    
-    elif final_resource_type == 'google_compute_instance':
-        # Set provider to GCP for compute instances
-        full_spec["provider"] = "gcp"
-        
-        # Add zone if not specified
-        if "zone" not in full_spec:
-            full_spec["zone"] = "us-central1-a"
-        
-        # Add machine type if not specified
-        if "machine_type" not in full_spec:
-            full_spec["machine_type"] = "e2-micro"
-    
-    elif final_resource_type == 'azurerm_virtual_machine':
-        # Set provider to Azure for virtual machines
-        full_spec["provider"] = "azure"
-        
-        # Add location if not specified
-        if "location" not in full_spec:
-            full_spec["location"] = "eastus"
-        
-        # Add VM size if not specified
-        if "vm_size" not in full_spec:
-            full_spec["vm_size"] = "Standard_B1s"
-    
-    # Add autoscaling if provided
-    if autoscaling_config:
-        full_spec['autoscale'] = autoscaling_config
-    
-    # Determine provider from spec or use default
-    provider = full_spec.get('provider') or get_default_provider() or 'noop'
-    
-    # --- AUTHENTICATION CHECK ---
-    # Check if user is authenticated for this provider before proceeding
-    if provider != "noop":
-        ensure_authenticated_for_resource(provider, resource_type)
-    
-    # --- INTERACTIVE PROMPTS FOR MISSING FIELDS ---
-    # If not using --yes flag and not applying, prompt for missing required fields
-    if not yes and not apply:
-        full_spec = prompt_for_missing_fields(full_spec, resource_type)
-    
-    typer.echo(f"Creating resource '{name}' with specification...")
-    typer.echo(f"Full spec: {json.dumps(full_spec, indent=2)}")
-    
-    if not yes and apply:
-        if not typer.confirm("Apply this configuration?"):
-            raise typer.Abort()
-    
-    try:
-        if apply:
-            # Use OpenTofu adapter for actual provisioning
-            typer.echo(f"\nProvisioning {resource_type} '{name}' with OpenTofu...")
-            
-            # Use the OpenTofu adapter for actual resource creation
-            ta = OpenTofuAdapter()
-            
-            # Create the resource (this will actually provision it to the cloud)
-            result = ta.create_instance(name, full_spec, plan_only=False)
-            
-            if result.get("success"):
-                typer.secho("\n[SUCCESS] Resource created successfully!", fg=typer.colors.GREEN)
-                typer.echo(f"Resource ID: {result.get('resource_id', 'N/A')}")
-                typer.echo(f"Provider: {full_spec.get('provider', 'unknown')}")
-                typer.echo(f"Region: {full_spec.get('region', 'unknown')}")
-                
-                # Show any outputs from the provisioning
-                if "output" in result:
-                    typer.echo(f"\nProvisioning Output:")
-                    typer.echo(result["output"])
-                
-                return
-            else:
-                typer.secho("\n[ERROR] Failed to create resource", fg=typer.colors.RED)
-                typer.echo(f"Error: {result.get('error', 'Unknown error')}")
-                raise typer.Exit(1)
-        else:
-            # Use fast validation for plan-only mode
-            from LCF.fast_validation import fast_validator
-            
-            # Validate and get HCL configuration
-            is_valid, validation_result = fast_validator.validate_resource(resource_type, full_spec)
-            
-            if not is_valid:
-                typer.echo("\nValidation failed:")
-                typer.echo(json.dumps(validation_result, indent=2))
-                raise typer.Exit(1)
-            
-            hcl_config = validation_result.get('hcl', 'Configuration generation failed')
-            
-            typer.echo("\nGenerated Configuration (Plan Mode):")
-            typer.echo(hcl_config)
-            typer.echo("\n(Use --apply to actually create this resource)")
-            
-            # Show validation metrics
-            metrics = fast_validator.get_metrics()
-            typer.echo(f"\nValidation Metrics:")
-            typer.echo(f"   Validations: {metrics.get('total_validations', 0)}")
-            typer.echo(f"   Average Time: {metrics.get('average_time_ms', 0):.2f} ms")
-            typer.echo(f"   Success Rate: {metrics.get('success_rate', 0) * 100:.1f}%")
-            typer.echo(f"   Cache Hits: {metrics.get('cache_hits', 0)}")
-            typer.echo(f"   Cache Misses: {metrics.get('cache_misses', 0)}")
-            
-            return
-        
-    except Exception as e:
-        typer.echo(f"Error: {str(e)}", err=True)
+        attributes["provider"] = provider
+    if bucket:
+        attributes["bucket"] = bucket
+    if acl:
+        attributes["acl"] = acl
+    if versioning:
+        attributes["versioning"] = {"enabled": bool(versioning)}
+
+    resolved_provider = attributes.get("provider") or provider or get_default_provider() or "opentofu"
+    if resolved_provider != "noop":
+        ensure_authenticated_for_resource(resolved_provider, resource_type)
+
+    if async_apply:
+        off = OffloadManager(DEFAULT_OFFLOAD_DB)
+        tid = off.enqueue(
+            adapter=resolved_provider,
+            task_type="pipeline_create",
+            payload={
+                "name": name,
+                "resource_type": resource_type,
+                "provider": resolved_provider,
+                "attributes": attributes,
+                "plan_only": not apply,
+                "non_interactive": yes,
+            },
+        )
+        typer.echo(json.dumps({"enqueued_task_id": tid}, indent=2))
+        return
+
+    result = provisioning_pipeline.execute(
+        {
+            "name": name,
+            "resource_type": resource_type,
+            "provider": resolved_provider,
+            "attributes": attributes,
+            "plan_only": not apply,
+            "non_interactive": yes,
+        }
+    )
+    typer.echo(json.dumps(result, indent=2))
+    if not result.get("success"):
         raise typer.Exit(1)
 
 
