@@ -267,9 +267,9 @@ class OffloadManager:
                 if not adapter_id:
                     raise RuntimeError("destroy requires adapter_id")
                 
-                ok = tofu.destroy_instance(adapter_id)
-                self.record_log(task_id, json.dumps({"deleted": ok}))
-                return {"deleted": ok}
+                destroy_res = tofu.destroy_instance(adapter_id)
+                self.record_log(task_id, json.dumps({"deleted": bool(destroy_res.get("success")), "result": destroy_res}))
+                return {"deleted": bool(destroy_res.get("success")), "result": destroy_res}
 
             raise RuntimeError(f"Unknown OpenTofu task_type: {task_type}")
 
