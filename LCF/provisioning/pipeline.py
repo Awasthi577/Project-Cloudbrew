@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+import hashlib
+import json
 import os
 import subprocess
+import time
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -15,6 +18,7 @@ from LCF.provisioning.prompt_engine import (
     PromptEngine,
 )
 from LCF.resource_resolver import ResourceResolver
+from LCF.provisioning.run_metadata import RunMetadataStore
 
 
 @dataclass
@@ -34,16 +38,18 @@ class ProvisioningPipeline:
     parse -> resolve -> schema -> gap -> collect -> typed config -> render -> tofu exec.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, run_store_path: str = ".cloudbrew/runs.sqlite") -> None:
         self.resolver = ResourceResolver()
         self.adapter = OpenTofuAdapter()
         self.tofu_bin = self.adapter.tofu_path or "tofu"
+        self.run_store = RunMetadataStore(run_store_path)
 
     def execute(self, raw_request: Dict[str, Any]) -> Dict[str, Any]:
         req = self._parse_canonical_request(raw_request)
         resolved = self._resolve_provider_and_type(req)
         schema_info = self._load_provider_schema(resolved)
         prompt_advanced = bool(raw_request.get("advanced"))
+        pre_prompt_values = dict(resolved["attributes"])
         final_values, gap = self._collect_missing_values(
             schema=schema_info["resource_schema"],
             values=resolved["attributes"],
@@ -53,18 +59,68 @@ class ProvisioningPipeline:
         typed = self._build_typed_config(final_values, schema_info["resource_schema"])
         rendered = self._render_from_typed_object(req.name, resolved["resource_type"], resolved["provider"], typed, schema_info["resource_schema"])
         tofu = self._run_tofu_stages(req.name, rendered["hcl"], run_apply=not req.plan_only)
+        schema_hash = self._stable_hash(schema_info["resource_schema"])
+        prompted_fields = self._derive_prompted_fields(pre_prompt_values, final_values)
+        hcl_artifact_path = str(Path(tofu["workdir"]) / "main.tf")
 
-        return {
+        response = {
             "success": tofu["success"],
             "request": req.__dict__,
             "resolved": {k: v for k, v in resolved.items() if k != "attributes"},
             "provider_schema": schema_info["provider_schema_key"],
             "provider_version": schema_info["provider_version"],
+            "schema_hash": schema_hash,
             "gap_analysis": gap,
+            "prompted_fields": prompted_fields,
+            "final_spec": final_values,
             "typed_config": typed,
             "rendered": rendered,
+            "hcl_artifact_path": hcl_artifact_path,
             "tofu": tofu,
         }
+        run_id = self.run_store.save(
+            {
+                "resolved_identity": response["resolved"],
+                "schema": {
+                    "provider_schema": response["provider_schema"],
+                    "provider_version": response["provider_version"],
+                    "schema_hash": schema_hash,
+                },
+                "prompted_fields": prompted_fields,
+                "final_spec": final_values,
+                "hcl_artifact_path": hcl_artifact_path,
+                "execution_timeline": tofu.get("steps", []),
+                "request": req.__dict__,
+                "success": response["success"],
+            },
+            run_id=raw_request.get("run_id"),
+        )
+        response["run_id"] = run_id
+        return response
+
+    def replay(self, run_id: str) -> Dict[str, Any]:
+        record = self.run_store.get(run_id)
+        if not record:
+            raise typer.BadParameter(f"Unknown run_id: {run_id}")
+        payload = record.payload
+        identity = payload.get("resolved_identity", {})
+        request = payload.get("request", {})
+        replay_req = {
+            "name": identity.get("identity", {}).get("logical_name") or request.get("name"),
+            "resource_type": identity.get("resource_type") or request.get("resource_type"),
+            "provider": identity.get("provider") or request.get("provider_hint") or "opentofu",
+            "attributes": payload.get("final_spec", {}),
+            "plan_only": bool(request.get("plan_only", True)),
+            "non_interactive": True,
+            "run_id": run_id,
+        }
+        return self.execute(replay_req)
+
+    def get_run(self, run_id: str) -> Optional[Dict[str, Any]]:
+        record = self.run_store.get(run_id)
+        if not record:
+            return None
+        return {"run_id": record.run_id, "created_at": record.created_at, **record.payload}
 
     def _parse_canonical_request(self, raw: Dict[str, Any]) -> CanonicalCreateRequest:
         attrs = dict(raw.get("attributes", {}))
@@ -204,11 +260,16 @@ class ProvisioningPipeline:
         env = os.environ.copy()
         env["TF_IN_AUTOMATION"] = "1"
         for cmd in commands:
+            started = time.time()
             proc = subprocess.run(cmd, cwd=str(workdir), capture_output=True, text=True, env=env)
+            finished = time.time()
             results.append(
                 {
                     "command": " ".join(cmd),
                     "returncode": proc.returncode,
+                    "started_at": started,
+                    "finished_at": finished,
+                    "duration_seconds": round(finished - started, 6),
                     "stdout": proc.stdout,
                     "stderr": proc.stderr,
                 }
@@ -216,3 +277,21 @@ class ProvisioningPipeline:
             if proc.returncode != 0:
                 return {"success": False, "steps": results, "workdir": str(workdir)}
         return {"success": True, "steps": results, "workdir": str(workdir)}
+
+    def _stable_hash(self, value: Any) -> str:
+        return hashlib.sha256(json.dumps(value, sort_keys=True).encode("utf-8")).hexdigest()
+
+    def _derive_prompted_fields(self, before: Dict[str, Any], after: Dict[str, Any]) -> List[str]:
+        return sorted(self._flatten_paths(after) - self._flatten_paths(before))
+
+    def _flatten_paths(self, value: Any, prefix: str = "") -> set[str]:
+        paths: set[str] = set()
+        if isinstance(value, dict):
+            for key, val in value.items():
+                next_prefix = f"{prefix}.{key}" if prefix else key
+                paths.add(next_prefix)
+                paths.update(self._flatten_paths(val, next_prefix))
+        elif isinstance(value, list):
+            for item in value:
+                paths.update(self._flatten_paths(item, prefix))
+        return paths
