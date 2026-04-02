@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 import os
 import subprocess
 from dataclasses import dataclass, field
@@ -10,6 +9,11 @@ from typing import Any, Dict, List, Optional
 import typer
 
 from LCF.cloud_adapters.opentofu_adapter import OpenTofuAdapter
+from LCF.provisioning.prompt_engine import (
+    InteractiveTerminalPromptAdapter,
+    NonInteractivePromptAdapter,
+    PromptEngine,
+)
 from LCF.resource_resolver import ResourceResolver
 
 
@@ -39,8 +43,13 @@ class ProvisioningPipeline:
         req = self._parse_canonical_request(raw_request)
         resolved = self._resolve_provider_and_type(req)
         schema_info = self._load_provider_schema(resolved)
-        gap = self._run_gap_analysis(schema_info["resource_schema"], resolved["attributes"])
-        final_values = self._collect_missing_values(gap, resolved["attributes"], req.non_interactive)
+        prompt_advanced = bool(raw_request.get("advanced"))
+        final_values, gap = self._collect_missing_values(
+            schema=schema_info["resource_schema"],
+            values=resolved["attributes"],
+            non_interactive=req.non_interactive,
+            prompt_advanced=prompt_advanced,
+        )
         typed = self._build_typed_config(final_values, schema_info["resource_schema"])
         rendered = self._render_from_typed_object(req.name, resolved["resource_type"], resolved["provider"], typed, schema_info["resource_schema"])
         tofu = self._run_tofu_stages(req.name, rendered["hcl"], run_apply=not req.plan_only)
@@ -116,31 +125,28 @@ class ProvisioningPipeline:
             "resource_schema": resource_schema,
         }
 
-    def _run_gap_analysis(self, schema: Dict[str, Any], values: Dict[str, Any]) -> Dict[str, Any]:
-        block = schema.get("block", {})
-        attrs = block.get("attributes", {})
-        blocks = block.get("block_types", {})
-        missing_required_fields = [k for k, v in attrs.items() if v.get("required") and k not in values]
-        missing_required_blocks = [k for k, v in blocks.items() if int(v.get("min_items", 0)) > 0 and k not in values]
-        return {
-            "missing_required_fields": missing_required_fields,
-            "missing_required_blocks": missing_required_blocks,
-            "ok": not missing_required_fields and not missing_required_blocks,
+    def _collect_missing_values(
+        self,
+        schema: Dict[str, Any],
+        values: Dict[str, Any],
+        non_interactive: bool,
+        prompt_advanced: bool,
+    ) -> tuple[Dict[str, Any], Dict[str, Any]]:
+        adapter = NonInteractivePromptAdapter(strict=True) if non_interactive else InteractiveTerminalPromptAdapter()
+        result = PromptEngine(adapter).build_canonical_spec(
+            schema=schema,
+            current_spec=values,
+            prompt_advanced=prompt_advanced,
+        )
+        missing = result.missing_required_paths
+        gap = {
+            "missing_required_fields": missing,
+            "missing_required_blocks": [],
+            "ok": not missing,
         }
-
-    def _collect_missing_values(self, gap: Dict[str, Any], values: Dict[str, Any], non_interactive: bool) -> Dict[str, Any]:
-        updated = dict(values)
-        required = gap["missing_required_fields"] + gap["missing_required_blocks"]
-        if not required:
-            return updated
-        if non_interactive:
-            raise typer.BadParameter(f"Missing required fields in non-interactive mode: {', '.join(required)}")
-        for field in gap["missing_required_fields"]:
-            updated[field] = typer.prompt(f"Enter value for {field}")
-        for block in gap["missing_required_blocks"]:
-            raw = typer.prompt(f"Enter JSON object for required block {block}", default="{}")
-            updated[block] = json.loads(raw)
-        return updated
+        if missing and non_interactive:
+            raise typer.BadParameter(f"Missing required fields in non-interactive mode: {', '.join(missing)}")
+        return result.canonical_spec, gap
 
     def _build_typed_config(self, values: Dict[str, Any], schema: Dict[str, Any]) -> Dict[str, Any]:
         typed = {}

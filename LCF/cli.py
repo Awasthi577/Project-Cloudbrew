@@ -98,73 +98,12 @@ def _load_spec(path_str: str) -> Dict[str, Any]:
 
 
 def prompt_for_missing_fields(spec: Dict[str, Any], resource_type: str) -> Dict[str, Any]:
-    """
-    Prompt user for missing required fields based on resource type.
-    
-    Args:
-        spec: Current specification dictionary
-        resource_type: Type of resource being created
-        
-    Returns:
-        Updated specification with user-provided values
-    """
-    updated_spec = spec.copy()
-    
-    if resource_type == "aws_s3_bucket":
-        # Bucket name is required for S3
-        if "bucket" not in updated_spec:
-            bucket_name = typer.prompt("Bucket name")
-            updated_spec["bucket"] = bucket_name
-        
-        # ACL with default
-        if "acl" not in updated_spec:
-            acl_value = typer.prompt("ACL", default="private")
-            updated_spec["acl"] = acl_value
-        
-        # Region with default
-        if "region" not in updated_spec:
-            region_value = typer.prompt("Region", default="us-east-1")
-            updated_spec["region"] = region_value
-            
-    elif resource_type == "aws_instance":
-        # AMI is required for EC2
-        if "ami" not in updated_spec:
-            ami_value = typer.prompt("AMI ID")
-            updated_spec["ami"] = ami_value
-        
-        # Instance type with default
-        if "instance_type" not in updated_spec:
-            instance_type_value = typer.prompt("Instance type", default="t3.micro")
-            updated_spec["instance_type"] = instance_type_value
-        
-        # Region with default
-        if "region" not in updated_spec:
-            region_value = typer.prompt("Region", default="us-east-1")
-            updated_spec["region"] = region_value
-            
-    elif resource_type == "google_compute_instance":
-        # Machine type with default
-        if "machine_type" not in updated_spec:
-            machine_type_value = typer.prompt("Machine type", default="e2-micro")
-            updated_spec["machine_type"] = machine_type_value
-        
-        # Zone with default
-        if "zone" not in updated_spec:
-            zone_value = typer.prompt("Zone", default="us-central1-a")
-            updated_spec["zone"] = zone_value
-            
-    elif resource_type == "azurerm_virtual_machine":
-        # VM size with default
-        if "vm_size" not in updated_spec:
-            vm_size_value = typer.prompt("VM size", default="Standard_B1s")
-            updated_spec["vm_size"] = vm_size_value
-        
-        # Location with default
-        if "location" not in updated_spec:
-            location_value = typer.prompt("Location", default="eastus")
-            updated_spec["location"] = location_value
-    
-    return updated_spec
+    """Deprecated shim: canonical create flow now uses LCF.provisioning.prompt_engine."""
+    typer.echo(
+        "prompt_for_missing_fields is deprecated and bypassed by the canonical create pipeline.",
+        err=True,
+    )
+    return dict(spec)
     """Load a spec from JSON or YAML file."""
     p = Path(path_str)
     if not p.exists():
